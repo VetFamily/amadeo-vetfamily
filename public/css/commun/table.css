@@ -1,0 +1,814 @@
+.zone-tableau-withoutOnglets {
+	display: flex;
+	width: 100%;
+	/*margin: 20px auto;*/
+}
+.zone-tableau-withOnglets {
+	width: 100%;
+	margin-top: -5px;
+	background: #E8E8E8;
+    border: 1px solid #212629;
+}
+
+.tableau
+{
+	width: 100%;
+}
+
+.modal-body-table
+{
+	background: #E8E8E8;
+	padding: 0 !important;
+}
+
+.tableau table.dataTable,
+.modal-body table.dataTable
+{
+	/*border-collapse: separate;
+    border-spacing: 0 10px;
+    *border-collapse: expression('separate', cellSpacing = '0 10px');*/
+    background: transparent;
+    border: none;
+}
+
+.tableau table.dataTable>tbody tr,
+.modal-body table.dataTable>tbody tr
+{
+	background: transparent !important;
+}
+
+.dataTables_scrollBody
+{
+    border-bottom: none !important;
+    overflow-y: scroll !important;
+    /*right: 5px;*/
+}
+
+
+.dataTables_scrollBody::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+	background-color: #E8E8E8;
+}
+
+.dataTables_scrollBody::-webkit-scrollbar-track,
+.dataTables_scrollBody::-webkit-scrollbar-thumb {
+	border: 3px solid rgba(255,255,255,0);
+	background-clip: padding-box;
+}
+
+.dataTables_scrollBody::-webkit-scrollbar-track {
+	background-color: #212629;
+}
+
+.dataTables_scrollBody::-webkit-scrollbar-thumb {
+	background-color: #01b4bc;
+}
+
+.dataTables_scrollBody::-webkit-scrollbar-thumb:hover {
+	border: 2px solid rgba(255,255,255,0);
+}
+
+/*
+.dataTables_scrollBody::-webkit-scrollbar
+{
+	width: 5px;
+	height: 5px;
+	background-color: #01b4bc;
+}
+
+.dataTables_scrollBody::-webkit-scrollbar-track
+{
+	background-color: #212629;
+}
+
+.dataTables_scrollBody::-webkit-scrollbar-thumb
+{
+	border: 1px solid #212629;
+	background-color: #01b4bc;	
+}
+*/
+/*********************
+ * Informations du tableau *
+ *********************/
+
+.tableau .dataTables_info
+{
+	padding-left: 40px;
+	color: #212629;
+	font-size: 12px;
+}
+
+.tableau .dataTables_paginate
+{
+	padding-right: 30px;
+	color: #212629;
+	font-size: 12px;
+}
+
+.tableau .dataTables_paginate .paginate_button.current,
+.tableau .dataTables_paginate .paginate_button.current:hover,
+.tableau .dataTables_paginate .paginate_button:hover,
+.tableau .dataTables_paginate .paginate_button:active
+{
+	color: #01b4bc !important;
+	border: 1px solid transparent;
+	background: none;
+	box-shadow: none;
+}
+
+/*********************
+ * Entête du tableau *
+ *********************/
+
+.tableau .dataTables_scrollHeadInner,
+.tableau .dataTables_scrollHeadInner table
+{
+	width: 100% !important;
+	margin-bottom: 20px;
+}
+
+.modal-body .dataTables_scrollHeadInner,
+.modal-body .dataTables_scrollHeadInner table
+{
+	width: 100% !important;
+}
+
+.tableau th {
+	/*text-align: center;
+	text-transform: capitalize;*/
+}
+
+.tableau thead tr,
+.modal-body thead tr
+{
+	background-color: #FFFFFF;
+}
+
+.modal-body th 
+{
+	line-height: 13px;
+	height: 35px;
+	border: none !important;
+	font-size: 16px;
+	color: #01b4bc;
+}
+
+.tableau th
+{
+	line-height: 13px;
+}
+
+.tableau thead tr th
+{
+	line-height: 13px;
+	border-bottom: none;
+	font-size: 16px;
+	color: #01b4bc;
+	height: 25px;
+}
+
+.zone-tableau-withoutOnglets .tableau tr:last-child th
+{
+	padding-top: 0px;
+	padding-bottom: 5px;
+    border: none;
+    height: 25px;
+	color: #212629;
+}
+
+.zone-tableau-withoutOnglets .tableau tr:last-child th.star-filter
+{
+    text-align: right;
+    padding-right: 27px;
+    cursor: pointer;
+}
+
+.tableau tr:first-child th:first-child
+{
+	padding-left: 44px;
+}
+
+.tableau table span 
+{
+	font-size: 11px;
+	font-weight: 300;
+	white-space: nowrap;
+}
+
+.tableau th input,
+.tableau th select {
+	font-size: 12px;
+	font-weight: 300;
+	border: none;
+	border-bottom: 1px solid #212629;
+	max-width: 90%;
+}
+
+.tableau th input,
+.modal-body th input
+{
+	background: url('/images/LOUPE.svg') no-repeat left 2px center !important;
+	padding-left: 20px !important;
+}
+
+.tableau th.text-filter
+{
+	/*padding-right: 5%;*/
+}
+
+.tableau table.dataTable thead .sorting,
+.tableau table.dataTable thead .sorting_desc,
+.tableau table.dataTable thead .sorting_asc,
+.modal-body table.dataTable thead .sorting,
+.modal-body table.dataTable thead .sorting_desc,
+.modal-body table.dataTable thead .sorting_asc
+{
+	background-position: right 2% center;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #212629;
+    opacity: 1; /* Firefox */
+}
+
+/*********************
+ * Corps du tableau *
+ *********************/
+
+.tableau table.dataTable>tbody>tr>td>div,
+.modal-body table.dataTable>tbody>tr>td>div
+{
+	background: #FFFFFF;
+	height: 40px;
+	line-height: 40px;
+	display: block;
+    text-align: left;
+    padding-left: 18px;
+    padding-right: 18px;
+}
+
+.tableau table.dataTable>tbody>tr>td:first-child>div
+{
+	margin-left: 26px;
+}
+
+.tableau table.dataTable>tbody>tr>td:last-child>div,
+.modal-body table.dataTable>tbody>tr>td:last-child>div
+{
+	margin-right: 8px;
+}
+
+.tableau table.dataTable>tbody>tr>td,
+.modal-body table.dataTable>tbody>tr>td
+{
+	line-height: 12px;
+    font-size: 12px;
+    padding: 0 !important;
+    border-top: 5px solid #E8E8E8;
+    border-bottom: 5px solid #E8E8E8;
+}
+
+.tableau table.dataTable>tbody>tr:first-child>td
+{
+	border-top: 0;
+}
+
+.tableau table.dataTable>tbody>tr:last-child>td
+{
+	border-bottom: 10px solid #E8E8E8;
+}
+
+.tableau table.dataTable .width-5,
+.modal-body table.dataTable>tbody>tr>td.width-5
+{
+	min-width: 5vh;
+	max-width: 5vh;
+}
+
+.tableau table.dataTable .width-9,
+.modal-body table.dataTable>tbody>tr>td.width-9
+{
+	min-width: 9vh;
+	max-width: 9vh;
+}
+
+.tableau table.dataTable .width-10,
+.modal-body table.dataTable>tbody>tr>td.width-10
+{
+	min-width: 10vh;
+	max-width: 10vh;
+}
+
+.tableau table.dataTable .width-15,
+.modal-body table.dataTable>tbody>tr>td.width-15
+{
+	min-width: 15vh;
+	max-width: 15vh;
+}
+
+.tableau table.dataTable .width-20,
+.modal-body table.dataTable>tbody>tr>td.width-20
+{
+	min-width: 20vh;
+	max-width: 20vh;
+}
+
+.tableau table.dataTable .width-30,
+.modal-body table.dataTable>tbody>tr>td.width-30
+{
+	min-width: 30vh;
+	max-width: 30vh;
+}
+
+.tableau table.dataTable .width-40,
+.modal-body table.dataTable>tbody>tr>td.width-40
+{
+	min-width: 40vh;
+	max-width: 40vh;
+}
+
+.tableau table.dataTable .width-50,
+.modal-body table.dataTable>tbody>tr>td.width-50
+{
+	min-width: 50vh;
+	max-width: 50vh;
+}
+
+.tableau table.dataTable>tbody>tr>td .objectif-suivi,
+.tableau table.dataTable>tbody>tr>td .objectif-non-suivi {
+    margin-left: 2px;
+    cursor: pointer;
+}
+
+.tableau table.dataTable>tbody>tr>td>div.details-control 
+{
+    background: #FFFFFF url('/images/PLUS.svg') no-repeat;
+    background-position: left 15px center;
+    cursor: pointer;
+}
+
+.tableau table.dataTable>tbody>tr.shown div.details-control 
+{
+    background: #01b4bc url('/images/MOINS.svg') no-repeat;
+    background-position: left 15px center;
+    cursor: pointer;
+}
+
+.tableau table.dataTable .nombre,
+.modal-body table.dataTable>tbody>tr>td div.nombre
+{
+    text-align: right;
+}
+/*
+.tableau table.dataTable>tbody>tr>td>div.annee {
+	text-align: center;
+}
+*/
+.tableau table.dataTable .texte,
+.modal-body table.dataTable>tbody>tr>td div.texte
+{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tableau table.dataTable .italic
+{
+	font-style: italic;
+}
+
+/* Ligne obsolète */
+.tableau table.dataTable>tbody>tr>td>div.details-control-obsolete 
+{
+    background: #F4F3F3 url('/images/PLUS_OBSOLETE.svg') no-repeat;
+    background-position: left 15px center;
+    cursor: pointer;
+}
+
+.tableau table.dataTable>tbody>tr.shown div.details-control-obsolete 
+{
+    background: #9B9B9B url('/images/MOINS_OBSOLETE.svg') no-repeat;
+    background-position: left 15px center;
+    cursor: pointer;
+}
+
+.tableau table.dataTable>tbody>tr>td>div.obsolete,
+.modal-body table.dataTable>tbody>tr>td>div.obsolete
+{
+	font-style: italic;
+	color: #9B9B9B !important;
+	background: #F4F3F3;
+}
+
+.tableau table.dataTable>tbody>tr.shown>td>div.obsolete,
+.modal-body table.dataTable>tbody>tr.shown>td>div.obsolete
+{
+    background-color: #9B9B9B;
+    color: #F4F3F3 !important;
+}
+
+/* Affichage des nombres positifs ou négatifs */
+
+.tableau table.dataTable .positif
+{
+	color: #16B84E;
+}
+
+.tableau table.dataTable .negatif 
+{
+	color: red;
+}
+
+.tableau table.dataTable>tbody>tr>td>div.orange 
+{
+	color: orange;
+}
+
+
+/* Sélection d'une ligne */
+.tableau table.dataTable>tbody tr.selected td>div,
+.modal-body table.dataTable>tbody tr.selected td>div
+{
+	border-bottom: 2px solid #01b4bc;
+    border-top: 2px solid #01b4bc;
+}
+
+.tableau table.dataTable>tbody tr.selected td:first-child>div,
+.modal-body table.dataTable>tbody tr.selected td:first-child>div
+{
+	border-left: 10px solid #01b4bc;
+}
+
+.tableau table.dataTable>tbody tr.selected td:last-child>div,
+.modal-body table.dataTable>tbody tr.selected td:last-child>div
+{
+	border-right: 10px solid #01b4bc;
+}
+
+.tableau table.dataTable>tbody tr.selected div.details-control {
+    background-position: left 5px center;
+}
+
+.tableau table.dataTable>tbody tr.shown td
+{
+	border-bottom: none;
+}
+
+.tableau table.dataTable>tbody tr.shown td div
+{
+	background-color: #01b4bc;
+}
+
+.tableau table.dataTable>tbody tr.shown td div input
+{
+	width: 80% !important;
+	font-size: 12px;
+    font-weight: 300;
+    border: none;
+    border-bottom: 1px solid #FFFFFF;
+    background: transparent;
+    color: #FFFFFF;
+}
+
+/* Détail d'une ligne */
+.tableau table.dataTable>tbody>tr.child>td,
+.tableau table.dataTable>tbody>tr.child-obsolete>td
+{
+	border-top: none;
+}
+
+.tableau table.dataTable>tbody>tr.child>td>div
+{
+	border: 2px solid #01b4bc;
+	padding-left: 37px;
+	height: auto;
+}
+
+.tableau table.dataTable>tbody>tr.child-obsolete>td>div
+{
+	border: 2px solid #9B9B9B;
+	padding-left: 37px;
+	height: auto;
+}
+
+.tableau table.dataTable .detail-row
+{
+	width: 100%;
+	margin-top: 20px;
+}
+
+.tableau table.dataTable .detail-row td
+{
+	vertical-align: top;
+	line-height: 20px;
+}
+
+.tableau table.dataTable .detail-row tr td.detail-row-title
+{
+	width: 15%;
+	color: #01b4bc;
+	text-transform: uppercase;
+}
+
+.tableau table.dataTable .detail-row tr td input
+{
+	width: 80%;
+	font-weight: 300;
+    border: none;
+    border-bottom: 1px solid #212629;
+    background: transparent;
+    color: #212629;
+}
+
+.tableau table.dataTable .detail-row tr td textarea
+{
+	border: none;
+	background: #E8E8E8;
+	padding: 10px;
+	width: 100%;
+	height: 80px;
+}
+
+.commentaires {
+	overflow-y: auto;
+	max-height: 50vh;
+}
+
+.commentaires .bulle {
+    border: 1px solid #9B9B9B;
+    background-color: #F4F3F3;
+    padding: 7px;
+    margin: 5px 0;
+}
+.commentaires .bulle::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.commentaires .darker {
+    border-color: #9B9B9B;
+    background-color: #E8E8E8;
+}
+
+.commentaires .bulle .writer
+{
+	color: #9B9B9B;
+}
+
+.commentaires .bulle .time-right {
+    float: right;
+    color: #9B9B9B;
+}
+
+.tableau table.dataTable .detail-row tr td.detail-row-subTable
+{
+	max-width: 80vh;
+	border: 1px solid #9B9B9B;
+    border-right: none;
+}
+
+.tableau table.dataTable .detail-row tr td.detail-row-subTable thead th
+{
+    padding: 10px 18px;
+}
+
+.tableau table.dataTable .detail-row tr td.detail-row-subTable .dataTables_scrollBody,
+.modal-body .dataTables_scrollBody
+{
+    right: 0;
+    background: #E8E8E8;
+}
+
+.tableau table.dataTable .detail-row tr td.detail-row-subTable tr:first-child td,
+.modal-body table.dataTable tr:first-child td
+{
+    border-top: 10px solid #E8E8E8;
+}
+
+.tableau table.dataTable .detail-row tr td:first-child>div,
+.modal-body table.dataTable tr td:first-child>div
+{
+	margin-left: 8px;
+}
+
+.tableau table.dataTable .detail-row tr td.detail-row-subTable tr:last-child td,
+.modal-body table.dataTable tr:last-child td
+{
+    border-bottom: 10px solid #E8E8E8;
+}
+
+.tableau table.dataTable .detail-row tr td.detail-row-subTable input
+{
+	border-bottom: none;
+	width: 70%;
+    font-style: italic;
+}
+
+.tableau table.dataTable .detail-row tr td div.detail-row-buttons
+{
+	display: flex;
+	align-items: center;
+    justify-content: flex-end;
+}
+
+
+/*********************
+ * Pied du tableau *
+ *********************/
+
+.tableau .dataTables_scrollFootInner,
+.tableau .dataTables_scrollFootInner table
+{
+	width: 100% !important;
+	margin-top: 5px;
+}
+
+.tableau tfoot tr
+{
+	background-color: #FFFFFF;
+}
+
+.tableau tfoot tr td
+{
+	line-height: 13px;
+	border-top: none;
+	font-size: 12px;
+	color: #01b4bc;
+	height: 25px;
+	padding: 10px 18px;
+}
+
+.tableau tfoot tr td:first-child
+{
+	padding-left: 44px;
+	font-size: 16px;
+}
+
+.tableau tfoot tr td:last-child
+{
+	padding-right: 36px;
+}
+
+
+/*************
+* Pagination *
+**************/
+
+.tableau .dataTables_buttons
+{
+	float: left;
+    display: flex;
+    padding: 0.25em 0 0.25em 30px;
+}
+
+.tableau .dataTables_buttons>div
+{
+	display: flex;
+    flex-direction: column;
+    padding: 0 1.5em;
+}
+
+.tableau .dataTables_buttons>div>a
+{
+	cursor: pointer;
+}
+
+/* Affichage responsive */
+@media all and (max-width: 1024px) {
+	.zone-tableau-withoutOnglets {
+		overflow-x: scroll;
+		-webkit-overflow-scrolling:touch;
+	}
+
+	.dataTables_scrollBody
+	{
+		max-height: 55vh !important;
+		-webkit-overflow-scrolling:touch;
+	}
+}
+
+
+
+
+
+
+
+/*
+.tableau td {
+	border-right: 1px solid rgba(52,52,52,0.1);
+}
+
+.tableau td:last-child {
+	border-right: none;
+}
+*/
+
+
+
+
+
+/*
+
+.tableau .dataTables_scroll
+{
+	margin-bottom: 10px;
+}
+
+.tableau tfoot td {
+	text-align: center;
+}
+
+.tableau .nombre,
+.tableau tfoot .nombre {
+	text-align: right;
+    font-size: 12px;
+	padding: 8px 10px;
+	white-space: nowrap;
+}
+
+.tableau tfoot .nombre {
+	padding: 4px;
+}
+
+.tableau .annee {
+	text-align: center;
+}
+
+.tableau .texte {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tableau .width-50 {
+	min-width: 50vh;
+	max-width: 50vh;
+}
+
+.tableau .width-40 {
+	min-width: 40vh;
+	max-width: 40vh;
+}
+
+.tableau .width-30 {
+	min-width: 30vh;
+	max-width: 30vh;
+}
+
+.tableau .width-20 {
+	min-width: 20vh;
+	max-width: 20vh;
+}
+
+.tableau .width-10 {
+	max-width: 10vh;
+}
+
+.tableau .width-9 {
+	max-width: 9vh;
+}
+
+.tableau table tfoot {
+	font-weight: bold;
+}
+
+.no-objectif {
+	height: 80vh;
+	line-height: 80vh;
+	text-align: center;
+	font-style: italic;
+}
+
+.obsolete {
+	font-style: italic;
+	color: #999 !important;
+}
+
+.positif {
+	color: #16B84E;
+}
+
+.negatif {
+	color: red;
+}
+
+.orange {
+	color: orange;
+}
+
+
+
+.tableau td .objectif-suivi,
+.tableau td .objectif-non-suivi {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+
+/*
+.detail-row tbody tr td {
+	border: 0 !important;
+}*
+*/

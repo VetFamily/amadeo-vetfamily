@@ -1,0 +1,128 @@
+.administration h1
+{
+	font-size: 14px;
+    text-transform: uppercase;
+    padding-left: 10px;
+    color: #01b4bc;
+}
+
+.administration h2
+{
+	font-size: 14px;
+	/*margin: auto 0px;*/
+}
+
+.estimationRFA, 
+.extractionPrixNet,
+.bilanRFA
+{
+	display: flex;
+	flex-direction: row;
+	padding: 20px;
+	border-bottom: 1px #01b4bc;
+}
+
+.administration-critere
+{
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	flex: 1;
+}
+
+.administration-critere>div
+{
+	padding: 20px;
+    display: flex;
+    flex-direction: row;
+}
+
+.administration-critere>div.radio-item
+{
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+.administration-critere .administration-encart ul
+{
+	padding: 0;
+}
+
+.administration-critere .administration-encart ul li
+{
+	list-style-type: none;
+}
+
+.administration-critere .administration-criteres-dropdown
+{
+	display: flex;
+    padding-bottom: 10px;
+    justify-content: space-between;
+    padding-right: 20%;
+}
+
+.administration-critere .administration-encart
+{
+	flex-direction: column;
+	padding: 0;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #212629;
+    opacity: 1; /* Firefox */
+}
+
+.administration-button
+{
+	display: flex;
+    flex: 1;
+	align-items: flex-start;
+	margin-top: 22px;
+    padding-right: 30px;
+}
+
+.administration-critere a 
+{
+	margin: auto 0;
+}
+
+.administration-critere .dropdown-display-label
+{
+	background: #FFFFFF;
+}
+
+.administration-critere .dropdown-multiple-label
+{
+	border: 1px solid #D8D8D8;
+}
+
+.administration-critere .dropdown-main
+{
+	margin-bottom: 0;
+	border: none;
+}
+
+.administration-critere .dropdown-display-label
+{
+	display: none;
+}
+
+.administration-critere .dropdown-search input
+{
+	background: url(/images/LOUPE.svg) no-repeat left 2px center !important;
+	padding-left: 20px !important;
+	margin-left: 10px;
+}
+
+.administration-critere .administration-criteres-dropdown-buttons
+{
+	display: flex;
+    justify-content: space-between;
+    margin: 3px 25px -3px 15px;
+}
+
+.administration-critere .administration-criteres-dropdown-buttons a
+{
+	cursor: pointer;
+    font-size: 12px;
+}

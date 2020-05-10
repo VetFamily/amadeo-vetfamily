@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="19px" height="17px" viewBox="0 0 19 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.1 (51147) - http://www.bohemiancoding.com/sketch -->
+    <title>ENREGISTER SOMBRE</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="ENREGISTER-SOMBRE" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <g id="Group" transform="translate(2.000000, 1.000000)" stroke="#212629">
+            <polyline id="Triangle" transform="translate(8.937765, 6.042091) rotate(180.000000) translate(-8.937765, -6.042091) " points="2.90199422 11.0258065 10.8755294 1.05837603 14.9735352 6.01118487"></polyline>
+            <path d="M11.942347,1.45657469 C10.6988795,0.541003274 9.1626188,0 7.5,0 C3.35786438,0 0,3.35786438 0,7.5 C0,11.6421356 3.35786438,15 7.5,15 C11.6421356,15 15,11.6421356 15,7.5 C15,6.6401373 14.8552986,5.81407142 14.5889184,5.04482496" id="Oval-5"></path>
+        </g>
+    </g>
+</svg>

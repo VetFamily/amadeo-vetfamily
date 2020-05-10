@@ -1,0 +1,184 @@
+.modal-backdrop.in 
+{
+    opacity: .75;
+    background-color: #212629;
+}
+
+.modal {
+  z-index: 1050;
+  display: none;
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+  outline: 0;
+  top: -130px;
+}
+
+.modal-dialog
+{
+  -webkit-transition: -webkit-transform .3s ease-out;
+  -o-transition: -o-transform .3s ease-out;
+  transition: transform .3s ease-out;
+  -webkit-transform: translate(0,-25%);
+  -ms-transform: translate(0,-25%);
+  -o-transform: translate(0,-25%);
+  transform: translate(0,-25%);
+  -webkit-transform: translate(0,0);
+  -ms-transform: translate(0,0);
+  -o-transform: translate(0,0);
+  transform: translate(0,0);
+  position: relative;
+  width: 649px;
+  margin: 200px auto;
+}
+
+.confirmBox .modal-dialog
+{
+  width: 500px;
+}
+
+/* Modal Content */
+.modal-content {
+  position: relative;
+  background-color: #FFFFFF;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  border: 2px solid #01b4bc;
+  border-radius: 0;
+  outline: 0;
+  -webkit-box-shadow: 0 3px 9px rgba(0,0,0,.5);
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+  from {top:-300px; opacity:0} 
+  to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+  from {top:-300px; opacity:0}
+  to {top:0; opacity:1}
+}
+
+/* The Close Button */
+.close {
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-header {
+  padding: 5px 16px;
+  background-color: #01b4bc;
+  color: #FFFFFF;
+  text-align: center;
+  line-height: 40px;
+  height: 40px;
+}
+
+.modal-header h4 {
+    font-size: 18px;
+}
+
+.modal-body {
+    padding: 20px 35px 0 35px;
+    background: #FFFFFF;
+}
+
+.modal-body .form-horizontal .control-label
+{
+  text-align: left;
+  font-size: 13px;
+  color: #01b4bc;
+}
+
+.modal-body .form-group
+{
+  margin: 0;
+}
+
+.modal-body .form-horizontal .form-group .col-sm-8
+{
+  float: none;
+  width: 100%;
+}
+
+.modal-body label.label_text
+{
+  width: 100%;
+  margin-top: 15px;
+  font-size: 16px;
+  color: #01b4bc;
+}
+
+.modal-body input[type="text"],
+.modal-body input[type="password"],
+.modal-body input[type="date"]
+{
+  padding: 5px 0;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #212629;
+  background: transparent;
+  color: #212629 !important;
+  font-size: 12px;
+}
+
+.modal-body select
+{
+  padding: 5px 0;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #212629;
+  border-radius: 0px;
+  background: transparent;
+  color: #212629 !important;
+  font-size: 12px;
+}
+
+.modal-body .help-block {
+  font-family: 'Montserrat-Bold';
+  font-size: 13px;
+}
+
+.modal-body p {
+  text-align: center;
+  font-size: 14px;
+  color: #212629;
+  text-align: left;
+}
+
+.modal-body p.avertissement{
+    font-size: 13px;
+}
+
+.modal-body p.question{
+    color: #01b4bc;
+}
+
+.modal-footer {
+  border-top: 1px solid #E8E8E8;
+  background: #FFFFFF;
+  /*border: none;
+  background: #E8E8E8;*/
+}
+
+.modal-footer div.confirm-buttons
+{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-footer div.confirm-buttons-modal
+{
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}

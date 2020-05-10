@@ -1,0 +1,93 @@
+.onglets
+{
+	display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+	height: 50px;
+	background: #212629;
+}
+
+.onglets ul 
+{
+	/*-moz-column-count: 2;
+    -moz-column-gap: 20px;
+    -webkit-column-count: 2;
+    -webkit-column-gap: 20px;
+    list-style-type: none;
+	column-count: 2;
+	column-gap: 0px;
+	text-align: center;
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
+	display: block;*/
+	margin: 0px;
+    padding: 0px;
+    list-style: none; /* on supprime le style par défaut de la liste */
+    text-align: center !important; /* on centre le texte qui se trouve dans la liste */
+    font-family: Montserrat;
+    font-size: 12px; /* hauteur du texte : 12 pixels */
+    display: flex; 
+    flex-direction : row; 
+    justify-content: center;
+    width: 100%;
+}
+
+.onglets-li 
+{
+	/*height: 30px;
+	line-height: 30px;
+	background: #212629;*/
+    width: 100%; /* largeur */
+	/*padding: 10px 0 10px 0;*/
+	border-right: 1px solid #212629;
+	cursor: pointer;
+}
+
+.onglets-li a 
+{
+	/*display: inline-block;
+	padding: 0px 100px;
+	color: #fff;
+	font-size: 14px;
+	font-weight: 100;
+	cursor: pointer;*/
+	display: block;
+    padding: 0;
+    text-decoration: none;
+    width: 100%;
+    color: #E8E8E8;
+	border-bottom: 7px solid #212629;
+}
+
+.onglets-li a:hover {
+	text-decoration: none;
+	color: #E8E8E8;
+}
+
+.onglets-li:hover {
+	/*background-color: #01b4bc;
+	border-bottom: 7px solid #212629;*/
+    box-shadow: 0 7px 0 #01b4bc;
+}
+
+.ui-tabs-active {
+	/*background: #01b4bc !important;
+	border-bottom: 7px solid #212629;*/
+    box-shadow: 0 7px 0 #01b4bc;
+}
+
+.ui-tabs-anchor {
+	text-decoration: none !important;
+}
+
+.ui-tabs-panel {
+	overflow-x: scroll;
+}
+
+@media screen and (max-width: 1024px) {
+	.onglets-li a {
+		padding: 0px 30px;
+	}
+}

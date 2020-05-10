@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="15px" height="15px" viewBox="0 0 15 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49.1 (51147) - http://www.bohemiancoding.com/sketch -->
+    <title>SUPPRIMER BLANC</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="SUPPRIMER_BLANC" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="6.5" cy="6.5" r="6.5" stroke="#212629" fill="transparent" />
+        <line x1="0" y1="0" x2="13" y2="13" style="stroke:#212629;stroke-width:1" />
+        <line x1="0" y1="13" x2="13" y2="0" style="stroke:#212629;stroke-width:1" />
+    </g>
+</svg>
