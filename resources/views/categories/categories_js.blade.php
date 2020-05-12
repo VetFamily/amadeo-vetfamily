@@ -491,11 +491,7 @@
 					    	handle: ".modal-header"
 					  	});
 				    	$('#selectCategorieLaboratoire').val('');
-				    	$( '#divLaboratoireCategorie' ).removeClass("has-error");
-				    	$( '#laboratoire-error' ).html( "" )
 				    	$('#addCategorieNom').val('');
-				    	$( '#divNomCategorie' ).removeClass("has-error");
-				    	$( '#nom-error' ).html( "" );
 
 				    	var annee = (new Date().getMonth() < 8) ? new Date().getFullYear() : (new Date().getFullYear()) + 1;
 			    		$( '#addCategorieAnnee' ).val(annee);
@@ -539,9 +535,6 @@
 				    		$( '#copyCategorieAncienNom' ).html(select.data()[4]);
 				    		$( '#copyCategorieNom' ).val(select.data()[4]);
 					    	
-					    	$( '#divNomCategorie' ).removeClass("has-error");
-					    	$( '#nom-error' ).html( "" );
-
 					    	// Récupération des informations
 					    	var params = {
 								"_token": document.getElementsByName("_token")[0].value,
@@ -617,11 +610,6 @@
         					'@lang("amadeo.no")',
 		            		function()
 		            		{
-						    	$( '#divLaboratoireCategorie' ).removeClass("has-error");
-						    	$( '#laboratoire-error' ).html( "" )
-						    	$( '#divNomCategorie' ).removeClass("has-error");
-						    	$( '#nom-error' ).html( "" );
-						    	
 						    	// Récupération des informations
 						    	var selectedLaboratoire = $( '#selectCategorieLaboratoire' ).find('option:selected');
 
@@ -656,7 +644,7 @@
 						                	$('#addCategorieModal').modal('hide');
 
 						                    // Mise à jour du tableau
-						                    var laboratoire = data.categorie[0]["laboratoire_id"] != null ? data.categorie[0]["laboratoire"] : @lang("amadeo.categories.seller-multiple");
+						                    var laboratoire = data.categorie[0]["laboratoire_id"] != null ? data.categorie[0]["laboratoire"] : "@lang('amadeo.categories.seller-multiple')";
 						                    var index = $('#tab-categories').dataTable().fnAddData( [ null, data.categorie[0]["annee"], null, laboratoire, data.categorie[0]["categorie"], data.categorie[0]["nb_produits"], data.categorie[0]["id"], null, data.categorie[0]["laboratoire_id"] ] );
 
 						                    if ($( '#selectFilter-1 option[value="' + laboratoire + '"]' ).length == 0)
@@ -707,9 +695,6 @@
         					'@lang("amadeo.no")',
 		            		function()
 		            		{
-						    	$( '#divNomCategorie' ).removeClass("has-error");
-						    	$( '#nom-error' ).html( "" );
-						    	
 								// Récupération de la catégorie d'origine
 								var select = table.row( $('#tab-categories tbody > tr.selected').first());
 						    	
@@ -755,7 +740,7 @@
 						                	$('#copyCategorieModal').modal('hide');
 
 						                    // Affichage du laboratoire
-						                    var laboratoire = data.categorie[0]["laboratoire_id"] != null ? data.categorie[0]["laboratoire"] : @lang("amadeo.categories.seller-multiple");
+						                    var laboratoire = data.categorie[0]["laboratoire_id"] != null ? data.categorie[0]["laboratoire"] : "@lang('amadeo.categories.seller-multiple')";
 						                    
 						                    // Affichage des espèces
 						                    var especes = "";

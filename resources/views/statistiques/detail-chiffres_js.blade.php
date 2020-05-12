@@ -110,7 +110,7 @@
           // Construct tab by product
           var periode = startMonthName + params["startYear"].substring(2,4) + " à " + endMonthName + params["endYear"].substring(2,4);
           var periodePrec = startMonthName + String(params["startYear"]-nbYearDiff).substring(2,4) + " à " + endMonthName + String(params["endYear"]-nbYearDiff).substring(2,4);
-          $('#tab-purchases').html("<thead><tr><th class='texte width-10'>@lang('amadeo.products.seller')</th><th class='texte width-30'>@lang('amadeo.purchases.product')</th><th class='width-15 text-center'>@lang('amadeo.purchases.amount')<br><span>" + periode + "</span></th><th class='width-15 text-center'>@lang('amadeo.purchases.quantity')<br><span>" + periode + "</span></th><th class='width-15 text-center'>@lang('amadeo.purchases.amount')<br><span>" + periodePrec + "</span></th><th class='width-15 text-center'>@lang('amadeo.purchases.quantity')<br><span>" + periodePrec + "</span></th><th class='width-9 text-center'>@lang('amadeo.purchases.evolution-short')</th></tr><tr id='forFilters'><th class='select-filter'></th><th class='text-filter'></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody></tbody><tfoot><tr><td class='texte width-10'>@lang('amadeo.purchases.total')</td><td class='texte width-30'></td><td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-9'></td></tr></tfoot>");
+          $('#tab-purchases').html("<thead><tr><th class='texte width-10'>@lang('amadeo.products.seller')</th><th class='texte width-30'>@lang('amadeo.purchases.product')</th><th class='width-15 text-center'>@lang('amadeo.purchases.amount')<br><span>" + periode + "</span></th><th class='width-15 text-center'>@lang('amadeo.purchases.quantity')<br><span>" + periode + "</span></th><th class='width-15 text-center'>@lang('amadeo.purchases.amount')<br><span>" + periodePrec + "</span></th><th class='width-15 text-center'>@lang('amadeo.purchases.quantity')<br><span>" + periodePrec + "</span></th><th class='width-9 text-center'>@lang('amadeo.purchases.evolution-short')</th></tr><tr id='forFilters'><th class='select-filter'></th><th class='text-filter'></th><th colspan=5><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th>/tr></thead><tbody></tbody><tfoot><tr><td class='texte width-10'>@lang('amadeo.purchases.total')</td><td class='texte width-30'></td><td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-9'></td></tr></tfoot>");
 
           // Complete period
           tabPurchases = $('#tab-purchases').DataTable( {
@@ -287,6 +287,21 @@
               $('.tableau').css('display', 'block');
 
               tabPurchases.columns.adjust();
+
+              $('#mask-null-quantities').on('change', function() {
+                $.fn.dataTable.ext.search.push(
+                  function( settings, searchData, index, rowData, counter ) {
+                    if ( $('#mask-null-quantities').is(':checked') )
+                      return (rowData[2] != 0) || (rowData[3] != 0) || (rowData[4] != 0) || (rowData[5] != 0);
+                    else 
+                      return true;
+                  }     
+                );
+                tabPurchases.draw();
+                $.fn.dataTable.ext.search.pop();
+              });
+              //$('#mask-null-quantities').prop( "checked", true ).trigger("change");
+              $('#div-mask-null-quantities').removeClass('hide');
             }
           } );
         } else
@@ -373,7 +388,7 @@
               headerLine2 += " style='background: #F4F3F3;'";
             }
             headerLine2 += ">@lang('amadeo.purchases.evolution-short')</th>";
-            headerLine3 += "<th></th><th></th><th></th><th></th><th></th>"
+            headerLine3 += "<th colspan=5><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th>"
 
             // Footer
             footer += "<td class='nombre width-15'></td><td class='nombre width-9'></td><td class='nombre width-15'></td><td class='nombre width-9'></td><td class='nombre width-9'></td>";
@@ -571,6 +586,27 @@
               $('.tableau').css('display', 'block');
 
               tabPurchases.columns.adjust();
+
+              $('#mask-null-quantities').on('change', function() {
+                $.fn.dataTable.ext.search.push(
+                  function( settings, searchData, index, rowData, counter ) {
+                    if ( $('#mask-null-quantities').is(':checked') )
+                    {
+                      for (var i = 0; i < params["nbMonthDiff"]; i++) {
+                        if ((rowData[(i*5)+2] != 0) || (rowData[(i*5)+3] != 0) || (rowData[(i*5)+4] != 0) || (rowData[(i*5)+5] != 0))
+                          return true;
+                      }
+                      return false;
+                    }
+                    else 
+                      return true;
+                  }     
+                );
+                tabPurchases.draw();
+                $.fn.dataTable.ext.search.pop();
+              });
+              //$('#mask-null-quantities').prop( "checked", true ).trigger("change");
+              $('#div-mask-null-quantities').removeClass('hide');
             }
           });
         }
@@ -610,7 +646,7 @@
           // Construct tab by laboratory
           var periode = startMonthName + params["startYear"].substring(2,4) + " à " + endMonthName + params["endYear"].substring(2,4);
           var periodePrec = startMonthName + String(params["startYear"]-nbYearDiff).substring(2,4) + " à " + endMonthName + String(params["endYear"]-nbYearDiff).substring(2,4);
-          $('#tab-purchases').html("<thead><tr><th class='texte width-50'>@lang('amadeo.products.seller')</th><th class='text-center'>@lang('amadeo.purchases.amount')<br><span>" + periode + "</span></th><th class='text-center'>@lang('amadeo.purchases.amount')<br><span>" + periodePrec + "</span></th><th class='text-center'>@lang('amadeo.purchases.evolution')</th></tr><tr id='forFilters'><th class='text-filter'></th><th></th><th></th><th></th></tr></thead><tbody></tbody><tfoot><tr><td class='texte width-50'>@lang('amadeo.purchases.total-noothers')</td><td class='nombre'></td><td class='nombre'></td><td class='nombre'></td></tr></tfoot>");
+          $('#tab-purchases').html("<thead><tr><th class='texte width-50'>@lang('amadeo.products.seller')</th><th class='text-center'>@lang('amadeo.purchases.amount')<br><span>" + periode + "</span></th><th class='text-center'>@lang('amadeo.purchases.amount')<br><span>" + periodePrec + "</span></th><th class='text-center'>@lang('amadeo.purchases.evolution')</th></tr><tr id='forFilters'><th class='text-filter'></th><th colspan=3><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th></tr></thead><tbody></tbody><tfoot><tr><td class='texte width-50'>@lang('amadeo.purchases.total-noothers')</td><td class='nombre'></td><td class='nombre'></td><td class='nombre'></td></tr></tfoot>");
 
           // Complete period
           tabPurchases = $('#tab-purchases').DataTable( {
@@ -738,6 +774,21 @@
               $('.tableau').css('display', 'block');
 
               tabPurchases.columns.adjust();
+
+              $('#mask-null-quantities').on('change', function() {
+                $.fn.dataTable.ext.search.push(
+                  function( settings, searchData, index, rowData, counter ) {
+                    if ( $('#mask-null-quantities').is(':checked') )
+                      return (rowData[1] != 0) || (rowData[2] != 0);
+                    else 
+                      return true;
+                  }     
+                );
+                tabPurchases.draw();
+                $.fn.dataTable.ext.search.pop();
+              });
+              //$('#mask-null-quantities').prop( "checked", true ).trigger("change");
+              $('#div-mask-null-quantities').removeClass('hide');
             }
           } );
         } else
@@ -803,7 +854,7 @@
               headerLine2 += " style='background: #F4F3F3;'";
             }
             headerLine2 += ">@lang('amadeo.purchases.evolution-short')</th>";
-            headerLine3 += "<th></th><th></th><th></th>"
+            headerLine3 += "<th colspan=3><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th>"
 
             // Footer
             footer += "<td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-9'></td>";
@@ -952,6 +1003,27 @@
               $('.tableau').css('display', 'block');
 
               tabPurchases.columns.adjust();
+
+              $('#mask-null-quantities').on('change', function() {
+                $.fn.dataTable.ext.search.push(
+                  function( settings, searchData, index, rowData, counter ) {
+                    if ( $('#mask-null-quantities').is(':checked') )
+                    {
+                      for (var i = 0; i < params["nbMonthDiff"]; i++) {
+                        if ((rowData[(i*3)+1] != 0) || (rowData[(i*3)+2] != 0))
+                          return true;
+                      }
+                      return false;
+                    }
+                    else 
+                      return true;
+                  }     
+                );
+                tabPurchases.draw();
+                $.fn.dataTable.ext.search.pop();
+              });
+              //$('#mask-null-quantities').prop( "checked", true ).trigger("change");
+              $('#div-mask-null-quantities').removeClass('hide');
             }
           });
         }
@@ -991,7 +1063,7 @@
           // Construct tab by clinic
           var periode = startMonthName + params["startYear"].substring(2,4) + " à " + endMonthName + params["endYear"].substring(2,4);
           var periodePrec = startMonthName + String(params["startYear"]-nbYearDiff).substring(2,4) + " à " + endMonthName + String(params["endYear"]-nbYearDiff).substring(2,4);
-          $('#tab-purchases').html("<thead><tr><th class='texte width-30'>@lang('amadeo.clinics.veterinaries')</th><th class='texte width-20'>@lang('amadeo.clinics.name')</th><th class='width-15 text-center'>@lang('amadeo.purchases.amount')<br><span>" + periode + "</span></th><th class='width-15 text-center'>@lang('amadeo.purchases.amount')<br><span>" + periodePrec + "</span></th><th class='width-9 text-center'>@lang('amadeo.purchases.evolution-short')</th></tr><tr id='forFilters'><th class='text-filter'></th><th class='text-filter'></th><th></th><th></th><th></th></tr></thead><tbody></tbody><tfoot><tr><td class='texte width-30'>@lang('amadeo.purchases.total')</td><td class='texte width-20'></td><td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-9'></td></tr></tfoot>");
+          $('#tab-purchases').html("<thead><tr><th class='texte width-30'>@lang('amadeo.clinics.veterinaries')</th><th class='texte width-20'>@lang('amadeo.clinics.name')</th><th class='width-15 text-center'>@lang('amadeo.purchases.amount')<br><span>" + periode + "</span></th><th class='width-15 text-center'>@lang('amadeo.purchases.amount')<br><span>" + periodePrec + "</span></th><th class='width-9 text-center'>@lang('amadeo.purchases.evolution-short')</th></tr><tr id='forFilters'><th class='text-filter'></th><th class='text-filter'></th><th colspan=3><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th></tr></thead><tbody></tbody><tfoot><tr><td class='texte width-30'>@lang('amadeo.purchases.total')</td><td class='texte width-20'></td><td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-9'></td></tr></tfoot>");
 
           // Complete period
           tabPurchases = $('#tab-purchases').DataTable( {
@@ -1130,6 +1202,21 @@
               $('.tableau').css('display', 'block');
 
               tabPurchases.columns.adjust();
+
+              $('#mask-null-quantities').on('change', function() {
+                $.fn.dataTable.ext.search.push(
+                  function( settings, searchData, index, rowData, counter ) {
+                    if ( $('#mask-null-quantities').is(':checked') )
+                      return (rowData[2] != 0) || (rowData[3] != 0);
+                    else 
+                      return true;
+                  }     
+                );
+                tabPurchases.draw();
+                $.fn.dataTable.ext.search.pop();
+              });
+              //$('#mask-null-quantities').prop( "checked", true ).trigger("change");
+              $('#div-mask-null-quantities').removeClass('hide');
             }
           } );
         } else
@@ -1195,7 +1282,7 @@
               headerLine2 += " style='background: #F4F3F3;'";
             }
             headerLine2 += ">@lang('amadeo.purchases.evolution-short')</th>";
-            headerLine3 += "<th></th><th></th><th></th>"
+            headerLine3 += "<th colspan=3><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th>"
 
             // Footer
             footer += "<td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-9'></td>";
@@ -1348,6 +1435,27 @@
               $('.tableau').css('display', 'block');
 
               tabPurchases.columns.adjust();
+
+              $('#mask-null-quantities').on('change', function() {
+                $.fn.dataTable.ext.search.push(
+                  function( settings, searchData, index, rowData, counter ) {
+                    if ( $('#mask-null-quantities').is(':checked') )
+                    {
+                      for (var i = 0; i < params["nbMonthDiff"]; i++) {
+                        if ((rowData[(i*3)+2] != 0) || (rowData[(i*3)+3] != 0))
+                          return true;
+                      }
+                      return false;
+                    }
+                    else 
+                      return true;
+                  }     
+                );
+                tabPurchases.draw();
+                $.fn.dataTable.ext.search.pop();
+              });
+              //$('#mask-null-quantities').prop( "checked", true ).trigger("change");
+              $('#div-mask-null-quantities').removeClass('hide');
             }
           });
         }
@@ -1387,7 +1495,7 @@
           // Construct tab by category
           var periode = startMonthName + params["startYear"].substring(2,4) + " à " + endMonthName + params["endYear"].substring(2,4);
           var periodePrec = startMonthName + String(params["startYear"]-nbYearDiff).substring(2,4) + " à " + endMonthName + String(params["endYear"]-nbYearDiff).substring(2,4);
-          $('#tab-purchases').html("<thead><tr><th class='texte width-10'>@lang('amadeo.categories.year')</th><th class='texte width-10'>@lang('amadeo.categories.specie')</th><th class='texte width-10'>@lang('amadeo.products.seller')</th><th class='texte width-20'>@lang('amadeo.categories.name')</th><th class='width-10 text-center'>@lang('amadeo.purchases.amount')<br><span>" + periode + "</span></th><th class='width-10 text-center'>@lang('amadeo.purchases.amount')<br><span>" + periodePrec + "</span></th><th class='width-9 text-center'>@lang('amadeo.purchases.evolution-short')</th></tr><tr id='forFilters'><th class='select-filter'></th><th class='text-filter'></th><th class='text-filter'></th><th class='text-filter'></th><th></th><th></th><th></th></tr></thead><tbody></tbody><tfoot><tr><td class='texte width-10'>@lang('amadeo.purchases.total')</td><td class='texte width-10'></td><td class='texte width-10'></td><td class='texte width-20'></td><td class='nombre width-10'></td><td class='nombre width-10'></td><td class='nombre width-9'></td></tr></tfoot>");
+          $('#tab-purchases').html("<thead><tr><th class='texte width-10'>@lang('amadeo.categories.year')</th><th class='texte width-10'>@lang('amadeo.categories.specie')</th><th class='texte width-10'>@lang('amadeo.products.seller')</th><th class='texte width-20'>@lang('amadeo.categories.name')</th><th class='width-10 text-center'>@lang('amadeo.purchases.amount')<br><span>" + periode + "</span></th><th class='width-10 text-center'>@lang('amadeo.purchases.amount')<br><span>" + periodePrec + "</span></th><th class='width-9 text-center'>@lang('amadeo.purchases.evolution-short')</th></tr><tr id='forFilters'><th class='select-filter'></th><th class='text-filter'></th><th class='text-filter'></th><th class='text-filter'></th><th colspan=3><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th></tr></thead><tbody></tbody><tfoot><tr><td class='texte width-10'>@lang('amadeo.purchases.total')</td><td class='texte width-10'></td><td class='texte width-10'></td><td class='texte width-20'></td><td class='nombre width-10'></td><td class='nombre width-10'></td><td class='nombre width-9'></td></tr></tfoot>");
 
           // Complete period
           tabPurchases = $('#tab-purchases').DataTable( {
@@ -1534,6 +1642,21 @@
               $('.tableau').css('display', 'block');
 
               tabPurchases.columns.adjust();
+
+              $('#mask-null-quantities').on('change', function() {
+                $.fn.dataTable.ext.search.push(
+                  function( settings, searchData, index, rowData, counter ) {
+                    if ( $('#mask-null-quantities').is(':checked') )
+                      return (rowData[4] != 0) || (rowData[5] != 0);
+                    else 
+                      return true;
+                  }     
+                );
+                tabPurchases.draw();
+                $.fn.dataTable.ext.search.pop();
+              });
+              //$('#mask-null-quantities').prop( "checked", true ).trigger("change");
+              $('#div-mask-null-quantities').removeClass('hide');
             }
           } );
         } else
@@ -1599,7 +1722,7 @@
               headerLine2 += " style='background: #F4F3F3;'";
             }
             headerLine2 += ">@lang('amadeo.purchases.evolution-short')</th>";
-            headerLine3 += "<th></th><th></th><th></th>"
+            headerLine3 += "<th colspan=3><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th>"
 
             // Footer
             footer += "<td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-9'></td>";
@@ -1758,6 +1881,27 @@
               $('.tableau').css('display', 'block');
 
               tabPurchases.columns.adjust();
+
+              $('#mask-null-quantities').on('change', function() {
+                $.fn.dataTable.ext.search.push(
+                  function( settings, searchData, index, rowData, counter ) {
+                    if ( $('#mask-null-quantities').is(':checked') )
+                    {
+                      for (var i = 0; i < params["nbMonthDiff"]; i++) {
+                        if ((rowData[(i*3)+4] != 0) || (rowData[(i*3)+5] != 0))
+                          return true;
+                      }
+                      return false;
+                    }
+                    else 
+                      return true;
+                  }     
+                );
+                tabPurchases.draw();
+                $.fn.dataTable.ext.search.pop();
+              });
+              //$('#mask-null-quantities').prop( "checked", true ).trigger("change");
+              $('#div-mask-null-quantities').removeClass('hide');
             }
           });
         }
@@ -1804,6 +1948,27 @@
       return false;
     });      
 
+    $("#downloadPurchasesButton").click(function(){
+      // Open popup
+      $('#downloadPurchasesModal').modal("show");
+      $( '#downloadPurchasesModal' ).draggable({
+        handle: ".modal-header"
+      });
+    });
+
+    $("#launchButtonDownloadPurchases").click(function(){
+      // Récupération des paramètres du formulaire
+      var annee = getSelectValueById("downloadPurchasesYear");
+
+      document.location.href="downloadPurchasesCSV/" + annee;
+
+      bootoast.toast({
+        message: "@lang('amadeo.download-progress')",
+        type: 'success'
+      });
+      $('#downloadPurchasesModal').modal('hide');
+    });      
+
     $("#downloadPurchasesByParamsButton").click(function(){
         if ($(this).attr("download") == "true")
         {
@@ -1811,7 +1976,7 @@
         } else
         {
           bootoast.toast({
-            message: 'Veuillez d\'abord exécuter une recherche',
+            message: "@lang('amadeo.purchases.no-research')",
             type: 'warning'
           });
         }

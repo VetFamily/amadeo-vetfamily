@@ -25,15 +25,6 @@ class AchatRepository implements AchatRepositoryInterface
 	*/
 	public function findAll($year)
 	{
-		if (new DateTime(date('Y-m-d')) < (new DateTime(date('Y').'-02-05')))
-		{
-			$year = date('Y')-1;
-			
-		} else 
-		{ 
-			$year = date('Y');
-		}
-
 		$query = "select distinct a.id as achat_id, c.id AS clinique_id, c.veterinaires AS veterinaires, c.nom AS clinique, extract(year from c.date_entree) AS annee, l.nom AS laboratoire, p.id AS produit_id, CONCAT(p.denomination, ' ', p.conditionnement) AS produit_nom, p.code_gtin AS produit_gtin, liste_types.types, liste_especes.especes, ft.classe1_code, ft.classe1_nom, ft.classe2_code, ft.classe2_nom, ft.classe3_code, ft.classe3_nom, a.date AS date, a.qte_payante_complet AS qte_payante, a.qte_gratuite_complet AS qte_gratuite, a.ca_complet AS ca, ce.nom AS centrale
 				from achats a
 				join produits p on p.id = a.produit_id
@@ -149,7 +140,7 @@ class AchatRepository implements AchatRepositoryInterface
 							(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then a.qte_payante_complet else 0 end) as qte_periode, 
 							(case when (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "') then a.qte_payante_complet else 0 end) as qte_periode_prec
 							from produits p
-							left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and a.qte_payante_complet > 0 and ((a.date between '" . $startDate . "' and '" . $endDate . "') or (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "'))
+							left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and ((a.date between '" . $startDate . "' and '" . $endDate . "') or (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "'))
 							join centrale_clinique cc on cc .id = a.centrale_clinique_id 
 							" . ($clinics != null ? "" : "join cliniques c on c.id = cc.clinique_id") . "
 							" . ($products != null ? "": "join laboratoires l on l.id = p.laboratoire_id") . "
@@ -236,7 +227,7 @@ class AchatRepository implements AchatRepositoryInterface
 							(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then a.qte_payante_complet else 0 end) as qte_periode, 
 							(case when (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "') then a.qte_payante_complet else 0 end) as qte_periode_prec
 							from produits p
-							left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and a.qte_payante_complet > 0 and ((a.date between '" . $startDate . "' and '" . $endDate . "') or (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "'))
+							left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and ((a.date between '" . $startDate . "' and '" . $endDate . "') or (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "'))
 							join centrale_clinique cc on cc .id = a.centrale_clinique_id 
 							" . ($clinics != null ? "" : "join cliniques c on c.id = cc.clinique_id") . "
 							" . ($products != null ? "": "join laboratoires l on l.id = p.laboratoire_id") . "
@@ -331,7 +322,7 @@ class AchatRepository implements AchatRepositoryInterface
 								" . ($clinics != null ? "" : "join cliniques c on c.id = cc.clinique_id") . "
 								" . ($products != null ? "": "join laboratoires l on l.id = p.laboratoire_id") . "
 								" . $joinQuery . "
-								where a.obsolete IS FALSE and a.qte_payante_complet > 0 and ((a.date between '" . $startDate . "' and '" . $endDate . "') or (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "'))
+								where a.obsolete IS FALSE and ((a.date between '" . $startDate . "' and '" . $endDate . "') or (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "'))
 								" . ($clinics != null ? "and cc.clinique_id in (" . implode(",", $clinics) . ")" : "and c.obsolete is false and EXTRACT(year from c.date_entree) <= extract(year from current_date)") . "
 								" . ($products != null ? "and a.produit_id in (" . implode(",", $products) . ")" : "and p.invisible is false") . "
 								" . ($centralPurchasing != null && count($centralPurchasing) > 0 ? "and cc.centrale_id in (".implode(",", $centralPurchasing).")" : "") . "
@@ -420,7 +411,7 @@ class AchatRepository implements AchatRepositoryInterface
 								" . ($clinics != null ? "" : "join cliniques c on c.id = cc.clinique_id") . "
 								" . ($products != null ? "": "join laboratoires l on l.id = p.laboratoire_id") . "
 								" . $joinQuery . "
-								where a.obsolete IS FALSE and a.qte_payante_complet > 0 and ((a.date between '" . $startDate . "' and '" . $endDate . "') or (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "'))
+								where a.obsolete IS FALSE and ((a.date between '" . $startDate . "' and '" . $endDate . "') or (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "'))
 								" . ($clinics != null ? "and cc.clinique_id in (" . implode(",", $clinics) . ")" : "and c.obsolete is false and EXTRACT(year from c.date_entree) <= extract(year from current_date)") . "
 								" . ($products != null ? "and a.produit_id in (" . implode(",", $products) . ")" : "and p.invisible is false") . "
 								" . ($centralPurchasing != null && count($centralPurchasing) > 0 ? "and cc.centrale_id in (".implode(",", $centralPurchasing).")" : "") . "
@@ -545,7 +536,7 @@ class AchatRepository implements AchatRepositoryInterface
 								" . ($clinics != null ? "" : "join cliniques c on c.id = cc.clinique_id") . "
 								" . ($products != null ? "": "join laboratoires l on l.id = p.laboratoire_id") . "
 								" . $joinQuery . "
-								where a.obsolete IS FALSE and a.qte_payante_complet > 0 and ((a.date between '" . $startDate . "' and '" . $endDate . "') or (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "'))
+								where a.obsolete IS FALSE and ((a.date between '" . $startDate . "' and '" . $endDate . "') or (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "'))
 								" . ($clinics != null ? "and cc.clinique_id in (" . implode(",", $clinics) . ")" : "and c.obsolete is false and EXTRACT(year from c.date_entree) <= extract(year from current_date)") . "
 								" . ($products != null ? "and a.produit_id in (" . implode(",", $products) . ")" : "and p.invisible is false") . "
 								" . ($centralPurchasing != null && count($centralPurchasing) > 0 ? "and cc.centrale_id in (".implode(",", $centralPurchasing).")" : "") . "
@@ -611,7 +602,7 @@ class AchatRepository implements AchatRepositoryInterface
 								" . ($clinics != null ? "" : "join cliniques c on c.id = cc.clinique_id") . "
 								" . ($products != null ? "": "join laboratoires l on l.id = p.laboratoire_id") . "
 								" . $joinQuery . "
-								where a.obsolete IS FALSE and a.qte_payante_complet > 0 and ((a.date between '" . $startDate . "' and '" . $endDate . "') or (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "'))
+								where a.obsolete IS FALSE and ((a.date between '" . $startDate . "' and '" . $endDate . "') or (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "'))
 								" . ($clinics != null ? "and cc.clinique_id in (" . implode(",", $clinics) . ")" : "and c.obsolete is false and EXTRACT(year from c.date_entree) <= extract(year from current_date)") . "
 								" . ($products != null ? "and a.produit_id in (" . implode(",", $products) . ")" : "and p.invisible is false") . "
 								" . ($centralPurchasing != null && count($centralPurchasing) > 0 ? "and cc.centrale_id in (".implode(",", $centralPurchasing).")" : "") . "

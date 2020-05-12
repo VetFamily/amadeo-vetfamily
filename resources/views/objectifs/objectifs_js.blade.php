@@ -54,7 +54,7 @@
 		var add_rebate = target["remise_additionnelle"];
 		var html_remise = '<tr><td class="detail-row-title">@lang("amadeo.targets.rebate")</td><td>';
 		@if ((sizeof(Auth::user()->roles) >0) AND ("Administrateur" == Auth::user()->roles[0]['nom']))
-			html_remise += '<input type="text" id="input-remise-' + idRow + '" name="input-remise-' + idRow + '" value="' + (rebate != null ? rebate : 0) + '" style="width: 50%;">';
+			html_remise += '<input type="text" id="input-remise-' + idRow + '" name="input-remise-' + idRow + '" value="' + (rebate != null ? numberWithSpaces(rebate) : 0) + '" style="width: 50%;">';
 		@else
 			html_remise += (rebate != null ? rebate : 0);
 		@endif
@@ -80,7 +80,7 @@
 		var rebate_source = target["pourcentage_remise_source"];
 		var html_remise_source = '<tr><td class="detail-row-title">@lang("amadeo.targets.rebate-source")</td><td>';
 		@if ((sizeof(Auth::user()->roles) >0) AND ("Administrateur" == Auth::user()->roles[0]['nom']))
-		html_remise_source += '<input type="text" id="input-remise-source-' + idRow + '" name="input-remise-source-' + idRow + '" value="' + (rebate_source != null ? rebate_source : 0) + '" style="width: 50%;">';
+		html_remise_source += '<input type="text" id="input-remise-source-' + idRow + '" name="input-remise-source-' + idRow + '" value="' + (rebate_source != null ? numberWithSpaces(rebate_source) : 0) + '" style="width: 50%;">';
 		@else
 		html_remise_source += (rebate_source != null ? rebate_source : 0);
 		@endif
@@ -257,7 +257,7 @@
 						$('td', row).eq(1).find('div').addClass('texte');
 						$('td', row).eq(1).find('div').attr('title', $('td', row).eq(1).find('div').html());
 						$('td', row).eq(2).find('div').addClass('nombre');
-						$('td', row).eq(3).find('div').html('<input type="text" id="row-' + idRow + '-produit-remise-' + data[5] + '" value="' + data[4] + '"/> %');
+						$('td', row).eq(3).find('div').html('<input type="text" id="row-' + idRow + '-produit-remise-' + data[5] + '" value="' + data[3] + '"/> %');
 						$('td', row).eq(3).find('div').attr('noWrap','noWrap');
 						$('td', row).eq(4).find('div').html('<input type="text" id="row-' + idRow + '-produit-remise-source-' + data[5] + '" value="' + data[4] + '"/> %');
 						$('td', row).eq(4).find('div').attr('noWrap','noWrap');
@@ -422,7 +422,7 @@
 					var evol = (el.ca_periode_prec != null && el.ca_periode_prec != 0 ? ((el.ca_periode*100/el.ca_periode_prec)-100).toFixed(2) : "-");
 
 					if (el.annee > 2017)
-						return [[ el.suivi, el.annee, el.especes_noms, el.laboratoire, el.categorie, [el.type_obj, el.objectif], el.valeur != null ? (el.valeur).replace( /\./, "," ) : 0, numberWithSpaces(el.pourcentage_remise + el.pourcentage_remise_source), numberWithSpaces(ecartEuros), numberWithSpaces(ecartPourcents), el.ca_periode, el.ca_periode_prec, numberWithSpaces(evol), el.id, el.especes, el.manque_valo_periode, el.manque_valo_periode_prec ]];
+						return [[ el.suivi, el.annee, el.especes_noms, el.laboratoire, el.categorie, [el.type_obj, el.objectif], el.valeur != null ? (el.valeur).replace( /\./, "," ) : 0, numberWithSpaces(el.pourcentage_remise*1 + el.pourcentage_remise_source*1), numberWithSpaces(ecartEuros), numberWithSpaces(ecartPourcents), el.ca_periode, el.ca_periode_prec, numberWithSpaces(evol), el.id, el.especes, el.manque_valo_periode, el.manque_valo_periode_prec ]];
 				});
 
 			    // DataTable
@@ -1087,7 +1087,7 @@
 										var evol = (data.obj[0]["ca_periode_prec"] != null && data.obj[0]["ca_periode_prec"] != 0 ? ((data.obj[0]["ca_periode"]*100/data.obj[0]["ca_periode_prec"])-100).toFixed(2) : "-");
 
 					                    // Mise à jour du tableau
-										var index = $('#tab-objectifs').dataTable().fnAddData( [ data.obj[0]["suivi"], data.obj[0]["annee"], data.obj[0]["especes_noms"], data.obj[0]["laboratoire"], data.obj[0]["categorie"], [data.obj[0]["type_obj"], data.obj[0]["objectif"]], data.obj[0]["valeur"] != null ? (data.obj[0]["valeur"]).replace( /\./, "," ) : 0, numberWithSpaces(data.obj[0]["pourcentage_remise"] + data.obj[0]["pourcentage_remise_source"]), numberWithSpaces(ecartEuros), numberWithSpaces(ecartPourcents), data.obj[0]["ca_periode"], data.obj[0]["ca_periode_prec"], numberWithSpaces(evol), data.obj[0]["id"], data.obj[0]["especes"], data.obj[0]["manque_valo_periode"], data.obj[0]["manque_valo_periode_prec"] ] );
+										var index = $('#tab-objectifs').dataTable().fnAddData( [ data.obj[0]["suivi"], data.obj[0]["annee"], data.obj[0]["especes_noms"], data.obj[0]["laboratoire"], data.obj[0]["categorie"], [data.obj[0]["type_obj"], data.obj[0]["objectif"]], data.obj[0]["valeur"] != null ? (data.obj[0]["valeur"]).replace( /\./, "," ) : 0, numberWithSpaces(data.obj[0]["pourcentage_remise"]*1 + data.obj[0]["pourcentage_remise_source"]*1), numberWithSpaces(ecartEuros), numberWithSpaces(ecartPourcents), data.obj[0]["ca_periode"], data.obj[0]["ca_periode_prec"], numberWithSpaces(evol), data.obj[0]["id"], data.obj[0]["especes"], data.obj[0]["manque_valo_periode"], data.obj[0]["manque_valo_periode_prec"] ] );
 										
 										if (data.obj[0]["suivi"])
 										{
@@ -1390,7 +1390,7 @@
 	                    	{
 	                    		var idProd = $('#tab-objectif-produits-' + id).DataTable().row( $(this) ).data()[5];
 	                    		var remise = 0;
-								if (document.getElementById('row-' + id + '-produit-' + idProd))
+								if (document.getElementById('row-' + id + '-produit-remise-' + idProd))
 								{
 	                    			remise = document.getElementById('row-' + id + '-produit-remise-' + idProd).value;
 	                    			remiseSource = document.getElementById('row-' + id + '-produit-remise-source-' + idProd).value;
@@ -1499,13 +1499,11 @@
 											// Calcul de l'évolution
 											var evol = data.objectif[0]["ca_periode_prec"] != null && data.objectif[0]["ca_periode_prec"] != 0 ? ((data.objectif[0]["ca_periode"]*100/data.objectif[0]["ca_periode_prec"])-100).toFixed(2) : "-";
 
-											data.obj[0]["suivi"], data.obj[0]["annee"], data.obj[0]["especes_noms"], data.obj[0]["laboratoire"], data.obj[0]["categorie"], [data.obj[0]["type_obj"], data.obj[0]["objectif"]], data.obj[0]["valeur"] != null ? (data.obj[0]["valeur"]).replace( /\./, "," ) : 0, numberWithSpaces(data.obj[0]["pourcentage_remise"] + data.obj[0]["pourcentage_remise_source"]), numberWithSpaces(ecartEuros), numberWithSpaces(ecartPourcents), data.obj[0]["ca_periode"], data.obj[0]["ca_periode_prec"], numberWithSpaces(evol), data.obj[0]["id"], data.obj[0]["especes"], data.obj[0]["manque_valo_periode"], data.obj[0]["manque_valo_periode_prec"]
-
 									        // Mise à jour du tableau
 									        rowPrevData[5] = [params["typeObjectif"], params["nom"]];
 									        trPrev.children().eq(5).attr('title', params["nom"]);
 											rowPrevData[6] = params["valeur"];
-											rowPrevData[7] = numberWithSpaces(params["remise"] + params["remiseSource"]);
+											rowPrevData[7] = numberWithSpaces(params["remise"]*1 + params["remiseSource"]*1);
 						                    rowPrevData[8] = numberWithSpaces(ecartEuros);
 						                    rowPrevData[9] = numberWithSpaces(ecartPourcents);
 						                    rowPrevData[10] = data.objectif[0]["ca_periode"];

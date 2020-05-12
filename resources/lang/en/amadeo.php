@@ -17,6 +17,7 @@ return [
     'copy' => 'Duplicate',
     'delete' => 'Delete',
     'download' => 'Download',
+    'download-progress' => 'Download in progress',
     'close' => 'Close',
     'reset' => 'Cancel',
     'input.message' => 'Search',
@@ -30,6 +31,7 @@ return [
     'all-m' => 'All',
     'yes' => 'Yes',
     'no' => 'No',
+    'year' => 'Year',
 
     'header.dashboard' => 'Dashboard',
     'header.monitoring' => 'Consultation',
@@ -58,6 +60,7 @@ return [
     'purchases.parameters-show' => 'Show parameters',
     'purchases.parameters-mask' => 'Hide parameters',
     'purchases.start-research' => 'Start the search',
+    'purchases.no-research' => 'Please perform a search first',
     'purchases.criteria-period' => 'Period',
     'purchases.criteria-period-start' => 'from',
     'purchases.criteria-period-end' => 'to',
@@ -109,6 +112,7 @@ return [
     'purchases.total-noothers' => 'Total (apart from Other)',
     'purchases.date' => 'Date',
     'purchases.source' => 'Distributor',
+    'purchases.mask-empty' => 'Hide lines at 0',
     'sellers.search-empty' => 'No matching results found',
 
     'clinics.id' => 'Clinic ID',

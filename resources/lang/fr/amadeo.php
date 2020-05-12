@@ -17,6 +17,7 @@ return [
     'copy' => 'Dupliquer',
     'delete' => 'Supprimer',
     'download' => 'Télécharger',
+    'download-progress' => 'Le téléchargement est en cours.',
     'close' => 'Fermer',
     'reset' => 'Rétablir',
     'input.message' => 'Rechercher',
@@ -30,6 +31,7 @@ return [
     'all-m' => 'Tous',
     'yes' => 'Oui',
     'no' => 'Non',
+    'year' => 'Année',
 
     'header.dashboard' => 'Tableau de bord',
     'header.monitoring' => 'Suivi',
@@ -58,6 +60,7 @@ return [
     'purchases.parameters-show' => 'Afficher les paramètres',
     'purchases.parameters-mask' => 'Masquer les paramètres',
     'purchases.start-research' => 'Lancer la recherche',
+    'purchases.no-research' => 'Veuillez d\'abord exécuter une recherche',
     'purchases.criteria-period' => 'Période',
     'purchases.criteria-period-start' => 'de',
     'purchases.criteria-period-end' => 'à',
@@ -109,6 +112,7 @@ return [
     'purchases.total-noothers' => 'Total (hors Autre)',
     'purchases.date' => 'Date',
     'purchases.source' => 'Centrale',
+    'purchases.mask-empty' => 'Masquer les lignes à 0',
     'sellers.search-empty' => 'Aucun laboratoire correspondant',
 
     'clinics.id' => 'ID clinique',
@@ -133,7 +137,7 @@ return [
     'clinics.delete.ok' => 'Les cliniques ont été supprimées.',
     'clinics.delete.no-select' => 'Veuillez sélectionner au moins une clinique à supprimer.',
     'clinics.reset.warning' => 'Toutes les informations non sauvegardées seront perdues.',
-    'clinics.reset.title' => 'Suppression des cliniques',
+    'clinics.reset.title' => 'Modification des cliniques',
     'clinics.update.title' => 'Modification d\'une clinique',
     'clinics.update.ok' => 'La clinique a été modifiée.',
 

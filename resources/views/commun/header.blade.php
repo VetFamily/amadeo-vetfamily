@@ -35,15 +35,15 @@
                     <li><a href="{{ route('page.cliniques') }}" class="{{ (Request::is('cliniques') ? 'active-sous-menu' : '') }}">@lang('amadeo.header.clinics')</a></li>
                     @endif
                     @if ((sizeof(Auth::user()->roles) >0) AND ("Vétérinaire" != Auth::user()->roles[0]['nom']))
-                    <!--<li><a href="{{ route('page.produits') }}" class="{{ (Request::is('produits') ? 'active-sous-menu' : '') }}">@lang('amadeo.header.products')</a></li>-->
+                    <li><a href="{{ route('page.produits') }}" class="{{ (Request::is('produits') ? 'active-sous-menu' : '') }}">@lang('amadeo.header.products')</a></li>
                     <li><a href="{{ route('page.categories') }}" class="{{ (Request::is('categories') ? 'active-sous-menu' : '') }}">@lang('amadeo.header.categories')</a></li>
                     @endif
                 </ul>
             </li>
             @if ((sizeof(Auth::user()->roles) >0) AND ("Administrateur" == Auth::user()->roles[0]['nom']) AND Session::get('user_is_super_admin'))
-            <li>
+            <!--<li>
                 <a href="{{ route('page.administration') }}" class="{{ (Request::is('administration') ? 'active-menu' : '') }}">@lang('amadeo.header.administration')</a>
-            </li>
+            </li>-->
             @endif
             <li class="menu-mobile-user">
                 <a href="{{ route('page.password.change') }}">@lang('amadeo.header.user-settings')</a>

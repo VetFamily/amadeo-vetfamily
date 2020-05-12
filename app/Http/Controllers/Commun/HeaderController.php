@@ -77,11 +77,12 @@ class HeaderController extends Controller
         return view('produits/produits');
     }
 
-    public function showCategories(EspeceRepository $especeRepository, LaboratoireRepository $laboratoireRepository, RoleRepository $roleRepository)
+    public function showCategories(ParametrageRepository $parametrageRepository, EspeceRepository $especeRepository, LaboratoireRepository $laboratoireRepository, RoleRepository $roleRepository)
     {
         $this->getUserInformations($roleRepository);
         Session::put('laboratoires_liste', $laboratoireRepository->findAll());
         Session::put('list_of_species', $especeRepository->findAll());
+        Session::put('date_maj', $parametrageRepository->findPurchagesLastUpdateDate());
 
     	return view('categories/categories');
     }

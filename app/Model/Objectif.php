@@ -21,6 +21,7 @@ class Objectif extends Model
 		'valorisation_laboratoire',
 		'pourcentage_decote',
 		'pourcentage_remise',
+		'pourcentage_remise_source',
 		'remise_additionnelle',
 		'valorisation_remise',
 		'objectif_conditionne_id',

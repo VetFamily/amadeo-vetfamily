@@ -78,18 +78,37 @@
 					</div>
 				</div>
 
+				<div id="addCategorieProduitModal" class="modal">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+						    <div class="modal-header">
+								<button type="button" class="bootpopup-button close" data-dismiss="modal" aria-label="@lang('amadeo.close')"><img src="/images/CROIX_FERMETURE_BLANC.svg" height="32px" width="32px"></button>
+								<h4 class="modal-title">@lang("amadeo.categories.add-product.title")</h4>
+						    </div>
+						    <div id="divListeProduitsCandidats" class="modal-body modal-body-table flex-column">
+									<div id="loadProductsModal" class="load">
+										{{ Html::image('images/activity_indicator.gif', \Lang::get('amadeo.load')) }}
+									</div>
+									<div id="tableProductsModal" class="tableau"></div>
+							</div>
+						    <div id="divButtonListeProduits" class="modal-footer"></div>
+						</div>
+					</div>
+				</div>
+
 				<div id="addCategorieModal" class="modal">
 					<div class="modal-dialog" role="document">
 						<div class="modal-content">
 						    <div class="modal-header">
 								<button type="button" class="bootpopup-button close" data-dismiss="modal" aria-label="@lang('amadeo.close')"><img src="/images/CROIX_FERMETURE_BLANC.svg" height="32px" width="32px"></button>
-								<h4 class="modal-title">@lang("amadeo.categories.add.title")</h4>
+								<h4 class="modal-title">@lang('amadeo.categories.add.title')</h4>
 						    </div>
 						    <div class="modal-body flex-column">
 						    	<div id="divAnneeCategorie" class="form-group">
 					                <label class="label_text">@lang('amadeo.categories.year') <input type="text" id="addCategorieAnnee" autofocus></label>
+					            </div>
 					            <div id="divLaboratoireCategorie" class="form-group">
-					                <label class="label_text">@lang('amadeo.categories.seller') <select id="selectCategorieLaboratoire" autofocus><option value="">@lang("amadeo.list.message")</option></select></label>
+					                <label class="label_text">@lang('amadeo.categories.seller') <select id="selectCategorieLaboratoire" autofocus><option value="">@lang('amadeo.list.message')</option></select></label>
 					            </div>
 					            <div id="divNomCategorie" class="form-group">
 					                <label class="label_text">@lang('amadeo.categories.name') <input type="text" id="addCategorieNom"></label>
@@ -109,7 +128,7 @@
 						<div class="modal-content">
 						    <div class="modal-header">
 								<button type="button" class="bootpopup-button close" data-dismiss="modal" aria-label="@lang('amadeo.close')"><img src="/images/CROIX_FERMETURE_BLANC.svg" height="32px" width="32px"></button>
-								<h4 class="modal-title">@lang("amadeo.categories.copy.title")</h4>
+								<h4 class="modal-title">@lang('amadeo.categories.copy.title')</h4>
 						    </div>
 						    <div class="modal-body flex-column">
 						    	<div id="divAnneeCategorie" class="form-group">
@@ -140,24 +159,6 @@
 						    		<div id="saveCopyButtonCategorie" class="button"><a>@lang('amadeo.save')</a><span class="btn_save"></span></div>
 						    	</div>
 						    </div>
-						</div>
-					</div>
-				</div>
-
-				<div id="addCategorieProduitModal" class="modal">
-					<div class="modal-dialog" role="document">
-						<div class="modal-content">
-						    <div class="modal-header">
-								<button type="button" class="bootpopup-button close" data-dismiss="modal" aria-label="@lang('amadeo.close')"><img src="/images/CROIX_FERMETURE_BLANC.svg" height="32px" width="32px"></button>
-								<h4 class="modal-title">@lang("amadeo.categories.add-product.title")</h4>
-						    </div>
-						    <div id="divListeProduitsCandidats" class="modal-body modal-body-table flex-column">
-									<div id="loadProductsModal" class="load">
-										{{ Html::image('images/activity_indicator.gif', \Lang::get('amadeo.load')) }}
-									</div>
-									<div id="tableProductsModal" class="tableau"></div>
-							</div>
-						    <div id="divButtonListeProduits" class="modal-footer"></div>
 						</div>
 					</div>
 				</div>

@@ -90,7 +90,7 @@ ALTER FOREIGN TABLE ed_laboratoires OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW laboratoires
 AS
-(SELECT id, nom, obsolete FROM ed_laboratoires where id in (8, 11, 23, 25) or id between 57 and 239)
+(SELECT id, nom, obsolete FROM ed_laboratoires where id in (8, 11, 23, 25, 40) or id between 57 and 239)
 WITH DATA;
 ALTER MATERIALIZED VIEW laboratoires OWNER TO vetfamily;
 CREATE INDEX laboratoires_id_index ON laboratoires USING btree (id);
@@ -268,7 +268,7 @@ CREATE FOREIGN TABLE ed_especes (
     obsolete boolean
 )
 SERVER "foreign_elia-digital_server"
-OPTIONS (schema_name 'public', table_name 'especes');
+OPTIONS (schema_name 'public', table_name 'specie_netherlands');
 ALTER FOREIGN TABLE ed_especes OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW especes
@@ -362,7 +362,7 @@ CREATE FOREIGN TABLE ed_types (
     obsolete boolean
 )
 SERVER "foreign_elia-digital_server"
-OPTIONS (schema_name 'public', table_name 'types');
+OPTIONS (schema_name 'public', table_name 'type_netherlands');
 ALTER FOREIGN TABLE ed_types OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW types

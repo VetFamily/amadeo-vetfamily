@@ -65,7 +65,7 @@
 						@endif
 					</div>
 					@if ((sizeof(Auth::user()->roles) >0) AND ("Vétérinaire" != Auth::user()->roles[0]['nom']))
-						<div id="downloadPurchasesButton" class="button" onclick='window.location="downloadPurchasesCSV/{{ date('Y') }}"'><a>@lang('amadeo.purchases.download-purchases')</a><span class="btn_download"></span></div>
+						<div id="downloadPurchasesButton" class="button"><a>@lang('amadeo.purchases.download-purchases')</a><span class="btn_download"></span></div>
 						<div id="downloadPurchasesByParamsButton" class="button" download="false"><a>@lang('amadeo.purchases.download-purchases-filtered')</a><span class="btn_download"></span></div>
 					@endif
 				</div>
@@ -100,6 +100,27 @@
 
 				<!-- Products scope -->
 				@include('parametrage/parametrage_produits')
+
+				<div id="downloadPurchasesModal" class="modal">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+						    <div class="modal-header">
+								<button type="button" class="bootpopup-button close" data-dismiss="modal" aria-label="@lang('amadeo.close')"><img src="/images/CROIX_FERMETURE_BLANC.svg" height="32px" width="32px"></button>
+								<h4 class="modal-title">@lang('amadeo.purchases.download-purchases')</h4>
+						    </div>
+						    <div class="modal-body flex-column">
+						    	<div id="divPurchasesYear" class="form-group">
+					                <label class="label_text">@lang('amadeo.year') {{ Form::selectYear('downloadPurchasesYear', date('Y'), 2018, date('Y'), ['id' => 'downloadPurchasesYear']) }}</label>
+					            </div>
+						    </div>
+						    <div class="modal-footer">
+						    	<div class="confirm-buttons-modal">
+						    		<div id="launchButtonDownloadPurchases" class="button"><a>@lang('amadeo.download')</a><span class="btn_download_black"></span></div>
+						    	</div>
+						    </div>
+						</div>
+					</div>
+				</div>
 
 			</div>
 		{!! Form::close() !!}
