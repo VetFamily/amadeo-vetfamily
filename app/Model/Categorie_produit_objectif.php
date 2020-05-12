@@ -13,7 +13,8 @@ class Categorie_produit_objectif extends Model
     protected $fillable = [
     	'categorie_produit_id', 
     	'objectif_id', 
-    	'pourcentage_remise'
+    	'pourcentage_remise',
+    	'pourcentage_remise_source'
     ];
 
 }

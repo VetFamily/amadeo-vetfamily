@@ -126,9 +126,16 @@ class CliniqueAjaxController extends Controller
           $centClinicId = Centrale_clinique::create(['clinique_id' => $id, 'centrale_id' => $centId, 'identifiant' => $identifier, 'web' => $isWeb])->id;
         } else
         {
-          $clinicName = Clinique::where('id', $centClinic["clinique_id"])->pluck('nom')->first();
-          $centName = ucwords(strtolower(Centrale::where('id', $centId)->pluck('nom')->first()));
-          return [ ["Le code centrale '" . $identifier . "' (" . $centName . ") existe déjà pour la clinique '" . $clinicName . "'" ] ];
+          if ($centClinic["clinique_id"] != 99999)
+          {
+            $clinicName = Clinique::where('id', $centClinic["clinique_id"])->pluck('nom')->first();
+            $centName = ucwords(strtolower(Centrale::where('id', $centId)->pluck('nom')->first()));
+            return [ ["Le code centrale '" . $identifier . "' (" . $centName . ") existe déjà pour la clinique '" . $clinicName . "'" ] ];
+          } else 
+          {
+            $centClinic->clinique_id = $id;
+            $centClinic->save();
+          }
         }
       }
     }

@@ -182,6 +182,7 @@ return [
     'targets.type-level' => 'Objectif palier',
     'targets.period' => 'Période',
     'targets.valorization' => 'Type de valorisation',
+    'targets.rebate-total' => 'Remise',
     'targets.rebate' => 'Remise',
     'targets.rebate-add' => 'Remise additionnelle ?',
     'targets.rebate-source' => 'Remise centrale',

@@ -67,8 +67,8 @@
 									<th>@lang('amadeo.categories.seller')</th>
 									<th>@lang('amadeo.categories.name')</th>
 									<th>@lang('amadeo.targets.name')</th>
-									<th title="Valeur engagée sur l’année pour l’objectif">@lang('amadeo.targets.value')</th>
-									<th>@lang('amadeo.targets.rebate')</th>
+									<th>@lang('amadeo.targets.value')</th>
+									<th>@lang('amadeo.targets.rebate-total')</th>
 									<th>@lang('amadeo.targets.difference')</th>
 									<th>@lang('amadeo.targets.difference')</th>
 									<th>@lang('amadeo.targets.advancement-short')<br><span>@lang('amadeo.targets.year') N</span></th>
