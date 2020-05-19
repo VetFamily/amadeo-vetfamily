@@ -120,7 +120,7 @@ return [
     'clinics.search-empty' => 'No matching results found',
     'clinics.download-clinics.filename' => 'VetFamily_Clinics download',
     'clinics.veterinaries' => 'Member ID',
-    'clinics.name' => 'Company name',
+    'clinics.name' => 'Legal name',
     'clinics.address' => 'Adress',
     'clinics.zip-code' => 'ZIP',
     'clinics.city' => 'City',

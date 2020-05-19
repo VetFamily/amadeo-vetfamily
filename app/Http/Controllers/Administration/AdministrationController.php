@@ -24,6 +24,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -117,7 +118,7 @@ class AdministrationController extends Controller
 		exit;
 	}
 
-	private function generateEstimationRFALaboratoire($feuille, $moisDebut, $anneeDebut, $moisFin, $anneeFin, $nomEntreprise, $laboratoire, $produitsLaboratoire, $objectifsLaboratoire) 
+	private function generateEstimationRFALaboratoire($feuille, $anneeObj, $moisDebut, $anneeDebut, $moisFin, $anneeFin, $nomEntreprise, $laboratoire, $produitsLaboratoire, $objectifsLaboratoire, $entrepriseId, $codesEntreprises, $cliniqueRepository, $objectifRepository) 
 	{
 		
 		$feuille->getSheetView()->setZoomScale(130);
@@ -147,18 +148,22 @@ class AdministrationController extends Controller
 
 		$feuille->getRowDimension('1')->setRowHeight(42);
 		$feuille->getStyle('A1:P1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('212629');
-		$feuille->setCellValue('B1', 'Amadeo');
-		$feuille->getStyle('B1')->getFont()->getColor()->setRGB('FFFFFF');
-		$feuille->getStyle('B1')->getFont()->setSize(22);
-		$feuille->getStyle('B1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+		$drawing = new Drawing();
+		$drawing->setName('Logo');
+		$drawing->setPath(public_path('images/logo_white_background.png'));
+		$drawing->setHeight(50);
+		$drawing->setCoordinates('B1');
+		$drawing->setWorksheet($feuille);
 		$feuille->setCellValue('E1', $nomEntreprise);
 		$feuille->getStyle('E1')->getFont()->getColor()->setRGB('9B9B9B');
 		$feuille->getStyle('E1')->getFont()->setSize(12);
 		$feuille->getStyle('E1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-		$feuille->setCellValue('I1', 'Amadeo');
-		$feuille->getStyle('I1')->getFont()->getColor()->setRGB('FFFFFF');
-		$feuille->getStyle('I1')->getFont()->setSize(22);
-		$feuille->getStyle('I1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+		$drawing = new Drawing();
+		$drawing->setName('Logo');
+		$drawing->setPath(public_path('images/logo_white_background.png'));
+		$drawing->setHeight(50);
+		$drawing->setCoordinates('I1');
+		$drawing->setWorksheet($feuille);
 		$feuille->setCellValue('N1', $nomEntreprise);
 		$feuille->getStyle('N1')->getFont()->getColor()->setRGB('9B9B9B');
 		$feuille->getStyle('N1')->getFont()->setSize(12);
@@ -175,7 +180,6 @@ class AdministrationController extends Controller
 		$feuille->getStyle('C2')->getFont()->setSize(14);
 		$feuille->setCellValue('C2', $laboratoire->nom . ' - Estimation des remises / objectif');
 		$feuille->getStyle('C2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
-		setlocale(LC_ALL, 'fr_FR.UTF-8');
 		$feuille->setCellValue('E2', 'Période : de ' . strftime("%B",strtotime($anneeDebut . "-" . $moisDebut . "-01")) . ' ' . $anneeDebut . ' à ' . strftime("%B",strtotime($anneeFin . "-" . $moisFin . "-01")) . ' ' . $anneeFin);
 		$feuille->getStyle('E2')->getFont()->setSize(11);
 		$feuille->getStyle('E2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
@@ -199,7 +203,7 @@ class AdministrationController extends Controller
 		$feuille->getStyle('B3:F3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('E8E8E8');
 		$feuille->getStyle('B3:F3')->getFont()->getColor()->setRGB('01B4BC');
 		$feuille->getStyle('B3:F3')->getAlignment()->setWrapText(true);
-		$feuille->setCellValue('C3', 'Nom de l\'objectif');
+		$feuille->setCellValue('C3', 'Nom de l\'objectif (catégorie)');
 		$feuille->setCellValue('D3', 'Achats  sur la période (€ au tarif de référence)');
 		$feuille->setCellValue('E3', 'Remise financière estimée sur la période (€)*');
 		
@@ -223,20 +227,69 @@ class AdministrationController extends Controller
 			$cptObjectif++;
 			$feuille->getRowDimension($cptObjectif)->setRowHeight(30);
 			
+			// Recherche du CA pour la clinique et l'objectif
+			$caClinique = $cliniqueRepository->findCAByIdAndTargetId($entrepriseId, $codesEntreprises, $objectif->id, $anneeObj, true, $moisDebut, $anneeDebut, $moisFin, $anneeFin);
+
+			// Cas "classique" : objectif simple ou palier non incrémentiel
+			$valeurRemise = $caClinique[0]->remise_euro;
+			if (($objectif->type_objectif_id == 1) || ($objectif->type_objectif_id == 2 && !$objectif->incrementiel))
+			{
+				// Calcul du % moyen
+				if ($objectif->ca_euro != null && $objectif->ca_euro != 0 && $objectif->remise_euro != null && $objectif->remise_euro != 0)
+				{
+					$objectif->{"pourcentage_remise_moyen"} = ($objectif->remise_euro / $objectif->ca_euro) * 100;
+				} else 
+				{
+					$objectif->{"pourcentage_remise_moyen"} = $objectif->pourcentage_remise;
+				}
+			} else if (($objectif->type_objectif_id == 2) && $objectif->incrementiel)
+			{
+				// Objectif palier incrémentiel
+				if ($objectif->pourcentage_remise_moyen == null)
+				{
+					// On considère que la valeur qui sera atteinte par le groupe est la valeur de l'objectif suivi
+					$remiseUnite = $this->calculRemisePalierIncrementiel(0, $objectif, $caClinique[0]->ca_unite, $objectifRepository);
+					$objectif->{"pourcentage_remise_moyen"} = $remiseUnite / $objectif->valeur * 100;
+				}
+				$valeurRemise = $caClinique[0]->ca_euro * $objectif->pourcentage_remise_moyen / 100;
+			} else if ($objectif->type_objectif_id == 3)
+			{
+				// Objectif individuel
+				if ($objectif->incrementiel)
+				{
+					$remiseUnite = $this->calculRemisePalierIncrementiel(0, $objectif, $caClinique[0]->ca_unite, $objectifRepository);
+					$objectif->{"pourcentage_remise_moyen"} = $remiseUnite / $caClinique[0]->ca_unite * 100;
+				} else 
+				{
+					$pourcentageRemise = $this->calculRemisePalierIndividuel($caClinique[0]->ca_unite, $objectif, $objectifRepository);
+					$objectif->{"pourcentage_remise_moyen"} = $pourcentageRemise / 100;
+				}
+				$valeurRemise = $caClinique[0]->ca_euro * $objectif->pourcentage_remise_moyen;
+			}
+			
 			// Estimation des remises
 			$feuille->getStyle('B' . $cptObjectif . ':F' . $cptObjectif)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FFFFFF');
 			$feuille->getStyle('B' . $cptObjectif . ':F' . $cptObjectif)->getBorders()->getTop()->setBorderStyle(Border::BORDER_THICK);
 			$feuille->getStyle('B' . $cptObjectif . ':F' . $cptObjectif)->getBorders()->getTop()->getColor()->setRGB('E8E8E8');
-			$feuille->setCellValue('C' . $cptObjectif, $objectif->nom);
+			$objectifNom = $objectif->nom . ' (' . $objectif->cat_nom . ')';
+            $feuille->setCellValue('C' . $cptObjectif, (strlen($objectifNom) > 85 ? substr_replace($objectifNom, "...", 85) : $objectifNom));
+            $feuille->getComment('C' . $cptObjectif)->getText()->createTextRun($objectifNom);
+            $feuille->getComment('C' . $cptObjectif)->setWidth("400px");
 			$feuille->getStyle('C' . $cptObjectif)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 			$feuille->getStyle('C' . $cptObjectif)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 			$feuille->getStyle('C' . $cptObjectif)->getAlignment()->setWrapText(true);
-			$feuille->setCellValue('D' . $cptObjectif, $objectif->ca_periode);
+			$feuille->setCellValue('D' . $cptObjectif, round($caClinique[0]->ca_euro, 2));
 			$feuille->getStyle('D' . $cptObjectif)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE);
 			$feuille->getStyle('D' . $cptObjectif)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-			$feuille->setCellValue('E' . $cptObjectif, $objectif->remise_periode);
+			$feuille->setCellValue('E' . $cptObjectif, round($valeurRemise, 2));
 			$feuille->getStyle('E' . $cptObjectif)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE);
 			$feuille->getStyle('E' . $cptObjectif)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+			if (!property_exists($laboratoire, "remise_euro_calcule"))
+			{
+				$laboratoire->{"remise_euro_calcule"} = 0;
+			}
+			$laboratoire->{"remise_euro_calcule"} += $valeurRemise;
 		}
 
 		/*******************************
@@ -263,10 +316,22 @@ class AdministrationController extends Controller
 			$feuille->getStyle('K' . $cptProduit)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 			$feuille->getStyle('K' . $cptProduit)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 			$feuille->getStyle('K' . $cptProduit)->getAlignment()->setWrapText(true);
-			$feuille->setCellValue('L' . $cptProduit, $produit->ca_periode);
+			$feuille->setCellValue('L' . $cptProduit, round($produit->ca_periode, 2));
 			$feuille->getStyle('L' . $cptProduit)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE);
 			$feuille->getStyle('L' . $cptProduit)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-			$feuille->setCellValue('M' . $cptProduit, $produit->pourcentage_remise);
+            if ((($produit->type_objectif_id == 2) && $produit->incrementiel) || ($produit->type_objectif_id == 3)) {
+                // Recherche du pourcentage moyen de l'objectif dans le cas d'un palier incrémentiel ou d'un individuel
+                $objProduitId = $produit->objectif_id;
+                $objProduit = $objectifsLaboratoire->filter(function ($o) use (&$objProduitId) {
+                    if ($o->id == $objProduitId)
+                        return $o;
+                } );
+                $objProduit = $objProduit->values()->first();
+                $feuille->setCellValue('M' . $cptProduit, round(($objProduit->pourcentage_remise_moyen * 100), 2));
+            } else 
+            {
+                $feuille->setCellValue('M' . $cptProduit, round($produit->pourcentage_remise, 2));
+            }
 			$feuille->getStyle('M' . $cptProduit)->getNumberFormat()->setFormatCode('# ##0.00_-"%"');
 			$feuille->getStyle('M' . $cptProduit)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 			$commentPourcentageRemise = $feuille->getComment('M' . $cptProduit)->getText()->createTextRun('Objectif rattaché :');
@@ -377,10 +442,12 @@ class AdministrationController extends Controller
 
 		$feuille->getRowDimension('1')->setRowHeight(42);
 		$feuille->getStyle('A1:I1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('212629');
-		$feuille->setCellValue('B1', 'Amadeo');
-		$feuille->getStyle('B1')->getFont()->getColor()->setRGB('FFFFFF');
-		$feuille->getStyle('B1')->getFont()->setSize(22);
-		$feuille->getStyle('B1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+		$drawing = new Drawing();
+		$drawing->setName('Logo');
+		$drawing->setPath(public_path('images/logo_white_background.png'));
+		$drawing->setHeight(50);
+		$drawing->setCoordinates('B1');
+		$drawing->setWorksheet($feuille);
 		$feuille->setCellValue('G1', $nomEntreprise);
 		$feuille->getStyle('G1')->getFont()->getColor()->setRGB('9B9B9B');
 		$feuille->getStyle('G1')->getFont()->setSize(12);
@@ -396,7 +463,6 @@ class AdministrationController extends Controller
 		$feuille->getStyle('C2')->getFont()->setSize(14);
 		$feuille->setCellValue('C2', 'Synthèse');
 		$feuille->getStyle('C2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
-		setlocale(LC_ALL, 'fr_FR.UTF-8');
 		$feuille->setCellValue('G2', 'Période : de ' . strftime("%B",strtotime($anneeDebut . "-" . $moisDebut . "-01")) . ' ' . $anneeDebut . ' à ' . strftime("%B",strtotime($anneeFin . "-" . $moisFin . "-01")) . ' ' . $anneeFin);
 		$feuille->getStyle('G2')->getFont()->setSize(11);
 		$feuille->getStyle('G2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
@@ -432,7 +498,7 @@ class AdministrationController extends Controller
 			$feuille->getStyle('C' . $cpt)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 			$feuille->getStyle('C' . $cpt)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 			$feuille->getStyle('C' . $cpt)->getAlignment()->setWrapText(true);
-			$feuille->setCellValue('G' . $cpt, $laboratoire->total_remises);
+			$feuille->setCellValue('G' . $cpt, round($laboratoire->remise_euro_calcule, 2));
 			$feuille->getStyle('G' . $cpt)->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_CURRENCY_EUR_SIMPLE);
 			$feuille->getStyle('G' . $cpt)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 		}
@@ -483,6 +549,65 @@ class AdministrationController extends Controller
 		$feuille->getStyle('I1:I' . ($cpt+4))->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('212629');
 		$feuille->getStyle('A' . ($cpt+4) . ':I' . ($cpt+4))->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('212629');
 	}
+
+    private function calculRemisePalierIncrementiel($remise, $objectif, $caClinique, $objectifRepository)
+    {
+        if ($objectif->type_objectif_id == 2)
+        {
+            if ($objectif->objectif_precedent_id != null)
+            {
+                $objectifPrecedent = Objectif::where('id', $objectif->objectif_precedent_id)->first();
+                if ($objectifPrecedent->incrementiel)
+                {
+                    $remisePrec = ($objectif->valeur - $objectifPrecedent->valeur)*$objectifPrecedent->pourcentage_remise/100;
+                } else
+                {
+                    $remisePrec = $objectif->valeur*$objectifPrecedent->pourcentage_remise/100;
+                }
+                return $this->calculRemisePalierIncrementiel($remise+$remisePrec, $objectifPrecedent, $caClinique, $objectifRepository);
+            } else
+            {
+                return $remise;
+            }
+        } else if ($objectif->type_objectif_id == 3)
+        {
+            // Recherche des paliers de l'objectif individuel
+            $levels = $objectifRepository->findListLevelsById($objectif->id);
+            $levels->sortBy('valeur', 'desc');
+
+            $caTmp = $caClinique;
+            foreach($levels as $level)
+            {
+                if ($caClinique >= $level->valeur)
+                {
+                    $caTmp = $caTmp - $level->valeur;
+                    $remise += $caTmp * $level->pourcentage_remise / 100;
+                }
+            }
+
+            return $remise;
+        }
+    }
+
+    private function calculRemisePalierIndividuel($caClinique, $objectif, $objectifRepository)
+    {
+        // Recherche des paliers de l'objectif individuel
+        $levels = $objectifRepository->findListLevelsById($objectif->id);
+        $remise = 0;
+
+        foreach($levels as $level)
+        {
+            if ($caClinique >= $level->valeur)
+            {
+                $remise = $level->pourcentage_remise;
+            } else 
+            {
+                break;
+            }
+        }
+
+        return $remise;
+    }
 
 	/*
     * Recherche les produits pour le calcul des prix nets pour téléchargement d'un Excel.

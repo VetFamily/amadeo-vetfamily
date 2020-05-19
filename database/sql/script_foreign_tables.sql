@@ -426,10 +426,11 @@ AS
 (
     SELECT a.produit_id, a.centrale_clinique_id, a.date, sum(a.qte_gratuite_complet) AS qte_gratuite_complet, sum(a.qte_payante_complet) AS qte_payante_complet, sum(a.ca_complet) AS ca_complet
     FROM achats a
-    JOIN produits p ON p.id = a.produit_id
-    WHERE ((p.laboratoire_id = 40)
-    or (p.invisible is true AND a.obsolete IS false)
-    or (p.laboratoire_id not in (select id from laboratoires) AND a.obsolete IS false))
+    JOIN produits_ref p ON p.id = a.produit_id
+    WHERE p.laboratoire_id != 56
+	and ((p.laboratoire_id = 40)
+		or (p.invisible is true AND a.obsolete IS false)
+		or (p.laboratoire_id not in (select id from laboratoires) AND a.obsolete IS false))
     GROUP BY a.produit_id, a.centrale_clinique_id, a.date, a.obsolete
 )
 WITH DATA;

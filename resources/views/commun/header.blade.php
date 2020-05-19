@@ -12,9 +12,9 @@
         
         <ul class="menu">
             @if ((sizeof(Auth::user()->roles) >0) AND ("Administrateur" == Auth::user()->roles[0]['nom']))
-            <li>
+            <!--<li>
                 <a href="{{ route('page.tableaudebord') }}" class="{{ (Request::is('tableaudebord') ? 'active-menu' : '') }}">@lang('amadeo.header.dashboard')</a>
-            </li>
+            </li>-->
             @endif
             <li class="has-children">
                 <a href="#" class="{{ (Request::is('statistiques') || Request::is('engagements') || Request::is('objectifs') ? 'active-menu' : '') }}">@lang('amadeo.header.monitoring')</a>

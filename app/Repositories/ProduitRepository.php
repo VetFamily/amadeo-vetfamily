@@ -150,46 +150,59 @@ class ProduitRepository implements ProduitRepositoryInterface
 		return $query->get();
 	}
 
-	public function findEstimationsRFAForExcel($moisDeb, $anneeDeb, $moisFin, $anneeFin, $clinique, $laboratoire, $codesCliniques, $anneeObj)
+	public function findEstimationsRFAForExcel($startMonth, $startYear, $endMonth, $endYear, $clinic, $lab, $clinicCodes, $targetYear)
 	{
-		$dateDeb = Carbon::create($anneeDeb, $moisDeb, 1, 0, 0, 0);
-		$dateFin = Carbon::create($anneeFin, $moisFin, 28, 0, 0, 0);
+		$startDate = Carbon::create($startYear, $startMonth, 1, 0, 0, 0);
+		$endDate = Carbon::create($endYear, $endMonth, 1, 0, 0, 0)->endOfMonth();
 		
 		$query = $this->produit
-					->select('produits.denomination', 'produits.conditionnement', DB::raw('(CASE liste_objectifs.type_valorisation_objectif_id WHEN 1 THEN coalesce(calcul_periode.ca_total_achat, 0) WHEN 2 THEN coalesce(calcul_periode.ca_total_centrale, 0) WHEN 3 THEN coalesce(calcul_periode.ca_total_labo, 0) ELSE NULL END) AS ca_periode'), DB::raw('COALESCE(calcul_periode.qte_periode, 0) as qte_periode'), 'liste_objectifs.nom as objectif', 'liste_objectifs.pourcentage_remise')
-					->join('laboratoires','laboratoires.id', '=', 'produits.laboratoire_id')
+					->select('produits.denomination', 'produits.conditionnement', 'categorie_produit_objectif.pourcentage_remise', 'objectifs.id as objectif_id', 'objectifs.nom as objectif', 'objectifs.type_objectif_id', 'objectifs.incrementiel', DB::raw('COALESCE(calcul_periode.ca_periode, 0) as ca_periode'), DB::raw('COALESCE(calcul_periode.qte_periode, 0) as qte_periode'))
+					->join('categorie_produit','produits.id', '=', 'categorie_produit.produit_id')
+					->join('categorie_produit_objectif','categorie_produit.id', '=', 'categorie_produit_objectif.categorie_produit_id')
+					->join('objectifs','categorie_produit_objectif.objectif_id', '=', 'objectifs.id')
+					->join('categories','objectifs.categorie_id', '=', 'categories.id')
         			->leftJoin(DB::raw("(
-							select prod_id, round(sum(ca_total_achat)::numeric,2) AS ca_total_achat, round(sum(ca_total_centrale)::numeric,2) AS ca_total_centrale, round(sum(ca_total_labo)::numeric,2) AS ca_total_labo, round(sum(qte_periode)) AS qte_periode
+							select prod_id, obj_id, sum(volume) as qte_periode, (sum(ca_periode)::numeric) as ca_periode
 							FROM (
-							    select distinct produits.id AS prod_id, achats.id, achats.date AS date, achats.ca_complet AS ca_total_achat, (produit_valorisations.valo_euro * achats.qte_payante_complet) AS ca_total_labo, (cpt.prix_unitaire_hors_promo * achats.qte_payante_complet) AS ca_total_centrale, achats.qte_payante_complet AS qte_periode
-								from produits
-								left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between '" . $dateDeb . "' and '" . $dateFin . "')
-								join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
-								join cliniques on cliniques.id = centrale_clinique.clinique_id
-								left join produit_valorisations on produit_valorisations.produit_id = produits.id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
-								left join centrale_produit on centrale_produit.id = achats.centrale_produit_id
-								left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = centrale_produit.id and achats.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
-								where produits.invisible is false
-								" . (($clinique == null) ? "" : ("and cliniques.id = " . $clinique)) . "
-								" . (($codesCliniques == null || in_array('0', $codesCliniques)) ? "" : ("and centrale_clinique.id in (".implode(",", $codesCliniques).")")) . "
-							) achats_periode
-							group by prod_id
+								select prod_id, obj_id, volume,
+									(CASE type_valorisation_objectif_id 
+										WHEN 1 THEN ca_complet 
+										WHEN 2 THEN (prix_unitaire_hors_promo * volume)
+										WHEN 3 THEN (valo_euro * volume)
+										ELSE NULL 
+									END) AS ca_periode
+								FROM (
+									select distinct p.id AS prod_id, o.id as obj_id, o.type_valorisation_objectif_id, o.valorisation_laboratoire, a.id, a.date AS date, a.ca_complet, pv.valo_euro, cpt.prix_unitaire_hors_promo, p.valo_volume, a.qte_payante_complet AS volume
+									from objectifs o
+									join categories cat on cat.id = o.categorie_id
+									join categorie_produit_objectif cpo on cpo.objectif_id = o.id
+									join categorie_produit cpr on cpr.id = cpo.categorie_produit_id
+									join produits p on p.id = cpr.produit_id
+									left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and (a.date between '" . $startDate . "' and '" . $endDate . "') and (extract(month from a.date) between extract(month from o.date_debut) and extract(month from o.date_fin))
+									join centrale_clinique cc on cc.id = a.centrale_clinique_id 
+									join cliniques c on c.id = cc.clinique_id
+									left join produit_valorisations pv on pv.produit_id = p.id and ((a.date between pv.date_debut and pv.date_fin) or (a.date >= pv.date_debut and pv.date_fin is null))
+									left join centrale_produit cp on cp.id = a.centrale_produit_id
+									left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = cp.id and a.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
+									where p.invisible is false
+									and o.obsolete is false
+									and o.suivi is true
+									and cat.annee = '" . $targetYear . "'
+									and cat.laboratoire_id = '" . $lab . "'
+									" . (($clinic == null) ? "" : ("and c.id = " . $clinic)) . "
+									" . (($clinicCodes == null || in_array('0', $clinicCodes)) ? "" : ("and cc.id in (".implode(",", $clinicCodes).")")) . "
+								) achats_periode
+							) achats
+							group by prod_id, obj_id
 						) calcul_periode"),function($join){
 						$join->on("calcul_periode.prod_id","=","produits.id");
+						$join->on("calcul_periode.obj_id","=","objectifs.id");
 					})
-					->join(DB::raw("(
-							select distinct objectifs.id, objectifs.nom, objectifs.type_valorisation_objectif_id, categorie_produit.produit_id, categorie_produit_objectif.pourcentage_remise
-							from objectifs
-							join categories on categories.id = objectifs.categorie_id
-							join categorie_produit_objectif on categorie_produit_objectif.objectif_id = objectifs.id
-							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
-							where objectifs.obsolete is false
-							and objectifs.suivi is true
-							and categories.annee = '" . $anneeObj . "'
-						) liste_objectifs"),function($join){
-						$join->on("liste_objectifs.produit_id","=","produits.id");
-					})
-					->where('laboratoires.id', '=', $laboratoire)
+					->where('produits.invisible', '=', 0)
+					->where('objectifs.obsolete', '=', 0)
+					->where('objectifs.suivi', '=', 1)
+					->where('categories.annee', '=', $targetYear)
+					->where('categories.laboratoire_id', '=', $lab)
 					->orderBy('denomination')
 					->orderBy('conditionnement')
 					->orderBy('objectif');

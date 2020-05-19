@@ -345,7 +345,6 @@ class AchatRepository implements AchatRepositoryInterface
 								(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then a.ca_complet else 0 end) as ca_periode, 
 								(case when (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "') then a.ca_complet else 0 end) as ca_periode_prec
 								from achats_autres a
-								join produits p on p.id = a.produit_id
 								join centrale_clinique cc on cc.id = a.centrale_clinique_id 
 								" . ($clinics != null ? "" : "join cliniques c on c.id = cc.clinique_id") . "
 								where ((a.date between '" . $startDate . "' and '" . $endDate . "') or (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "'))
@@ -443,7 +442,6 @@ class AchatRepository implements AchatRepositoryInterface
 								(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then a.ca_complet else 0 end) as ca_periode, 
 								(case when (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "') then a.ca_complet else 0 end) as ca_periode_prec
 								from achats_autres a
-								join produits p on p.id = a.produit_id
 								join centrale_clinique cc on cc.id = a.centrale_clinique_id 
 								" . ($clinics != null ? "" : "join cliniques c on c.id = cc.clinique_id") . "
 								where ((a.date between '" . $startDate . "' and '" . $endDate . "') or (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "'))

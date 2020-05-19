@@ -110,7 +110,7 @@
           // Construct tab by product
           var periode = startMonthName + params["startYear"].substring(2,4) + " à " + endMonthName + params["endYear"].substring(2,4);
           var periodePrec = startMonthName + String(params["startYear"]-nbYearDiff).substring(2,4) + " à " + endMonthName + String(params["endYear"]-nbYearDiff).substring(2,4);
-          $('#tab-purchases').html("<thead><tr><th class='texte width-10'>@lang('amadeo.products.seller')</th><th class='texte width-30'>@lang('amadeo.purchases.product')</th><th class='width-15 text-center'>@lang('amadeo.purchases.amount')<br><span>" + periode + "</span></th><th class='width-15 text-center'>@lang('amadeo.purchases.quantity')<br><span>" + periode + "</span></th><th class='width-15 text-center'>@lang('amadeo.purchases.amount')<br><span>" + periodePrec + "</span></th><th class='width-15 text-center'>@lang('amadeo.purchases.quantity')<br><span>" + periodePrec + "</span></th><th class='width-9 text-center'>@lang('amadeo.purchases.evolution-short')</th></tr><tr id='forFilters'><th class='select-filter'></th><th class='text-filter'></th><th colspan=5><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th>/tr></thead><tbody></tbody><tfoot><tr><td class='texte width-10'>@lang('amadeo.purchases.total')</td><td class='texte width-30'></td><td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-9'></td></tr></tfoot>");
+          $('#tab-purchases').html("<thead><tr><th class='texte width-10'>@lang('amadeo.products.seller')</th><th class='texte width-30'>@lang('amadeo.purchases.product')</th><th class='width-15 text-center'>@lang('amadeo.purchases.amount')<br><span>" + periode + "</span></th><th class='width-15 text-center'>@lang('amadeo.purchases.quantity')<br><span>" + periode + "</span></th><th class='width-15 text-center'>@lang('amadeo.purchases.amount')<br><span>" + periodePrec + "</span></th><th class='width-15 text-center'>@lang('amadeo.purchases.quantity')<br><span>" + periodePrec + "</span></th><th class='width-9 text-center'>@lang('amadeo.purchases.evolution-short')</th></tr><tr id='forFilters'><th class='select-filter'></th><th class='text-filter'></th><th colspan=5><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th></tr></thead><tbody></tbody><tfoot><tr><td class='texte width-10'>@lang('amadeo.purchases.total')</td><td class='texte width-30'></td><td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-9'></td></tr></tfoot>");
 
           // Complete period
           tabPurchases = $('#tab-purchases').DataTable( {
@@ -388,7 +388,13 @@
               headerLine2 += " style='background: #F4F3F3;'";
             }
             headerLine2 += ">@lang('amadeo.purchases.evolution-short')</th>";
-            headerLine3 += "<th colspan=5><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th>"
+            if (i == 0)
+            {
+              headerLine3 += "<th colspan=5><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th>"
+            } else 
+            {
+              headerLine3 += "<th></th><th></th><th></th><th></th><th></th>";
+            }
 
             // Footer
             footer += "<td class='nombre width-15'></td><td class='nombre width-9'></td><td class='nombre width-15'></td><td class='nombre width-9'></td><td class='nombre width-9'></td>";
@@ -854,7 +860,13 @@
               headerLine2 += " style='background: #F4F3F3;'";
             }
             headerLine2 += ">@lang('amadeo.purchases.evolution-short')</th>";
-            headerLine3 += "<th colspan=3><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th>"
+            if (i == 0)
+            {
+              headerLine3 += "<th colspan=3><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th>"
+            } else 
+            {
+              headerLine3 += "<th></th><th></th><th></th>";
+            }
 
             // Footer
             footer += "<td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-9'></td>";
@@ -1282,7 +1294,13 @@
               headerLine2 += " style='background: #F4F3F3;'";
             }
             headerLine2 += ">@lang('amadeo.purchases.evolution-short')</th>";
-            headerLine3 += "<th colspan=3><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th>"
+            if (i == 0)
+            {
+              headerLine3 += "<th colspan=3><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th>"
+            } else 
+            {
+              headerLine3 += "<th></th><th></th><th></th>";
+            }
 
             // Footer
             footer += "<td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-9'></td>";
@@ -1722,7 +1740,13 @@
               headerLine2 += " style='background: #F4F3F3;'";
             }
             headerLine2 += ">@lang('amadeo.purchases.evolution-short')</th>";
-            headerLine3 += "<th colspan=3><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th>"
+            if (i == 0)
+            {
+              headerLine3 += "<th colspan=3><div id='div-mask-null-quantities' class='checkbox-item-horizontal hide'><div class='checkboxContainer'><input id='mask-null-quantities' name='mask-null-quantities' type='checkbox' value='1'><label for='mask-null-quantities'></label></div><div class='checkboxLabel'><label for='mask-null-quantities' style='font-size: 12px;'>@lang('amadeo.purchases.mask-empty')</label></div></div></th>";
+            } else 
+            {
+              headerLine3 += "<th></th><th></th><th></th>";
+            }
 
             // Footer
             footer += "<td class='nombre width-15'></td><td class='nombre width-15'></td><td class='nombre width-9'></td>";

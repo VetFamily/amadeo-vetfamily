@@ -37,7 +37,7 @@ interface ProduitRepositoryInterface
 	/**
 	* Recherche la liste de tous les produits de tous les laboratoires avec les estimations de RFA pour téléchargement au format Excel.
 	*/
-	public function findEstimationsRFAForExcel($moisDeb, $anneeDeb, $moisFin, $anneeFin, $clinique, $laboratoire, $codesCliniques, $anneeObj);
+	public function findEstimationsRFAForExcel($startMonth, $startYear, $endMonth, $endYear, $clinic, $lab, $clinicCodes, $targetYear);
 
 	public function findBilanRFAForExcel($laboratoireId, $annee, $objectifsId, $cliniqueId);
 

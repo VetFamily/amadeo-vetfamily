@@ -324,4 +324,70 @@ class CliniqueRepository implements CliniqueRepositoryInterface
 		return $result;
 	}
 
+	public function findCAByIdAndTargetId($clinicId, $clinicCodes, $targetId, $year, $estim, $startMonth, $startYear, $endMonth, $endYear)
+	{
+		$query = "
+					select coalesce(sum(ca_unite)::numeric, 0) as ca_unite, coalesce(sum(ca_euro)::numeric, 0) as ca_euro, coalesce(sum(ca_euro * pourcentage_remise / 100)::numeric, 0) AS remise_euro
+					from
+					(
+						select obj_id, pourcentage_remise,
+						(CASE type_valorisation_objectif_id 
+							WHEN 1 THEN ca_complet 
+							WHEN 2 THEN (prix_unitaire_hors_promo * volume)
+							WHEN 3 THEN
+								CASE valorisation_laboratoire 
+									WHEN 'Valorisation en euros' THEN (valo_euro * volume)
+									WHEN 'Valorisation en volume' THEN (valo_volume * volume)
+									ELSE (valo_euro * volume)
+								END 
+							ELSE NULL 
+						END) AS ca_unite,
+						(CASE type_valorisation_objectif_id 
+							WHEN 1 THEN ca_complet 
+							WHEN 2 THEN (prix_unitaire_hors_promo * volume)
+							WHEN 3 THEN (valo_euro * volume)
+							ELSE NULL 
+						END) AS ca_euro
+						from (
+							select distinct o.id AS obj_id, a.id, a.date AS date, a.ca_complet, a.qte_payante_complet AS volume, pv.valo_euro, cpt.prix_unitaire_hors_promo, p.valo_volume, o.type_valorisation_objectif_id, o.valorisation_laboratoire, cpo.pourcentage_remise
+							from objectifs o
+							join categories cat on cat.id = o.categorie_id 
+							join categorie_produit_objectif cpo on cpo.objectif_id = o.id 
+							join categorie_produit cpr on cpr.id = cpo.categorie_produit_id 
+							join produits p on p.id = cpr.produit_id
+							left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE ";
+		if ($estim)
+		{
+			$query .= "and (a.date between '" . Carbon::create($startYear, $startMonth, 1, 0, 0, 0) . "' and '" . Carbon::create($endYear, $endMonth, 1, 0, 0, 0)->endOfMonth() . "') and (extract(month from a.date) between extract(month from o.date_debut) and extract(month from o.date_fin))";
+		} else 
+		{
+			$query .= "and a.obsolete IS FALSE AND EXTRACT(YEAR from a.date) = " . $year . " and (a.date between to_date('01/' || EXTRACT(MONTH from o.date_debut) || '/' || cat.annee, 'DD/MM/YYYY') and to_date('28/' || CASE cat.annee 
+								WHEN EXTRACT(YEAR from current_date) THEN 
+									CASE 
+										WHEN EXTRACT(MONTH from o.date_fin) < " . $endMonth . " THEN EXTRACT(MONTH from o.date_fin)
+										ELSE " . $endMonth . "
+									END
+								ELSE EXTRACT(MONTH from o.date_fin)
+							END || '/' || cat.annee, 'DD/MM/YYYY'))";
+		}
+
+		$query .= "
+							join centrale_clinique cc on cc.id = a.centrale_clinique_id 
+							join cliniques c on c.id = cc.clinique_id
+							left join produit_valorisations pv on pv.produit_id = p.id and ((a.date between pv.date_debut and pv.date_fin) or (a.date >= pv.date_debut and pv.date_fin is null))
+							left join centrale_produit cp on cp.id = a.centrale_produit_id
+							left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = cp.id and a.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
+							where o.obsolete is false 
+							and o.id = " . $targetId . "
+							and c.id = " . $clinicId . "
+							" . (($clinicCodes == null || in_array('0', $clinicCodes)) ? "" : ("and cc.id in (".implode(",", $clinicCodes).")")) . "
+							AND p.invisible IS FALSE
+						) achats_periode
+					) t";
+	
+		$result = DB::select(DB::raw($query));
+
+        return $result;
+	}
+
 }
