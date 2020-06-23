@@ -49,7 +49,6 @@ class CategorieAjaxController extends Controller
   {
     $validator = Validator::make($request->all(), [
       'annee' => 'required|max:4',
-      'laboratoire' => 'required',
       'nom' => 'required|max:255'
     ]);
 

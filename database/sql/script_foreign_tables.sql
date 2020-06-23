@@ -90,7 +90,7 @@ ALTER FOREIGN TABLE ed_laboratoires OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW laboratoires
 AS
-(SELECT id, nom, obsolete FROM ed_laboratoires where id in (8, 11, 23, 25, 40) or id between 57 and 239)
+(SELECT id, nom, obsolete FROM ed_laboratoires where id in (3, 6, 8, 10, 11, 16, 20, 23, 25, 40) or id between 57 and 241)
 WITH DATA;
 ALTER MATERIALIZED VIEW laboratoires OWNER TO vetfamily;
 CREATE INDEX laboratoires_id_index ON laboratoires USING btree (id);

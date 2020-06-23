@@ -47,7 +47,7 @@ class AdministrationController extends Controller
         echo $codesCentrales;
 	}
 
-	public function exportEstimationRFAExcel($detail, $moisDebut, $anneeDebut, $moisFin, $anneeFin, $entrepriseId, $entrepriseCodesCentrales, $anneeObj, ProduitRepository $produitRepository, LaboratoireRepository $laboratoireRepository, ObjectifRepository $objectifRepository)
+	public function exportEstimationRFAExcel($detail, $moisDebut, $anneeDebut, $moisFin, $anneeFin, $entrepriseId, $entrepriseCodesCentrales, $anneeObj, ProduitRepository $produitRepository, LaboratoireRepository $laboratoireRepository, ObjectifRepository $objectifRepository, CliniqueRepository $cliniqueRepository)
 	{
 		// Entreprise
 		$entreprise = Clinique::select('id', 'veterinaires')->where('id', $entrepriseId)->first();
@@ -84,18 +84,23 @@ class AdministrationController extends Controller
 		
 		$syntheseLaboratoires = $laboratoireRepository->findEstimationsRFAForExcel($moisDebut, $anneeDebut, $moisFin, $anneeFin, $entrepriseId, $codesEntreprises, $anneeObj);
 
-		if ($detail == '1')
-		{
-			// Création des feuilles "Laboratoires"
-			$cptFeuilles = 1;
-			foreach ($syntheseLaboratoires as $laboratoire) {
-				$feuilleLaboratoire = new Worksheet($classeur, $laboratoire->nom);
-				$classeur->addSheet($feuilleLaboratoire, $cptFeuilles);
-				// Recherche des produits du laboratoire
-				$produitsLaboratoire = $produitRepository->findEstimationsRFAForExcel($moisDebut, $anneeDebut, $moisFin, $anneeFin, $entrepriseId, $laboratoire->id, $codesEntreprises, $anneeObj);
-				// Recherche des objectifs du laboratoire
-				$objectifsLaboratoire = $objectifRepository->findEstimationsRFAForExcel($moisDebut, $anneeDebut, $moisFin, $anneeFin, $entrepriseId, $laboratoire->id, $codesEntreprises, $anneeObj);
-				$laboratoire = $this->generateEstimationRFALaboratoire($feuilleLaboratoire, $moisDebut, $anneeDebut, $moisFin, $anneeFin, $nomEntreprise, $laboratoire, $produitsLaboratoire, $objectifsLaboratoire);
+		// Création des feuilles "Laboratoires"
+		$cptFeuilles = 1;
+		foreach ($syntheseLaboratoires as $laboratoire) {
+			// Recherche des produits du laboratoire
+			$produitsLaboratoire = $produitRepository->findEstimationsRFAForExcel($moisDebut, $anneeDebut, $moisFin, $anneeFin, $entrepriseId, $laboratoire->id, $codesEntreprises, $anneeObj);
+			// Recherche des objectifs du laboratoire
+			$objectifsLaboratoire = $objectifRepository->findEstimationsRFAForExcel($moisDebut, $anneeDebut, $moisFin, $anneeFin, $entrepriseId, $laboratoire->id, $codesEntreprises, $anneeObj);
+
+			$feuilleLaboratoire = new Worksheet($classeur, $laboratoire->nom);
+			$classeur->addSheet($feuilleLaboratoire, $cptFeuilles);
+			$laboratoire = $this->generateEstimationRFALaboratoire($feuilleLaboratoire, $anneeObj, $moisDebut, $anneeDebut, $moisFin, $anneeFin, $nomEntreprise, $laboratoire, $produitsLaboratoire, $objectifsLaboratoire, $entrepriseId, $codesEntreprises, $cliniqueRepository, $objectifRepository);
+				
+			if ($detail != '1')
+			{
+				$classeur->removeSheetByIndex($cptFeuilles);
+			} else 
+			{
 				$cptFeuilles++;
 			}
 		}
@@ -106,15 +111,22 @@ class AdministrationController extends Controller
 		$this->generateEstimationRFASynthese($feuilleSynthese, $moisDebut, $anneeDebut, $moisFin, $anneeFin, $nomEntreprise, $syntheseLaboratoires);
 
 		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-		$nom = 'Content-Disposition: attachment;filename="' . date('Ymd') . '_Estimation_RFA_' . str_replace('/', '-', $entreprise->veterinaires);
+		$nom = 'Content-Disposition: attachment;filename="' . date('Ymd') . '_Estimation_RFA_' . str_replace('/', '-', $entreprise->adherent_nom);
 		if ($detail == '1')
 		{
 			 $nom .= '_detail';
 		}
 		$nom .= '.xlsx"';
 		header($nom);
-	    $writer = IOFactory::createWriter($classeur, 'Xlsx');
+	    $writer = new Xlsx($classeur);
 		$writer->save('php://output');
+
+        // Release memory
+        $classeur->__destruct();
+        $classeur = null;
+        unset($classeur);
+        $writer = null;
+        unset($writer);
 		exit;
 	}
 

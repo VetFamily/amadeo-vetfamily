@@ -125,6 +125,7 @@ class ProduitRepository implements ProduitRepositoryInterface
 						 	ELSE EXTRACT(MONTH from objectifs.date_fin)
 						 END || '/' || categories.annee, 'DD/MM/YYYY')
 					AND EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
+					AND cliniques.obsolete is false
 				) t ON t.prod_id = liste.prod_id
 				GROUP BY denomination, conditionnement, pourcentage_remise, pourcentage_remise_source, cat_prod_obj_id, obsolete";
 
@@ -180,7 +181,7 @@ class ProduitRepository implements ProduitRepositoryInterface
 									join produits p on p.id = cpr.produit_id
 									left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and (a.date between '" . $startDate . "' and '" . $endDate . "') and (extract(month from a.date) between extract(month from o.date_debut) and extract(month from o.date_fin))
 									join centrale_clinique cc on cc.id = a.centrale_clinique_id 
-									join cliniques c on c.id = cc.clinique_id
+									join cliniques c on c.id = cc.clinique_id and c.obsolete is false
 									left join produit_valorisations pv on pv.produit_id = p.id and ((a.date between pv.date_debut and pv.date_fin) or (a.date >= pv.date_debut and pv.date_fin is null))
 									left join centrale_produit cp on cp.id = a.centrale_produit_id
 									left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = cp.id and a.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
@@ -239,7 +240,7 @@ class ProduitRepository implements ProduitRepositoryInterface
 									join produits on produits.id = categorie_produit.produit_id
 									left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between objectifs.date_debut and objectifs.date_fin)
 									join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
-									join cliniques on cliniques.id = centrale_clinique.clinique_id
+									join cliniques on cliniques.id = centrale_clinique.clinique_id and c.obsolete is false
 									left join produit_valorisations on produit_valorisations.produit_id = produits.id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
 									left join centrale_produit on centrale_produit.id = achats.centrale_produit_id
 									left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = centrale_produit.id and achats.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
@@ -321,7 +322,7 @@ class ProduitRepository implements ProduitRepositoryInterface
 						JOIN produit_type on produits.id = produit_type.produit_id
 						JOIN achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between '" . $dateDeb . "' and '" . $dateFin . "')
 						JOIN centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
-						JOIN cliniques on cliniques.id = centrale_clinique.clinique_id
+						JOIN cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.obsolete is false
 						WHERE produits.invisible is false
 						AND EXTRACT(YEAR from cliniques.date_entree) < " . ($annee+1) . "
 					) achats_periode
@@ -336,7 +337,7 @@ class ProduitRepository implements ProduitRepositoryInterface
 						JOIN produit_type on produits.id = produit_type.produit_id
 						JOIN achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between '" . $dateDebPrec . "' and '" . $dateFinPrec . "')
 						JOIN centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
-						JOIN cliniques on cliniques.id = centrale_clinique.clinique_id
+						JOIN cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.obsolete is false
 						WHERE produits.invisible is false
 						AND EXTRACT(YEAR from cliniques.date_entree) < " . ($annee+1) . "
 					) achats_periode

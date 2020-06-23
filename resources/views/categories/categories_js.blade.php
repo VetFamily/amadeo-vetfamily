@@ -713,7 +713,7 @@
 									"nom": document.getElementById("copyCategorieNom").value,
 									"annee": document.getElementById("copyCategorieAnnee").value,
 									"produits": produits,
-									"especes": select.data()[7].split("|")
+									"especes": select.data()[7] != null ? select.data()[7].split("|") : null
 								};
 								
 						    	$.ajax({

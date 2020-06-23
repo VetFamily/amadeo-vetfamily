@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Model\Clinique;
+use Carbon\Carbon;
 use DB;
 
 class CliniqueRepository implements CliniqueRepositoryInterface
