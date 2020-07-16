@@ -38,15 +38,16 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 		return tap(Objectif::findOrFail($objectif->id))->update($data)->fresh();
 	}
 
-	public function updateCAStateAndEcart($objectif, $mois_fin_CA)
+	public function updateCAStateAndEcart($objectif, $maxDateAchats)
 	{
-		$saveObjectif = $this->findCAById($objectif->id, $objectif->type_valorisation_objectif_id, $mois_fin_CA);
 		$dateDebut = new Carbon($objectif->date_debut);
 		$annee = $dateDebut->year;
 		$moisDebut = $dateDebut->month;
 		$moisFin = (new Carbon($objectif->date_fin))->month;
+
+		$saveObjectif = $this->findCAById($objectif->id, $objectif->type_valorisation_objectif_id, date("m", strtotime($maxDateAchats)));
 		$objectif->valeur_ca = $saveObjectif[0]->ca_periode;
-		$ecartsData = $objectif->getEcarts($annee, $moisDebut, $moisFin, getDaysObjectif($objectif->date_debut, $objectif->date_fin));
+		$ecartsData = $objectif->getEcarts($annee, $moisDebut, $moisFin, getDaysObjectif($objectif->date_debut, $objectif->date_fin, $maxDateAchats));
 		$objectif = $this->setEtat($objectif, $ecartsData);
 		$data = [
 			'valeur_ca' => $saveObjectif[0]->ca_periode,
@@ -59,6 +60,9 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 			'poids' => $this->calculatePoids($objectif)
 		];
 		$objectif->update($data);
+
+		$saveObjectif[0]->ecart = $data['ecart'];
+		$saveObjectif[0]->ecart_unite = $data['ecart_unite'];
 		return $saveObjectif;
 	}
 
@@ -108,7 +112,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 
 	public function findByLaboratoireIdAndMoisFin($laboratoireId, $moisFin)
 	{
-		$query = "select distinct o.id as id, o.nom as objectif, o.valeur as valeur, o.suivi, o.type_objectif_id AS type_obj, o.pourcentage_remise, o.pourcentage_remise_source, cat.annee as annee, cat.nom as categorie, l.nom as laboratoire, liste_especes.especes, liste_especes.especes_noms, o.valeur_ca AS ca_periode, o.valeur_ca_prec AS ca_periode_prec, o.manque_valo_periode, o.manque_valo_periode_prec 
+		$query = "select distinct o.id as id, o.nom as objectif, o.valeur as valeur, o.suivi, o.type_objectif_id AS type_obj, o.pourcentage_remise, o.pourcentage_remise_source, cat.annee as annee, cat.nom as categorie, l.nom as laboratoire, liste_especes.especes, liste_especes.especes_noms, o.valeur_ca AS ca_periode, o.valeur_ca_prec AS ca_periode_prec, o.manque_valo_periode, o.manque_valo_periode_prec, o.ecart, o.ecart_unite 
 			from objectifs o
 			join categories cat on cat.id = o.categorie_id 
 			left join laboratoires l on l.id = cat.laboratoire_id 
@@ -758,6 +762,9 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 				'categories.annee',
 				DB::raw('EXTRACT(MONTH from objectifs.date_debut) AS mois_debut'),
 				DB::raw('EXTRACT(MONTH from objectifs.date_fin) AS mois_fin'),
+				'objectifs.ecart', 
+				'objectifs.ecart_unite', 
+				'objectifs.etat_objectif_id',
 				DB::raw("(CASE objectifs.valorisation_laboratoire 
 						 	WHEN 'Valorisation en euros' THEN '€'
 						 	WHEN 'Valorisation en volume' THEN liste_produits.unite_valo_volume
@@ -866,6 +873,9 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 				'categories.annee',
 				DB::raw('EXTRACT(MONTH from objectifs.date_debut) AS mois_debut'),
 				DB::raw('EXTRACT(MONTH from objectifs.date_fin) AS mois_fin'),
+				'objectifs.ecart', 
+				'objectifs.ecart_unite', 
+				'objectifs.etat_objectif_id',
 				DB::raw("(CASE objectifs.valorisation_laboratoire 
 						 	WHEN 'Valorisation en euros' THEN '€'
 						 	WHEN 'Valorisation en volume' THEN liste_produits.unite_valo_volume
@@ -975,6 +985,9 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 				'categories.annee',
 				DB::raw('EXTRACT(MONTH from objectifs.date_debut) AS mois_debut'),
 				DB::raw('EXTRACT(MONTH from objectifs.date_fin) AS mois_fin'),
+				'objectifs.ecart', 
+				'objectifs.ecart_unite', 
+				'objectifs.etat_objectif_id',
 				DB::raw("(CASE objectifs.valorisation_laboratoire 
 						 	WHEN 'Valorisation en euros' THEN '€'
 						 	WHEN 'Valorisation en volume' THEN liste_produits.unite_valo_volume

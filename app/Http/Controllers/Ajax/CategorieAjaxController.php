@@ -9,6 +9,7 @@ use App\Model\Categorie_espece;
 use App\Model\Categorie_produit;
 use App\Model\Categorie_produit_objectif;
 use App\Model\Objectif;
+use App\Repositories\AchatRepository;
 use App\Repositories\CategorieRepository;
 use App\Repositories\ObjectifRepository;
 use Illuminate\Http\Request;
@@ -18,6 +19,12 @@ use Validator;
 
 class CategorieAjaxController extends Controller
 {
+  private $achatRepository;
+
+  public function __construct(AchatRepository $achatRepository)
+  {
+      $this->achatRepository = $achatRepository;
+  }
 
   /**
    * Display a listing of the resource.
@@ -175,7 +182,7 @@ class CategorieAjaxController extends Controller
     return;
   }
 
-  private function updateProduitsCategorie($id, $selectProduits, $moisFin, $objectifRepository)
+  private function updateProduitsCategorie($id, $annee, $selectProduits, $objectifRepository)
   {
     $oldProduits = Categorie_produit::where('categorie_id', $id)->pluck('produit_id')->toArray();
 
@@ -229,7 +236,7 @@ class CategorieAjaxController extends Controller
         $objectifProduits = [];
         foreach ($objectifs as $objectif) {
           foreach ($categorieProduits as $categorieProduit) {
-            $objectifProduits[] = ['objectif_id' => $objectif->id, 'categorie_produit_id' => $categorieProduit->id, 'pourcentage_remise' => $objectif->pourcentage_remise];
+            $objectifProduits[] = ['objectif_id' => $objectif->id, 'categorie_produit_id' => $categorieProduit->id, 'pourcentage_remise' => $objectif->pourcentage_remise, 'pourcentage_remise_source' => $objectif->pourcentage_remise_source];
           }
         }
         Categorie_produit_objectif::insert($objectifProduits);
@@ -239,8 +246,9 @@ class CategorieAjaxController extends Controller
     // Mise à jour du CA de l'objectif
     if (sizeof($produitsToDelete) > 0 || sizeof($produitsToInsert) > 0) {
       $objectifs = Objectif::where('categorie_id', $id)->get();
+      $maxDateAchats = $this->achatRepository->findLastDateOfPurchasesByYear($annee);
       foreach ($objectifs as $objectif) {
-        $objectifRepository->updateCAStateAndEcart($objectif, $moisFin);
+        $objectifRepository->updateCAStateAndEcart($objectif, $maxDateAchats);
         // Mise à jour du suivi des objectifs s'il s'agit d'un palier
         if ($objectif->type_objectif_id == 2) {
           $premierPalier = $this->getPalierPrecedent($objectif);
@@ -266,7 +274,7 @@ class CategorieAjaxController extends Controller
     $this->updateEspecesCategorie($id, $request->especes);
 
     // Mise à jour des produits
-    $this->updateProduitsCategorie($id, $request->produits, $request->mois_fin, $objectifRepository);
+    $this->updateProduitsCategorie($id, $saveCategorie["annee"], $request->produits, $objectifRepository);
 
     // Mise à jour des commentaires
     if ($request->commentaires != null) {

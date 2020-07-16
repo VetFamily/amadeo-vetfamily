@@ -511,6 +511,16 @@
 	text-transform: uppercase;
 }
 
+.tableau table.dataTable .detail-row tr td.detail-row-title div.checkbox-item-horizontal:not(.disable) label
+{
+	color: #212629;
+}
+
+.tableau table.dataTable .detail-row tr td.detail-row-title label
+{
+	text-transform: none;
+}
+
 .tableau table.dataTable .detail-row tr td input
 {
 	width: 80%;

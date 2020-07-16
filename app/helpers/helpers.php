@@ -12,14 +12,20 @@ function getNbDaysOfPeriod($year, $month1, $month2)
   return $result;
 }
 
-function getDaysObjectif($dateStart, $dateEnd)
+function getDaysObjectif($dateStart, $dateEnd, $maxDatePurchases)
 {
   $nbOfDays = 0;
-  $dateMAJ = explode("/", Session::get('date_maj'));
-  $year = (date('Y') != $dateMAJ[2]) || ((new DateTime($dateMAJ[2] . '-' . $dateMAJ[1] . '-' . $dateMAJ[0])) < (new DateTime(date('Y') . '-02-05'))) ?  date('Y') - 1 : date('Y');
-  $today = new Carbon("{$year}-$dateMAJ[1]-" . ($dateMAJ[0] > 15 ? 15 : 1));
   $dateStart = new Carbon($dateStart);
   $dateEnd = new Carbon($dateEnd);
+  $maxDatePurchases = new Carbon($maxDatePurchases);
+  if (($maxDatePurchases->year == date('Y')) & ($maxDatePurchases->month == date('m')))
+  {
+    $today = $maxDatePurchases->firstOfMonth()->addDays(14);
+  } else 
+  {
+    $today = $maxDatePurchases->firstOfMonth()->addMonths(1);
+  }
+
   if ($today->greaterThan($dateEnd)) {
     $dateEnd = $dateEnd->endOfMonth();
     $nbOfDays = ($dateEnd->diffInDays($dateStart)) + 1;

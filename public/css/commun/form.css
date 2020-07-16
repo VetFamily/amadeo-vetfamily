@@ -163,6 +163,21 @@ input[type=radio]
   cursor: pointer;
 }
 
+.disable .radioContainer,
+.disable .checkboxContainer,
+.disable .radioContainer-14,
+.disable .checkboxContainer-14
+{
+  border-color: #9B9B9B !important;
+}
+
+.disable .radioLabel,
+.disable .checkboxLabel,
+.disable .radioLabel-14,
+.disable .checkboxLabel-14
+{
+  color: #9B9B9B !important;
+}
 
 
 

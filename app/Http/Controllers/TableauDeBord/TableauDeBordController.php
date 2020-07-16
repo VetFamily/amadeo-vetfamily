@@ -26,20 +26,12 @@ class TableauDeBordController extends Controller
 
 	public function getObjectifsGeneral(Request $request, ObjectifRepository $objectifRepository)
 	{
+		$dateMAJ = explode("-", Session::get('last_date'));
+
+		$moisFin = $dateMAJ[1];
+		$annee = $dateMAJ[0];
+		
 		// 1ère passe : Récupérations des objectifs suivis atteints et non atteints
-		$dateMAJ = explode("/", Session::get('date_maj'));
-
-		if ((date('Y') != $dateMAJ[2]) || ((new DateTime($dateMAJ[2] . '-' . $dateMAJ[1] . '-' . $dateMAJ[0])) < (new DateTime(date('Y').'-02-05'))))
-		{
-			$moisFin = 12;
-			$annee = date('Y')-1;
-			
-		} else 
-		{ 
-			$moisFin = $dateMAJ[1]-1;
-			$annee = date('Y');
-		}
-
 		$listeObjectifsAtteints = $objectifRepository->findObjectifsAtteints($annee, $moisFin);
 		$listeObjectifsNonAtteints = $objectifRepository->findObjectifsNonAtteints($annee, $moisFin);
 

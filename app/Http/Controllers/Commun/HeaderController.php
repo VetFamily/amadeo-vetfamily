@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Commun;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\AchatRepository;
 use App\Repositories\CentraleRepository;
 use App\Repositories\CliniqueRepository;
 use App\Repositories\EspeceRepository;
@@ -20,27 +21,52 @@ use Session;
 
 class HeaderController extends Controller
 {
-    public function getUserInformations($roleRepository)
+    private $achatRepository;
+    private $parametrageRepository;
+    private $roleRepository;
+    private $especeRepository;
+    private $cliniqueRepository;
+    private $typeRepository;
+    private $centraleRepository;
+    private $typeObjectifRepository;
+    private $typeValorisationObjectifRepository;
+    private $laboratoireRepository;
+  
+    public function __construct(AchatRepository $achatRepository, ParametrageRepository $parametrageRepository, RoleRepository $roleRepository, EspeceRepository $especeRepository, CliniqueRepository $cliniqueRepository, TypeRepository $typeRepository, CentraleRepository $centraleRepository, TypeObjectifRepository $typeObjectifRepository, TypeValorisationObjectifRepository $typeValorisationObjectifRepository, LaboratoireRepository $laboratoireRepository)
+    {
+        $this->achatRepository = $achatRepository;
+        $this->parametrageRepository = $parametrageRepository;
+        $this->roleRepository = $roleRepository;
+        $this->especeRepository = $especeRepository;
+        $this->cliniqueRepository = $cliniqueRepository;
+        $this->typeRepository = $typeRepository;
+        $this->centraleRepository = $centraleRepository;
+        $this->typeObjectifRepository = $typeObjectifRepository;
+        $this->typeValorisationObjectifRepository = $typeValorisationObjectifRepository;
+        $this->laboratoireRepository = $laboratoireRepository;
+    }
+  
+    public function getUserInformations()
     {
         if ((sizeof(Auth::user()->roles) >0) && ("Vétérinaire" == Auth::user()->roles[0]['nom']) && Session::get('user_clinique_id') == null)
         {
             // Recherche de la clinique de l'utilisateur
-            Session::put('user_clinique_id', $roleRepository->findCliniqueIdByUserId(Auth::user()->id));
+            Session::put('user_clinique_id', $this->roleRepository->findCliniqueIdByUserId(Auth::user()->id));
         } else if ((sizeof(Auth::user()->roles) >0) && ("Laboratoire" == Auth::user()->roles[0]['nom']) && Session::get('user_laboratoire_id') == null)
         {
             // Recherche du laboratoire de l'utilisateur
-            Session::put('user_laboratoire_id', $roleRepository->findLaboratoireIdByUserId(Auth::user()->id));
+            Session::put('user_laboratoire_id', $this->roleRepository->findLaboratoireIdByUserId(Auth::user()->id));
         } else if ((sizeof(Auth::user()->roles) >0) && ("Administrateur" == Auth::user()->roles[0]['nom']) && Session::get('user_is_super_admin') == null)
         {
             // Recherche du caractère super admin de l'utilisateur
-            Session::put('user_is_super_admin', $roleRepository->isUserSuperAdmin(Auth::user()->id));
+            Session::put('user_is_super_admin', $this->roleRepository->isUserSuperAdmin(Auth::user()->id));
         }
     }
 
-	public function showTableauDeBord(ParametrageRepository $parametrageRepository, RoleRepository $roleRepository)
+	public function showTableauDeBord()
     {
-    	$this->getUserInformations($roleRepository);
-        Session::put('date_maj', $parametrageRepository->findPurchagesLastUpdateDate());
+    	$this->getUserInformations();
+        Session::put('last_date', $this->achatRepository->findLastDateOfPurchasesByYear(null));
         
         return view('tableaudebord/tableaudebord');
     }
@@ -48,70 +74,67 @@ class HeaderController extends Controller
     /*
     * Affiche l'onglet "Détail des chiffres"
     */
-    public function showOngletStatistiques(CliniqueRepository $cliniqueRepository, 
-        LaboratoireRepository $laboratoireRepository, TypeRepository $typeRepository, EspeceRepository $especeRepository, ParametrageRepository $parametrageRepository, RoleRepository $roleRepository, CentraleRepository $centraleRepository)
+    public function showOngletStatistiques()
     {
-        $this->getUserInformations($roleRepository);
-        Session::put('list_of_laboratories', $laboratoireRepository->findAllForSelect());
-        Session::put('list_of_types', $typeRepository->findAll());
-        Session::put('list_of_species', $especeRepository->findAll());
-        Session::put('list_of_central_purchasing', $centraleRepository->findAll());
-        Session::put('date_maj', $parametrageRepository->findPurchagesLastUpdateDate());
+        $this->getUserInformations();
+        Session::put('list_of_laboratories', $this->laboratoireRepository->findAllForSelect());
+        Session::put('list_of_types', $this->typeRepository->findAll());
+        Session::put('list_of_species', $this->especeRepository->findAll());
+        Session::put('list_of_central_purchasing', $this->centraleRepository->findAll());
+        Session::put('last_date', $this->achatRepository->findLastDateOfPurchasesByYear(null));
         
         return view('statistiques/statistiques');
     }
 
-    public function showCliniques(RoleRepository $roleRepository)
+    public function showCliniques()
     {
-    	$this->getUserInformations($roleRepository);
+    	$this->getUserInformations();
         
         return view('cliniques/cliniques');
     }
 
-    public function showProduits(TypeRepository $typeRepository, EspeceRepository $especeRepository, RoleRepository $roleRepository)
+    public function showProduits()
     {
-    	$this->getUserInformations($roleRepository);
-        Session::put('list_of_types', $typeRepository->findAll());
-        Session::put('list_of_species', $especeRepository->findAll());
+    	$this->getUserInformations();
+        Session::put('list_of_types', $this->typeRepository->findAll());
+        Session::put('list_of_species', $this->especeRepository->findAll());
         
         return view('produits/produits');
     }
 
-    public function showCategories(ParametrageRepository $parametrageRepository, EspeceRepository $especeRepository, LaboratoireRepository $laboratoireRepository, RoleRepository $roleRepository)
+    public function showCategories()
     {
-        $this->getUserInformations($roleRepository);
-        Session::put('laboratoires_liste', $laboratoireRepository->findAll());
-        Session::put('list_of_species', $especeRepository->findAll());
-        Session::put('date_maj', $parametrageRepository->findPurchagesLastUpdateDate());
+        $this->getUserInformations();
+        Session::put('laboratoires_liste', $this->laboratoireRepository->findAll());
+        Session::put('list_of_species', $this->especeRepository->findAll());
 
     	return view('categories/categories');
     }
 
-    public function showObjectifs(ParametrageRepository $parametrageRepository, EspeceRepository $especeRepository, LaboratoireRepository $laboratoireRepository, RoleRepository $roleRepository, TypeObjectifRepository $typeObjectifRepository, TypeValorisationObjectifRepository $typeValorisationObjectifRepository)
+    public function showObjectifs()
     {
-        $this->getUserInformations($roleRepository);
-        Session::put('laboratoires_liste', $laboratoireRepository->findAll());
-        Session::put('list_of_species', $especeRepository->findAll());
-        Session::put('types_objectif_liste', $typeObjectifRepository->findAll());
-        Session::put('types_valorisations_liste', $typeValorisationObjectifRepository->findAll());
-        Session::put('date_maj', $parametrageRepository->findPurchagesLastUpdateDate());
+        $this->getUserInformations();
+        Session::put('laboratoires_liste', $this->laboratoireRepository->findAll());
+        Session::put('list_of_species', $this->especeRepository->findAll());
+        Session::put('types_objectif_liste', $this->typeObjectifRepository->findAll());
+        Session::put('types_valorisations_liste', $this->typeValorisationObjectifRepository->findAll());
         
         return view('objectifs/objectifs');
     }
 
-    public function showEngagements(ParametrageRepository $parametrageRepository, EspeceRepository $especeRepository, RoleRepository $roleRepository)
+    public function showEngagements()
     {
-        $this->getUserInformations($roleRepository);
-        Session::put('list_of_species', $especeRepository->findAll());
-        Session::put('date_maj', $parametrageRepository->findPurchagesLastUpdateDate());
+        $this->getUserInformations();
+        Session::put('list_of_species', $this->especeRepository->findAll());
+        Session::put('last_date', $this->achatRepository->findLastDateOfPurchasesByYear(null));
         
         return view('engagements/engagements');
     }
 
-    public function showAdministration(RoleRepository $roleRepository, CliniqueRepository $cliniqueRepository)
+    public function showAdministration()
     {
-        $this->getUserInformations($roleRepository);
-        Session::put('cliniques_liste', $cliniqueRepository->findAllForSelect(null));
+        $this->getUserInformations();
+        Session::put('cliniques_liste', $this->cliniqueRepository->findAllForSelect(null));
         
         return view('administration/administration');
     }

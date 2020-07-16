@@ -21,19 +21,11 @@
 	
 	function loadTbdGeneral()
 	{
-		var dateMAJ = "{{ Session::get('date_maj') }}".split("/");
-		$('.tbd_graphe').html('<div id="load" class="load">{{ Html::image("images/activity_indicator.gif", \Lang::get("amadeo.load")) }}</div><canvas id="tbd_general_pie"></canvas>');
-
-		var annee;
-		if (("{{date('Y')}}" != dateMAJ[2]) || (Date.parse(dateMAJ[2] + "-" + dateMAJ[1] + "-" + dateMAJ[0]) < Date.parse("{{date('Y')}}-02-05")))
-		{
-			annee = "{{date('Y')-1}}";
-			
-		} else 
-		{ 
-			annee = "{{date('Y')}}";
-		}
-		$('#commentaire_general').html("Année : " + annee);
+		var dateMAJ = "{{ Session::get('last_date') }}".split("-");
+		$('.tbd_graphe').html('<div id="load" class="load">{{ Html::image("images/activity_indicator.gif", "Chargement en cours") }}</div><canvas id="tbd_general_pie"></canvas>');
+		
+		var annee = dateMAJ[0];
+		$('#commentaire_general').html("Year : " + annee);
 		
     	var params = {
 			"_token": document.getElementsByName("_token")[0].value,

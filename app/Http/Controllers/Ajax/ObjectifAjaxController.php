@@ -7,6 +7,7 @@ use App\Model\Categorie_produit;
 use App\Model\Categorie_produit_objectif;
 use App\Model\Objectif;
 use App\Model\Objectif_commentaires;
+use App\Repositories\AchatRepository;
 use App\Repositories\CliniqueRepository;
 use App\Repositories\ObjectifRepository;
 use App\Repositories\ProduitRepository;
@@ -17,6 +18,14 @@ use Validator;
 
 class ObjectifAjaxController extends Controller
 {
+  private $objectifRepository;
+  private $achatRepository;
+
+  public function __construct(ObjectifRepository $objectifRepository, AchatRepository $achatRepository)
+  {
+      $this->objectifRepository = $objectifRepository;
+      $this->achatRepository = $achatRepository;
+  }
 
   /**
    * Display a listing of the resource.
@@ -105,7 +114,8 @@ class ObjectifAjaxController extends Controller
         }
         Categorie_produit_objectif::insert($insertProduits);
 
-        $objectif = $objectifRepository->findCAById($idObjectif, 3, $request->mois_fin);
+        $maxDateAchats = $this->achatRepository->findLastDateOfPurchasesByYear($request->annee);
+        $objectif = $objectifRepository->findCAById($idObjectif, 3, date("m",strtotime($maxDateAchats)));
 
         return response()->json(['success' => 1, 'objectif' => $objectif]);
       }
@@ -200,7 +210,8 @@ class ObjectifAjaxController extends Controller
           Objectif_commentaires::insert($request->commentaires);
         }
         // Mise à jour du CA et de l'indicateur 'Atteint' de l'objectif + ( ecart, ecart_unite et etat_objectif_id)
-        $saveObjectif = $objectifRepository->updateCAStateAndEcart($objectif, $request->mois_fin_CA);
+        $maxDateAchats = $this->achatRepository->findLastDateOfPurchasesByYear($request->annee);
+        $saveObjectif = $this->objectifRepository->updateCAStateAndEcart($objectif, $maxDateAchats);
         // Mise à jour du suivi des objectifs s'il s'agit d'un palier
         if ($request->typeObjectif == 2) {
           $premierPalier = $this->getPalierPrecedent($objectif);
@@ -233,5 +244,33 @@ class ObjectifAjaxController extends Controller
     Objectif::whereIn('objectif_conditionne_id', $ids)->update(['objectif_conditionne_id' => NULL]);
 
     return $deleteObjectifs;
+  }
+  
+  public function updateAll($year)
+  {
+    $objectifs = Objectif::select('objectifs.*')
+                            ->join('categories', 'categories.id', '=', 'objectifs.categorie_id')
+                            ->where('categories.annee', '=', $year)
+                            ->where('objectifs.obsolete', 0)
+                            ->get();
+
+    $maxDateAchats = $this->achatRepository->findLastDateOfPurchasesByYear($year);
+    foreach ($objectifs as $objectif) {
+      $this->objectifRepository->updateCAStateAndEcart($objectif, $maxDateAchats);
+    }
+
+    // Mise à jour du suivi des objectifs s'il s'agit d'un palier : MAJ AUTOMATIQUE NON VOULU PAR LE CLIENT
+    $objectifsPaliers = Objectif::select('objectifs.*')
+                                  ->join('categories', 'categories.id', '=', 'objectifs.categorie_id')
+                                  ->where('categories.annee', '=', $year)
+                                  ->where('objectifs.type_objectif_id', 2)
+                                  ->whereNotNull('objectifs.objectif_precedent_id')
+                                  ->where('objectifs.obsolete', 0)
+                                  ->get();
+    foreach ($objectifsPaliers as $objectif) {
+      $this->updateSuiviPalier($objectif);
+    }
+
+    return response()->json(['nb_objectifs' => sizeof($objectifs)], Response::HTTP_OK);
   }
 }

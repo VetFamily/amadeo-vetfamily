@@ -926,31 +926,12 @@
 					    	var url = '{{ route("categorie-ajax.update", "id") }}';
 					    	url = url.replace('id', id);
 					    	
-							var dateMAJ = "{{ Session::get('date_maj') }}".split("/");
-							var moisFin;
-							// Si l'année est différente de la date de MAJ des achats, ou si la date de MAJ est antérieure au 15/02
-							if (({{date('Y')}} != dateMAJ[2]) || (Date.parse(dateMAJ[2] + "-" + dateMAJ[1] + "-" + dateMAJ[0]) < Date.parse("{{date('Y')}}-02-15")))
-							{
-								moisFin = '01';
-								
-							} else 
-							{
-								if (dateMAJ[0] > 15)
-								{
-									moisFin = dateMAJ[1];
-									
-								} else {
-									moisFin = dateMAJ[1]-1;
-								}
-							}
-
 					    	var params = {
 								"_token": document.getElementsByName("_token")[0].value,
 								"nom": nom,
 								"especes": especes,
 								"produits": produits,
-								"commentaires": commentaires,
-								"mois_fin": moisFin
+								"commentaires": commentaires
 							};
 
 					    	// Enregistrement en base

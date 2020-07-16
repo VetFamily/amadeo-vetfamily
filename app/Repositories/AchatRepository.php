@@ -805,4 +805,16 @@ class AchatRepository implements AchatRepositoryInterface
         return $result;
 	}
 
+	public function findLastDateOfPurchasesByYear($year)
+	{
+		$query = DB::table('achats')->select(DB::raw("max(date) AS date"));
+
+		if ($year != null)
+			$query->where(DB::raw("extract(year from date)"), $year);
+		
+		$result = $query->first();
+		
+		return $result->date;
+	}
+
 }

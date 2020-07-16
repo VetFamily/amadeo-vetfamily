@@ -212,14 +212,14 @@
 	/*
 	* Met en forme le tableau des produits d'un objectif.
 	*/
-	function loadDatatableProduits(rowData, moisFin)
+	function loadDatatableProduits(rowData)
 	{
 		var idRow = rowData[13];
     	// Récupération des informations
     	var params = {
 			"_token": document.getElementsByName("_token")[0].value,
 			"objectif": idRow,
-			"moisFin": moisFin
+			"load": 1
 		};
 
 		$.ajax({
@@ -372,27 +372,8 @@
 	function loadAjaxFormObjectifs()
 	{
 		var html, htmlPrec;
-		var dateMAJ = "{{ Session::get('date_maj') }}".split("/");
-		var moisFin;
-		// Si l'année est différente de la date de MAJ des achats, ou si la date de MAJ est antérieure au 15/02
-		if (("{{date('Y')}}" != dateMAJ[2]) || (Date.parse(dateMAJ[2] + "-" + dateMAJ[1] + "-" + dateMAJ[0]) < Date.parse("{{date('Y')}}-02-15")))
-		{
-			moisFin = '01';
-			
-		} else 
-		{ 
-			if (dateMAJ[0] > 15)
-			{
-				moisFin = dateMAJ[1];
-				
-			} else {
-				moisFin = dateMAJ[1]-1;
-			}
-		}
-		
     	var params = {
-			"_token": document.getElementsByName("_token")[0].value,
-			"mois_fin": moisFin
+			"_token": document.getElementsByName("_token")[0].value
 		};
 
 		$.ajax({
@@ -400,29 +381,11 @@
 		    data: $.param(params),
 		    success: function(json) {
 		    	var data = jQuery.map(json, function(el, i) {
-		    		// Calcul des écarts
-					var jour;
-					var totalJours = getNbDaysOfPeriod(el.annee, el.mois_debut, el.mois_fin);
-
-					if (el.annee == "{{date('Y')}}")
-					{
-						jour = getDayOfPeriod(el.annee, dateMAJ[1]-1, (dateMAJ[0] > 15 ? 15 : 1), (el.mois_debut != null ? (el.mois_debut-1) : 0));
-					}
-					else if (el.annee < "{{date('Y')}}")
-					{
-						jour = totalJours;
-					} else 
-					{
-						jour = null;
-					}
-					var ecartPourcents = el.valeur != null && el.valeur != 0 && jour != null ? (((el.ca_periode / el.valeur) - (jour / totalJours)) * 100).toFixed(2) : "-";
-					var ecartEuros = ecartPourcents != null && ecartPourcents != "-" ? (el.valeur * ecartPourcents / 100).toFixed(2) : el.ca_periode;
-
 					// Calcul de l'évolution
 					var evol = (el.ca_periode_prec != null && el.ca_periode_prec != 0 ? ((el.ca_periode*100/el.ca_periode_prec)-100).toFixed(2) : "-");
 
 					if (el.annee > 2017)
-						return [[ el.suivi, el.annee, el.especes_noms, el.laboratoire, el.categorie, [el.type_obj, el.objectif], el.valeur != null ? (el.valeur).replace( /\./, "," ) : 0, numberWithSpaces(el.pourcentage_remise*1 + el.pourcentage_remise_source*1), numberWithSpaces(ecartEuros), numberWithSpaces(ecartPourcents), el.ca_periode, el.ca_periode_prec, numberWithSpaces(evol), el.id, el.especes, el.manque_valo_periode, el.manque_valo_periode_prec ]];
+						return [[ el.suivi, el.annee, el.especes_noms, el.laboratoire, el.categorie, [el.type_obj, el.objectif], el.valeur != null ? (el.valeur).replace( /\./, "," ) : 0, numberWithSpaces(el.pourcentage_remise*1 + el.pourcentage_remise_source*1), numberWithSpaces(el.ecart_unite), (el.ecart != null ? numberWithSpaces(el.ecart) : "-"), el.ca_periode, el.ca_periode_prec, numberWithSpaces(evol), el.id, el.especes, el.manque_valo_periode, el.manque_valo_periode_prec ]];
 				});
 
 			    // DataTable
@@ -718,7 +681,7 @@
 								sort_list('select-obj-prec-' + idRow);
 
 								row.child( '<div>' + format( row.data(), table.rows().data(), target ) + '</div>' ).show();
-								loadDatatableProduits(row.data(), moisFin);
+								loadDatatableProduits(row.data());
 								loadChangeActions(idRow, row.data());
 								loadDivCommentaires(idRow);
 								row.child().addClass('child');
@@ -843,30 +806,11 @@
 					    	var selectedCategorie = $( '#selectObjectifCategorie' ).find('option:selected');
 					    	var annee = $( '#addObjectifAnnee' ).val();
 
-							var dateMAJ = "{{ Session::get('date_maj') }}".split("/");
-							var moisFin;
-							// Si l'année est différente de la date de MAJ des achats, ou si la date de MAJ est antérieure au 15/02
-							if (("{{date('Y')}}" != dateMAJ[2]) || (Date.parse(dateMAJ[2] + "-" + dateMAJ[1] + "-" + dateMAJ[0]) < Date.parse("{{date('Y')}}-02-15")))
-							{
-								moisFin = '01';
-								
-							} else 
-							{
-								if (dateMAJ[0] > 15)
-								{
-									moisFin = dateMAJ[1];
-									
-								} else {
-									moisFin = dateMAJ[1]-1;
-								}
-							}
-
 					    	var params = {
 								"_token": document.getElementsByName("_token")[0].value,
 								"isCopy": 0,
 								"categorie": selectedCategorie.val(),
 								"nom": document.getElementById("addObjectifNom").value,
-								"mois_fin": moisFin,
 								"annee": annee
 							};
 							
@@ -1019,30 +963,11 @@
 							// Récupération de l'objectif d'origine
 							var select = table.row( $('#tab-objectifs tbody > tr.selected').first());
 					    	
-							var dateMAJ = "{{ Session::get('date_maj') }}".split("/");
-							var moisFin;
-							// Si l'année est différente de la date de MAJ des achats, ou si la date de MAJ est antérieure au 15/02
-							if (("{{date('Y')}}" != dateMAJ[2]) || (Date.parse(dateMAJ[2] + "-" + dateMAJ[1] + "-" + dateMAJ[0]) < Date.parse("{{date('Y')}}-02-15")))
-							{
-								moisFin = '01';
-								
-							} else 
-							{
-								if (dateMAJ[0] > 15)
-								{
-									moisFin = dateMAJ[1];
-									
-								} else {
-									moisFin = dateMAJ[1]-1;
-								}
-							}
-
 					    	var params = {
 								"_token": document.getElementsByName("_token")[0].value,
 								"isCopy": 1,
 								"ancien_objectif": select.data()[13],
-								"nom": document.getElementById("copyObjectifNom").value,
-								"mois_fin": moisFin
+								"nom": document.getElementById("copyObjectifNom").value
 							};
 							
 					    	$.ajax({
@@ -1068,26 +993,11 @@
 											});
 										jQuery('#copyObjectifModal').modal('hide');	
 										
-										// Calcul des écarts
-										var jour;
-										var totalJours = getNbDaysOfPeriod(data.obj[0]["annee"], data.obj[0]["mois_debut"], data.obj[0]["mois_fin"]);
-
-										if (data.obj[0]["annee"] == "{{date('Y')}}")
-										{
-											jour = getDayOfPeriod(data.obj[0]["annee"], dateMAJ[1]-1, (dateMAJ[0] > 15 ? 15 : 1), (data.obj[0]["mois_debut"] != null ? (data.obj[0]["mois_debut"]-1) : 0));
-										}
-										else
-										{
-											jour = totalJours;
-										}
-										var ecartPourcents = data.obj[0]["valeur"] != null && data.obj[0]["valeur"] != 0 ? (((data.obj[0]["ca_periode"] / data.obj[0]["valeur"]) - (jour / totalJours)) * 100).toFixed(2) : "-";
-										var ecartEuros = ecartPourcents != null && ecartPourcents != "-" ? (data.obj[0]["valeur"] * ecartPourcents / 100).toFixed(2) : data.obj[0]["ca_periode"];
-
 										// Calcul de l'évolution
 										var evol = (data.obj[0]["ca_periode_prec"] != null && data.obj[0]["ca_periode_prec"] != 0 ? ((data.obj[0]["ca_periode"]*100/data.obj[0]["ca_periode_prec"])-100).toFixed(2) : "-");
 
 					                    // Mise à jour du tableau
-										var index = $('#tab-objectifs').dataTable().fnAddData( [ data.obj[0]["suivi"], data.obj[0]["annee"], data.obj[0]["especes_noms"], data.obj[0]["laboratoire"], data.obj[0]["categorie"], [data.obj[0]["type_obj"], data.obj[0]["objectif"]], data.obj[0]["valeur"] != null ? (data.obj[0]["valeur"]).replace( /\./, "," ) : 0, numberWithSpaces(data.obj[0]["pourcentage_remise"]*1 + data.obj[0]["pourcentage_remise_source"]*1), numberWithSpaces(ecartEuros), numberWithSpaces(ecartPourcents), data.obj[0]["ca_periode"], data.obj[0]["ca_periode_prec"], numberWithSpaces(evol), data.obj[0]["id"], data.obj[0]["especes"], data.obj[0]["manque_valo_periode"], data.obj[0]["manque_valo_periode_prec"] ] );
+										var index = $('#tab-objectifs').dataTable().fnAddData( [ data.obj[0]["suivi"], data.obj[0]["annee"], data.obj[0]["especes_noms"], data.obj[0]["laboratoire"], data.obj[0]["categorie"], [data.obj[0]["type_obj"], data.obj[0]["objectif"]], data.obj[0]["valeur"] != null ? (data.obj[0]["valeur"]).replace( /\./, "," ) : 0, numberWithSpaces(data.obj[0]["pourcentage_remise"]*1 + data.obj[0]["pourcentage_remise_source"]*1), numberWithSpaces(data.obj[0]["ecart_unite"]), (data.obj[0]["ecart"] != null ? numberWithSpaces(data.obj[0]["ecart"]) : "-"), data.obj[0]["ca_periode"], data.obj[0]["ca_periode_prec"], numberWithSpaces(evol), data.obj[0]["id"], data.obj[0]["especes"], data.obj[0]["manque_valo_periode"], data.obj[0]["manque_valo_periode_prec"] ] );
 										
 										if (data.obj[0]["suivi"])
 										{
@@ -1331,7 +1241,7 @@
 									sort_list('select-obj-prec-' + idRow);
 
 									row.child( '<div>' + format( row.data(), table.rows().data(), target ) + '</div>' ).show();
-									loadDatatableProduits(row.data(), moisFin);
+									loadDatatableProduits(row.data());
 									loadChangeActions(idRow, row.data());
 									loadDivCommentaires(idRow);
 									row.child().addClass('child');
@@ -1389,16 +1299,17 @@
 	                    	if ($('#tab-objectif-produits-' + id).DataTable().row( $(this) ).data())
 	                    	{
 	                    		var idProd = $('#tab-objectif-produits-' + id).DataTable().row( $(this) ).data()[5];
-	                    		var remise = 0;
+	                    		var remiseProd = 0;
+	                    		var remiseSourceProd = 0;
 								if (document.getElementById('row-' + id + '-produit-remise-' + idProd))
 								{
-	                    			remise = document.getElementById('row-' + id + '-produit-remise-' + idProd).value;
-	                    			remiseSource = document.getElementById('row-' + id + '-produit-remise-source-' + idProd).value;
+	                    			remiseProd = document.getElementById('row-' + id + '-produit-remise-' + idProd).value;
+	                    			remiseSourceProd = document.getElementById('row-' + id + '-produit-remise-source-' + idProd).value;
 								}
 	                    		produits.push({
 	                    			"cat_prod_obj_id": idProd,
-	                    			"remise": (remise != null && remise != '') ? remise.replace( /,/, "." ) : 0,
-	                    			"remise_source": (remiseSource != null && remiseSource != '') ? remiseSource.replace( /,/, "." ) : 0
+	                    			"remise": (remiseProd != null && remiseProd != '') ? remiseProd.replace( /,/, "." ) : 0,
+	                    			"remise_source": (remiseSourceProd != null && remiseSourceProd != '') ? remiseSourceProd.replace( /,/, "." ) : 0
 	                    		});
 	                    	}
 	                    });
@@ -1426,25 +1337,7 @@
 						    	// Création de l'URL
 						    	var url = '{{ route("objectif-ajax.update", "id") }}';
 						    	url = url.replace('id', id);
-														    	
-								var dateMAJ = "{{ Session::get('date_maj') }}".split("/");
-								var moisFinCA;
-								// Si l'année est différente de la date de MAJ des achats, ou si la date de MAJ est antérieure au 15/02
-								if (("{{date('Y')}}" != dateMAJ[2]) || (Date.parse(dateMAJ[2] + "-" + dateMAJ[1] + "-" + dateMAJ[0]) < Date.parse("{{date('Y')}}-02-05")))
-								{
-									moisFinCA = '01';
-									
-								} else 
-								{
-									if (dateMAJ[0] > 15)
-									{
-										moisFinCA = dateMAJ[1];
-										
-									} else {
-										moisFinCA = dateMAJ[1]-1;
-									}
-								}
-								
+											
 						    	var params = {
 									"_token": document.getElementsByName("_token")[0].value,
 							    	"isSuivi": 0,
@@ -1461,8 +1354,7 @@
 				        			"idObjPrecedent": (typeObjectif != 1 && idObjPrecedent != null && idObjPrecedent != "") ? idObjPrecedent : null,
 				        			"paliersIncrementiels": (typeObjectif != 1 && paliersIncrementiels != null && paliersIncrementiels.length > 0) ? 1 : 0,
 				        			"produits": produits,
-									"commentaires": commentaires,
-				        			"mois_fin_CA": moisFinCA
+									"commentaires": commentaires
 								};
 								
 						    	// Enregistrement en base
@@ -1479,23 +1371,6 @@
 												type: 'success'
 											});
 						                    
-											// Calcul des écarts
-											var jour;
-											var totalJours = getNbDaysOfPeriod(rowPrevData[1], moisDebut, moisFin);
-											if (rowPrevData[1] == "{{date('Y')}}")
-											{
-												jour = getDayOfPeriod(rowPrevData[1], dateMAJ[1]-1, (dateMAJ[0] > 15 ? 15 : 1), (moisDebut != null ? (moisDebut-1) : 0));
-											}
-											else if (rowPrevData[1] < "{{date('Y')}}")
-											{
-												jour = totalJours;
-											} else 
-											{
-												jour = null;
-											}
-											var ecartPourcents = params["valeur"] != null && params["valeur"] != 0 && jour != null ? (((data.objectif[0]["ca_periode"] / params["valeur"]) - (jour / totalJours)) * 100).toFixed(2) : "-";
-											var ecartEuros = ecartPourcents != null && ecartPourcents != "-" ? (params["valeur"] * ecartPourcents / 100).toFixed(2) : data.objectif[0]["ca_periode"];
-											
 											// Calcul de l'évolution
 											var evol = data.objectif[0]["ca_periode_prec"] != null && data.objectif[0]["ca_periode_prec"] != 0 ? ((data.objectif[0]["ca_periode"]*100/data.objectif[0]["ca_periode_prec"])-100).toFixed(2) : "-";
 
@@ -1504,8 +1379,8 @@
 									        trPrev.children().eq(5).attr('title', params["nom"]);
 											rowPrevData[6] = params["valeur"];
 											rowPrevData[7] = numberWithSpaces(params["remise"]*1 + params["remiseSource"]*1);
-						                    rowPrevData[8] = numberWithSpaces(ecartEuros);
-						                    rowPrevData[9] = numberWithSpaces(ecartPourcents);
+						                    rowPrevData[8] = numberWithSpaces(data.objectif[0]["ecart_unite"]);
+						                    rowPrevData[9] = data.objectif[0]["ecart"] != null ? numberWithSpaces(data.objectif[0]["ecart"]) : "-";
 						                    rowPrevData[10] = data.objectif[0]["ca_periode"];
 						                    rowPrevData[11] = data.objectif[0]["ca_periode_prec"];
 						                    rowPrevData[12] = numberWithSpaces(evol);

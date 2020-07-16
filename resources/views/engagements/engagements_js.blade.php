@@ -72,9 +72,9 @@
 			"_token": document.getElementsByName("_token")[0].value
 		};
 
-		var dateMAJ = "{{ Session::get('date_maj') }}".split("/");
+		var dateMAJ = "{{ Session::get('last_date') }}".split("-");
 		var dateJour = new Date();
-		dateJour.setFullYear({{date('Y')}}, dateMAJ[1]-1, (dateMAJ[0] > 15 ? 15 : 1));
+		dateJour.setFullYear({{date('Y')}}, dateMAJ[1]-1, (dateMAJ[2] > 15 ? 15 : 1));
 
 		$.ajax({
 		    url: "{{ route('engagement-ajax.index') }}",

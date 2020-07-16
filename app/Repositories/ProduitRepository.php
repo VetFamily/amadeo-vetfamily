@@ -116,14 +116,7 @@ class ProduitRepository implements ProduitRepositoryInterface
 					WHERE objectifs.id = " . $objectifId . "
 					AND produits.invisible IS FALSE
 					AND achats.obsolete IS FALSE
-					AND achats.date BETWEEN to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and to_date('28/' || CASE categories.annee 
-						 	WHEN EXTRACT(YEAR from current_date) THEN 
-						 		CASE 
-						 			WHEN EXTRACT(MONTH from objectifs.date_fin) < " . $moisFin . " THEN EXTRACT(MONTH from objectifs.date_fin)
-						 			ELSE " . $moisFin . "
-						 		END
-						 	ELSE EXTRACT(MONTH from objectifs.date_fin)
-						 END || '/' || categories.annee, 'DD/MM/YYYY')
+					AND achats.date BETWEEN to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and to_date('28/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY')
 					AND EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 					AND cliniques.obsolete is false
 				) t ON t.prod_id = liste.prod_id

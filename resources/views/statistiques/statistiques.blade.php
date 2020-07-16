@@ -59,14 +59,15 @@
 			<div class="zone_title">
 				<div class="title">@lang('amadeo.purchases.title')</div>
 				<div id="buttonsGeneral" class="buttonsGeneral">
-					<div>
-						@if (null != Session::get('date_maj'))
-						@lang('amadeo.purchases.update-date') {{ Session::get('date_maj') }}
+					<div title="Last purchases loaded">
+						@if (null != Session::get('last_date'))
+						{{ ucwords(strftime("%B %Y", DateTime::createFromFormat('Y-m-d', Session::get('last_date'))->getTimestamp())) }}
 						@endif
 					</div>
 					@if ((sizeof(Auth::user()->roles) >0) AND ("Vétérinaire" != Auth::user()->roles[0]['nom']))
 						<div id="downloadPurchasesButton" class="button"><a>@lang('amadeo.purchases.download-purchases')</a><span class="btn_download"></span></div>
 						<div id="downloadPurchasesByParamsButton" class="button" download="false"><a>@lang('amadeo.purchases.download-purchases-filtered')</a><span class="btn_download"></span></div>
+						<div class="button" onclick="location.href='{{ config('app.url_v2') }}'"><a>Load purchases</a><span class="btn_add"></span></div>
 					@endif
 				</div>
 			</div>

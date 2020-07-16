@@ -18,9 +18,9 @@ class ObjectifProduitAjaxController extends Controller
    */
   public function index(Request $request, ProduitRepository $produitRepository)
   {
-    if ($request->moisFin)
+    if ($request->load)
     {
-      $produits = $produitRepository->findListByObjectifIdAndMoisFin($request->objectif, $request->moisFin);
+      $produits = $produitRepository->findListByObjectifIdAndMoisFin($request->objectif, null);
     } else
     {
       $produits = $produitRepository->findListByObjectifId($request->objectif);

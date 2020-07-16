@@ -22,12 +22,13 @@
         		<li>
         			<div class="params-periode div-periode">
                         <div style="flex: 0.25; text-align: center;">@lang('amadeo.purchases.criteria-period-start') </div>
-	        			{{ Form::selectMonth('period-startMonth', (Session::get((Request::is('statistiques') ? 'purchases' : ((Request::is('remises')) ? 'discounts' : '') ) . 'Criteria') != null ? Session::get((Request::is('statistiques') ? 'purchases' : ((Request::is('remises')) ? 'discounts' : '') ) . 'Criteria')["startMonth"] : 1), ['id' => 'period-startMonth', 'style' => 'text-transform: capitalize;']) }} {{ Form::selectYear('period-startYear', date('Y'), 2016, (Session::get((Request::is('statistiques') ? 'purchases' : ((Request::is('remises')) ? 'discounts' : '') ) . 'Criteria') != null ? Session::get((Request::is('statistiques') ? 'purchases' : ((Request::is('remises')) ? 'discounts' : '') ) . 'Criteria')["startYear"] : date('Y')), ['id' => 'period-startYear']) }}
+	        			{{ Form::selectMonth('period-startMonth', (Session::get('purchasesCriteria') != null ? Session::get('purchasesCriteria')["startMonth"] : 1), ['id' => 'period-startMonth', 'style' => 'text-transform: capitalize;']) }} 
+						{{ Form::selectYear('period-startYear', date('Y'), 2016, (Session::get('purchasesCriteria') != null ? Session::get('purchasesCriteria')["startYear"] : (int)(explode("-", Session::get('last_date'))[0])), ['id' => 'period-startYear']) }}
 					</div>
 					<div class="params-periode">
 						<div style="flex: 0.25; text-align: center;">@lang('amadeo.purchases.criteria-period-end')</div>
-	        			{{ Form::selectMonth('period-endMonth', (Session::get((Request::is('statistiques') ? 'purchases' : ((Request::is('remises')) ? 'discounts' : '') ) . 'Criteria') != null ? Session::get((Request::is('statistiques') ? 'purchases' : ((Request::is('remises')) ? 'discounts' : '') ) . 'Criteria')["endMonth"] : (int)(explode("/", Session::get('date_maj'))[1]-1)), ['id' => 'period-endMonth', 'style' => 'text-transform: capitalize;']) }}
-					    {{ Form::selectYear('period-endYear', date('Y'), 2016, (Session::get((Request::is('statistiques') ? 'purchases' : ((Request::is('remises')) ? 'discounts' : '') ) . 'Criteria') != null ? Session::get((Request::is('statistiques') ? 'purchases' : ((Request::is('remises')) ? 'discounts' : '') ) . 'Criteria')["endYear"] : date('Y')), ['id' => 'period-endYear']) }}
+	        			{{ Form::selectMonth('period-endMonth', (Session::get('purchasesCriteria') != null ? Session::get('purchasesCriteria')["endMonth"] : (int)(explode("-", Session::get('last_date'))[1])), ['id' => 'period-endMonth', 'style' => 'text-transform: capitalize;']) }}
+					    {{ Form::selectYear('period-endYear', date('Y'), 2016, (Session::get('purchasesCriteria') != null ? Session::get('purchasesCriteria')["endYear"] : (int)(explode("-", Session::get('last_date'))[0])), ['id' => 'period-endYear']) }}
 					</div>
                     <div class="checkbox-item checkbox-sub">
                     	<div class="checkboxContainer" style="width: 14px !important; height: 14px !important; margin-top: 2px;">
