@@ -72,7 +72,7 @@
 
 			// Parcours des données
 			foreach ($purchases as $purchase) {
-				$evol = $purchase->ca_periode_prec != 0 ? round((($purchase->ca_periode*100/$purchase->ca_periode_prec)-100),2) : "-";
+				$evol = $purchase->ca_periode_prec != 0 ? round((($purchase->ca_periode*100/$purchase->ca_periode_prec)-100)/100,2) : "-";
 				fputcsv($output, [ $purchase->laboratoire, $purchase->denomination . " : " . $purchase->conditionnement, $purchase->code_gtin, $purchase->types, $purchase->especes, str_replace(".", ",", $purchase->ca_periode), $purchase->qte_periode, str_replace(".", ",", $purchase->ca_periode_prec), $purchase->qte_periode_prec, str_replace(".", ",", $evol) ], ';');
 			}
 			break;
@@ -83,7 +83,7 @@
 
 			// Parcours des données
 			foreach ($purchases as $purchase) {
-				$evol = $purchase->ca_periode_prec != 0 ? round((($purchase->ca_periode*100/$purchase->ca_periode_prec)-100),2) : "-";
+				$evol = $purchase->ca_periode_prec != 0 ? round((($purchase->ca_periode*100/$purchase->ca_periode_prec)-100)/100,2) : "-";
 				fputcsv($output, [ $purchase->laboratoire, str_replace(".", ",", $purchase->ca_periode), str_replace(".", ",", $purchase->ca_periode_prec), str_replace(".", ",", $evol) ], ';');
 			}
 			break;
@@ -94,7 +94,7 @@
 
 		// Parcours des données
 		foreach ($purchases as $purchase) {
-			$evol = $purchase->ca_periode_prec != 0 ? round((($purchase->ca_periode*100/$purchase->ca_periode_prec)-100),2) : "-";
+			$evol = $purchase->ca_periode_prec != 0 ? round((($purchase->ca_periode*100/$purchase->ca_periode_prec)-100)/100,2) : "-";
 			fputcsv($output, [ $purchase->veterinaires, $purchase->clinique, str_replace(".", ",", $purchase->ca_periode), str_replace(".", ",", $purchase->ca_periode_prec), str_replace(".", ",", $evol) ], ';');
 		}
 			break;
@@ -105,7 +105,7 @@
 
         // Parcours des données
         foreach ($purchases as $purchase) {
-            $evol = $purchase->ca_periode_prec != 0 ? round((($purchase->ca_periode*100/$purchase->ca_periode_prec)-100),2) : "-";
+            $evol = $purchase->ca_periode_prec != 0 ? round((($purchase->ca_periode*100/$purchase->ca_periode_prec)-100)/100,2) : "-";
             fputcsv($output, [ $purchase->annee, $purchase->especes, $purchase->laboratoire, $purchase->categorie, str_replace(".", ",", $purchase->ca_periode), str_replace(".", ",", $purchase->ca_periode_prec), str_replace(".", ",", $evol) ], ';');
         }
             break;
