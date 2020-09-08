@@ -40,7 +40,7 @@
                     @endif
                 </ul>
             </li>
-            @if ((sizeof(Auth::user()->roles) >0) AND ("Administrateur" == Auth::user()->roles[0]['nom']) AND Session::get('user_is_super_admin'))
+            @if ((sizeof(Auth::user()->roles) >0) AND ("Administrateur" == Auth::user()->roles[0]['nom']))
             <li>
                 <a href="{{ route('page.administration') }}" class="{{ (Request::is('administration') ? 'active-menu' : '') }}">@lang('amadeo.header.administration')</a>
             </li>

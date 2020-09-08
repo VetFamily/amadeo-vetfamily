@@ -25,7 +25,7 @@ class AchatRepository implements AchatRepositoryInterface
 	*/
 	public function findAll($year)
 	{
-		$query = "select distinct a.id as achat_id, c.id AS clinique_id, c.veterinaires AS veterinaires, c.nom AS clinique, extract(year from c.date_entree) AS annee, l.nom AS laboratoire, p.id AS produit_id, CONCAT(p.denomination, ' ', p.conditionnement) AS produit_nom, p.code_gtin AS produit_gtin, liste_types.types, liste_especes.especes, ft.classe1_code, ft.classe1_nom, ft.classe2_code, ft.classe2_nom, ft.classe3_code, ft.classe3_nom, a.date AS date, a.qte_payante_complet AS qte_payante, a.qte_gratuite_complet AS qte_gratuite, a.ca_complet AS ca, ce.nom AS centrale
+		$query = "select distinct a.id as achat_id, c.id AS clinique_id, c.veterinaires AS veterinaires, c.nom AS clinique, extract(year from c.date_entree) AS annee, l.nom AS laboratoire, p.id AS produit_id, CONCAT(p.denomination, ' ', p.conditionnement) AS produit_nom, p.code_gtin AS produit_gtin, liste_types.types, liste_especes.especes, ft.classe1_code, ft.classe1_nom, ft.classe2_code, ft.classe2_nom, ft.classe3_code, ft.classe3_nom, a.date AS date, a.qte_payante_complet AS qte_payante, a.qte_gratuite_complet AS qte_gratuite, a.ca_complet AS ca, ce.nom AS centrale, a.total_rebate_euro as total_rebate, (a.clinic_rebate_percent * a.ca_complet) as clinic_rebate, (a.source_rebate_percent * a.ca_complet) as central_rebate, liste_categories.categories
 				from achats a
 				join produits p on p.id = a.produit_id
 				left join familles_therapeutiques ft on ft.id = p.famille_therapeutique_id
@@ -47,6 +47,13 @@ class AchatRepository implements AchatRepositoryInterface
 					join espece_produit ON especes.id = espece_produit.espece_id
 					group by espece_produit.produit_id
 				) liste_especes on liste_especes.produit_id = p.id
+				left join 
+				(
+					select distinct cp.produit_id, string_agg(cat.nom, ', ' order by cat.nom) as categories 
+					from categories cat 
+					join categorie_produit cp on cp.categorie_id = cat.id 
+					group by cp.produit_id
+				) liste_categories on liste_categories.produit_id = p.id
 				where a.obsolete IS FALSE
 				and ((a.qte_payante_complet != 0) or (a.qte_gratuite_complet != 0) or (a.ca_complet != 0))
 				and p.invisible IS FALSE

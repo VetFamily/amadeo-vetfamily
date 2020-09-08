@@ -113,6 +113,10 @@ return [
     'purchases.date' => 'Date',
     'purchases.source' => 'Distributor',
     'purchases.mask-empty' => 'Hide lines at 0',
+    'purchases.categories' => 'Supplier categories',
+    'purchases.total-rebate' => 'Total discount (in local currency)',
+    'purchases.clinic-rebate' => 'Clinic discount (in local currency)',
+    'purchases.central-rebate' => 'Central discount (in local currency)',
     'sellers.search-empty' => 'No matching results found',
 
     'clinics.id' => 'Clinic ID',

@@ -113,6 +113,10 @@ return [
     'purchases.date' => 'Date',
     'purchases.source' => 'Centrale',
     'purchases.mask-empty' => 'Masquer les lignes à 0',
+    'purchases.categories' => 'Catégories',
+    'purchases.total-rebate' => 'Remise totale',
+    'purchases.clinic-rebate' => 'Remise clinique',
+    'purchases.central-rebate' => 'Remise centrale',
     'sellers.search-empty' => 'Aucun laboratoire correspondant',
 
     'clinics.id' => 'ID clinique',
