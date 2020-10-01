@@ -21,7 +21,7 @@ class ProduitRepository implements ProduitRepositoryInterface
 	public function findAll($labId)
 	{			
 		$query = "
-			select p.id, l.nom AS laboratoire, p.denomination, p.conditionnement, pv.valo_euro, p.valo_volume, p.unite_valo_volume, p.obsolete, p.invisible, " . (((sizeof(Auth::user()->roles) >0) && ("Administrateur" == Auth::user()->roles[0]['nom']) && Session::get('user_is_super_admin')) ? "(CASE WHEN p.code_gtin is not null THEN CONCAT(p.code_gtin, CASE WHEN p.code_gtin_autre IS NOT NULL THEN ', ' END, REPLACE(p.code_gtin_autre, '|', ', ')) ELSE REPLACE(p.code_gtin_autre, '|', ', ') END) AS code_gtin" : "p.code_gtin") . ", liste_especes.especes_id, liste_types.types_id, (CASE WHEN p.famille_therapeutique_id IS NOT NULL THEN CONCAT(ft.classe1_code, ft.classe2_code, ft.classe3_code, ' (', p.famille_therapeutique_id, ')') ELSE NULL END) as classe_therapeutique
+			select p.id, l.nom AS laboratoire, p.denomination, p.conditionnement, pv.valo_euro, p.valo_volume, p.unite_valo_volume, p.obsolete, p.invisible, " . (((sizeof(Auth::user()->roles) >0) && ("Administrateur" == Auth::user()->roles[0]['nom']) && Session::get('user_is_super_admin')) ? "(CASE WHEN p.code_gtin is not null THEN CONCAT(p.code_gtin, CASE WHEN p.code_gtin_autre IS NOT NULL THEN ', ' END, REPLACE(p.code_gtin_autre, '|', ', ')) ELSE REPLACE(p.code_gtin_autre, '|', ', ') END) AS code_gtin" : "p.code_gtin") . ", liste_especes.especes_id, liste_types.types_id, (CASE WHEN p.famille_therapeutique_id IS NOT NULL THEN CONCAT(ft.classe1_code, ft.classe2_code, ft.classe3_code, ' (', p.famille_therapeutique_id, ')') ELSE NULL END) as classe_therapeutique, liste_countries.countries
 			from produits p 
 			join laboratoires l on l.id = p.laboratoire_id
 			left join familles_therapeutiques ft on ft.id = p.famille_therapeutique_id
@@ -37,6 +37,13 @@ class ProduitRepository implements ProduitRepositoryInterface
 				from produit_type pt
 				group by pt.produit_id
 			) liste_types ON liste_types.produit_id = p.id
+			left join
+			(
+				select prco_product_id, string_agg(ctry_name, ', ' order by ctry_name) as countries
+				from ed_product_country prco
+				join ed_country ctry on ctry_id = prco_country_id
+				group by prco_product_id
+			) liste_countries ON liste_countries.prco_product_id = p.id
 			left join produit_valorisations pv on pv.produit_id = p.id and ((now() > pv.date_debut and pv.date_fin is null) or (now() between pv.date_debut and pv.date_fin))
 			where l.obsolete is false
 			" . ( ((sizeof(Auth::user()->roles) >0) && ("Administrateur" == Auth::user()->roles[0]['nom']) && Session::get('user_is_super_admin')) ? "" : "and p.invisible is false" ) . "
@@ -49,7 +56,7 @@ class ProduitRepository implements ProduitRepositoryInterface
 	public function findDetailById($id)
 	{
 		$query = "
-		select distinct p.id as produit_id, ce.id AS centrale_id, ce.nom AS centrale_nom, 
+		select distinct p.id as produit_id, ce.id AS centrale_id, ctry_name as country, ce.nom AS centrale_nom, 
 			cp.code_produit, cp.obsolete, cp.date_obsolescence, cp.id as cp_id,
 			(case when cpe.denomination_mois is not null then cpe.denomination_mois else cpe.denomination_max end) as denomination, 
 			(case when cpe.denomination_mois is not null then cpe.denomination_mois_date else cpe.denomination_max_date end) as date_denomination,
@@ -57,6 +64,7 @@ class ProduitRepository implements ProduitRepositoryInterface
 			(case when cpe.prix_unitaire_mois is not null then cpe.prix_unitaire_mois_date else cpe.prix_unitaire_max_date end) as date_prix_unitaire
 		from produits p
 		join centrale_produit cp ON cp.produit_id = p.id
+		join ed_country ctry on ctry_id = cp.country_id
 		join centrales ce on ce.id = cp.centrale_id 
 		left join centrale_produit_encours cpe on cpe.centrale_produit_id = cp.id 
 		where p.id = :id

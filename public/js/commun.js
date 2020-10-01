@@ -398,4 +398,6 @@ function confirmBox(title, msg, $true, $false, doAction, cancelAction) {
     };
 })(jQuery);
 
-
+String.prototype.capitalize = function() {
+  return this.charAt(0).toUpperCase() + this.toLowerCase().slice(1);
+}

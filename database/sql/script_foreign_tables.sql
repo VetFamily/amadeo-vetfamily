@@ -32,7 +32,10 @@ DROP MATERIALIZED VIEW produits;
 DROP MATERIALIZED VIEW produits_ref;
 DROP FOREIGN TABLE ed_produits;
 DROP MATERIALIZED VIEW laboratoires;
+DROP MATERIALIZED VIEW laboratoires_ref;
 DROP FOREIGN TABLE ed_laboratoires;
+DROP MATERIALIZED VIEW ed_country;
+DROP FOREIGN TABLE ft_ed_country;
 
 drop USER MAPPING FOR PUBLIC SERVER "foreign_elia-digital_server";
 DROP SERVER "foreign_elia-digital_server";
@@ -43,6 +46,31 @@ OPTIONS (host 'foreign_elia-digital_server', port '5432', dbname 'ed-produits');
 
 CREATE USER MAPPING FOR PUBLIC SERVER "foreign_elia-digital_server"
 OPTIONS (user 'readonly', password 'IbegTaj8');
+
+
+-- Countries
+CREATE FOREIGN TABLE public.ft_ed_country (
+	id int4 NOT NULL,
+	"name" varchar(255) NOT NULL,
+	default_language_id int4 NOT NULL
+)
+SERVER "foreign_elia-digital_server"
+OPTIONS (schema_name 'public', table_name 'country');
+ALTER FOREIGN TABLE ft_ed_country OWNER TO vetfamily;
+
+CREATE MATERIALIZED VIEW public.ed_country
+TABLESPACE pg_default
+AS SELECT ft_ed_country.id AS ctry_id,
+    ft_ed_country.name AS ctry_name,
+    ft_ed_country.default_language_id AS ctry_default_language_id
+   FROM ft_ed_country
+WITH DATA;
+ALTER MATERIALIZED VIEW ed_country OWNER TO vetfamily;
+
+-- View indexes:
+CREATE INDEX ed_ed_country_default_language_id_idx ON public.ed_country USING btree (ctry_default_language_id);
+CREATE INDEX ed_ed_country_id_idx ON public.ed_country USING btree (ctry_id);
+CREATE INDEX ed_ed_country_name_idx ON public.ed_country USING btree (ctry_name);
 
 
 -- Familles thérapeutiques
@@ -419,6 +447,27 @@ CREATE INDEX produit_valorisations_produit_id_index ON produit_valorisations USI
 CREATE INDEX produit_valorisations_valo_euro_index ON produit_valorisations USING btree (valo_euro);
 CREATE INDEX produit_valorisations_date_debut_index ON produit_valorisations USING btree (date_debut);
 CREATE INDEX produit_valorisations_date_fin_index ON produit_valorisations USING btree (date_fin);
+
+
+-- Product-country
+CREATE FOREIGN TABLE public.ft_ed_product_country (
+	id int4 NOT NULL,
+	product_id int4 NOT NULL,
+	country_id int4 NOT NULL
+)
+SERVER "foreign_elia-digital_server"
+OPTIONS (schema_name 'public', table_name 'product_country');
+ALTER FOREIGN TABLE ft_ed_product_country OWNER TO vetfamily;
+
+CREATE MATERIALIZED VIEW ed_product_country
+AS
+SELECT prco_id, prco_product_id, prco_country_id FROM ft_ed_product_country
+WITH DATA;
+ALTER MATERIALIZED VIEW ed_product_country OWNER TO vetfamily;
+CREATE INDEX prco_id_idx ON ed_product_country USING btree (prco_id);
+CREATE INDEX prco_product_id_idx ON ed_product_country USING btree (prco_product_id);
+CREATE INDEX prco_country_id_idx ON ed_product_country USING btree (prco_country_id);
+
 
 
 -- Achats_autres

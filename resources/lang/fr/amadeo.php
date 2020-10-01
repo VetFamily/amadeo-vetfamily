@@ -231,6 +231,8 @@ return [
     'products.therapeutic-classes.level3-code' => 'Code classe 3',
     'products.therapeutic-classes.level3-name' => 'Nom classe 3',
     'products.therapeutic-classes.code' => 'Code',
+    'products.countries' => 'Pays',
+    'products.country' => 'Pays',
     'products.seller' => 'Laboratoire',
     'products.name' => 'Dénomination',
     'products.packaging' => 'Conditionnement',

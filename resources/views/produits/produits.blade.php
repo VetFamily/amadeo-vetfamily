@@ -54,6 +54,7 @@
 							<thead>
 								<tr>
 									<th></th>
+									<th>@lang('amadeo.products.countries')</th>
 									<th>@lang('amadeo.products.seller')</th>
 									<th>@lang('amadeo.products.name')</th>
 									<th>@lang('amadeo.products.packaging')</th>
@@ -63,6 +64,7 @@
 								</tr>
 								<tr id='forFilters'>
 									<th></th>
+									<th class='text-filter'></th>
 									<th class='select-filter'></th>
 									<th class='text-filter'></th>
 									<th class='text-filter'></th>
