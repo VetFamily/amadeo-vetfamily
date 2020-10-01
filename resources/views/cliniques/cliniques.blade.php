@@ -64,21 +64,25 @@
 								<thead>
 									<tr>
 										<th></th>
+										<th>@lang('amadeo.clinics.country')</th>
 										<th>@lang('amadeo.clinics.veterinaries')</th>
 										<th>@lang('amadeo.clinics.name')</th>
 										<th>@lang('amadeo.clinics.address')</th>
 										<th>@lang('amadeo.clinics.zip-code')</th>
 										<th>@lang('amadeo.clinics.city')</th>
 										<th>@lang('amadeo.clinics.entry-year')</th>
+										<th>@lang('amadeo.clinics.date-left')</th>
 									</tr>
 									<tr id='forFilters'>
 										<th></th>
-										<th class='text-filter'></th>
-										<th class='text-filter'></th>
-										<th class='text-filter'></th>
-										<th class='text-filter'></th>
-										<th class='text-filter'></th>
 										<th class='select-filter'></th>
+										<th class='text-filter'></th>
+										<th class='text-filter'></th>
+										<th class='text-filter'></th>
+										<th class='text-filter'></th>
+										<th class='text-filter'></th>
+										<th class='text-filter'></th>
+										<th class='text-filter'></th>
 									</tr>
 								</thead>
 							</table>

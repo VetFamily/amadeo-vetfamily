@@ -4,7 +4,7 @@
 	*/
 	function format ( row, clinic ) {
 		var nbCol = 8;
-		var idRow = row[7];
+		var idRow = row[9];
 		
 		// Affichage des codes pour chaque centrale
 		var off_web_centrals = JSON.parse(clinic["infos_hors_web"]);
@@ -80,7 +80,7 @@
 		    url: "{{ route('clinic-ajax.index') }}", 
 		    success: function(json) {
 		    	var data = jQuery.map(json, function(el, i) {
-				  return [[null, el.veterinaires, el.clinique, el.adresse, el.code_postal, el.ville, el.date_entree, el.clinique_id]];
+				  return [[null, el.country, el.veterinaires, el.clinique, el.adresse, el.code_postal, el.ville, el.date_entree, el.date_left, el.clinique_id]];
 				});
 
 			    // DataTable
@@ -102,15 +102,17 @@
 						"targets": 0,
 						"orderable": false
 					} ],
-					"order": [[ 1, "asc" ]],
+					"order": [[ 1, "asc" ], [ 2, "asc" ]],
 					"aoColumns": [ 
 						{"sWidth": "4%"}, 
-						{"sWidth": "10%"}, 
+						{"sWidth": "8%"}, 
+						{"sWidth": "8%"}, 
 						{"sWidth": "20%"},  
 						{"sWidth": "12%"}, 
-						{"sWidth": "5%"}, 
-						{"sWidth": "15%"}, 
-						{"sWidth": "10%"} 
+						{"sWidth": "8%"}, 
+						{"sWidth": "12%"}, 
+						{"sWidth": "8%"}, 
+						{"sWidth": "8%"} 
 					],
 					"aaData": data,
 					"createdRow": function ( row, data, index ) {
@@ -120,14 +122,18 @@
 
 						$('td', row).eq(1).addClass('width-10');
 						$('td', row).eq(1).find('div').addClass('texte');
-						$('td', row).eq(2).addClass('width-20');
+						$('td', row).eq(2).addClass('width-10');
 						$('td', row).eq(2).find('div').addClass('texte');
-						$('td', row).eq(3).addClass('width-10');
+						$('td', row).eq(3).addClass('width-20');
 						$('td', row).eq(3).find('div').addClass('texte');
-						$('td', row).eq(4).addClass('width-5');
+						$('td', row).eq(4).addClass('width-10');
 						$('td', row).eq(4).find('div').addClass('texte');
-						$('td', row).eq(5).addClass('width-10');
+						$('td', row).eq(5).addClass('width-5');
 						$('td', row).eq(5).find('div').addClass('texte');
+						$('td', row).eq(6).addClass('width-10');
+						$('td', row).eq(6).find('div').addClass('texte');
+						$('td', row).eq(7).addClass('width-10');
+						$('td', row).eq(7).find('div').addClass('texte');
 
 						// Affichage du bouton 'Détail' si administrateur ou pour la clinique du vétérinaire
 						@if ((sizeof(Auth::user()->roles) >0) AND ("Laboratoire" != Auth::user()->roles[0]['nom']))
@@ -141,7 +147,7 @@
 							};
 
 							// Création de l'URL
-							var idRow = row.data()[7];
+							var idRow = row.data()[9];
 							var url = '{{ route("clinic-ajax.show", "id") }}';
 							url = url.replace('id', idRow);
 							
@@ -229,15 +235,15 @@
 					    	if (index == 0)
 					    	{
 					    		$(this).html('<div class="details-control"></div>');
-					    	} else if (index > 0 && index < 3)
-					    	{
-					    		$(this).addClass('width-20');
-					    		$(this).html('<div class="texte">' + $(this).html() + '</div>');
-					    	} else if (index == 3 || index == 5)
+					    	} else if ((index > 0 && index < 3)|| index == 4|| index == 6|| index == 7)
 					    	{
 					    		$(this).addClass('width-10');
 					    		$(this).html('<div class="texte">' + $(this).html() + '</div>');
-					    	} else if (index == 4)
+					    	} else if (index == 3)
+					    	{
+					    		$(this).addClass('width-20');
+					    		$(this).html('<div class="texte">' + $(this).html() + '</div>');
+					    	} else if (index == 5)
 					    	{
 					    		$(this).addClass('width-5');
 					    		$(this).html('<div class="texte">' + $(this).html() + '</div>');
@@ -256,7 +262,7 @@
 						};
 
 						// Création de l'URL
-						var idRow = row.data()[7];
+						var idRow = row.data()[9];
 						var url = '{{ route("clinic-ajax.show", "id") }}';
 						url = url.replace('id', idRow);
 						
@@ -374,7 +380,7 @@
 				    $('#deleteButtonGeneral').click( function () {
 				    	var ids = [];
                         $( '.selected' ).each(function() {
-                        	ids.push(table.row( $(this) ).data()[7]);
+                        	ids.push(table.row( $(this) ).data()[9]);
                         });
 
 				    	if (ids.length > 0)
@@ -471,7 +477,7 @@
 							};
 
 							// Création de l'URL
-							var idRow = row.data()[7];
+							var idRow = row.data()[9];
 							var url = '{{ route("clinic-ajax.show", "id") }}';
 							url = url.replace('id', idRow);
 							
@@ -502,7 +508,7 @@
 			    	var rowPrevData = table.row( trPrev ).data();
 
 			    	// Récupération des informations
-			    	var id = rowPrevData[7];
+			    	var id = rowPrevData[9];
 			    	var veterinaries = $('input#row-' + id + '-1').val();
 			    	var clinic = $('input#row-' + id + '-2').val();
 			    	var addresse = $('input#row-' + id + '-3').val();
@@ -576,12 +582,13 @@
 										});
 							                    
 										// Mise à jour du tableau
-										rowPrevData[1] = params["veterinaries"];
-										rowPrevData[2] = params["clinic"];
-								    	rowPrevData[3] = params["addresse"];
-								    	rowPrevData[4] = params["zipCode"];
-								    	rowPrevData[5] = params["city"];
-										rowPrevData[6] = params["year"];
+										rowPrevData[1] = params["country"];
+										rowPrevData[2] = params["veterinaries"];
+										rowPrevData[3] = params["clinic"];
+								    	rowPrevData[4] = params["addresse"];
+								    	rowPrevData[5] = params["zipCode"];
+								    	rowPrevData[6] = params["city"];
+										rowPrevData[7] = params["year"];
 
 										$('#tab-clinics').dataTable().fnUpdate(rowPrevData,trPrev,undefined,false);
 										

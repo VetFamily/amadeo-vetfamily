@@ -47,8 +47,9 @@ class CliniqueRepository implements CliniqueRepositoryInterface
 	public function findAll($year, $userClinicId)
 	{
 		$query = "
-		select c.id AS clinique_id, c.veterinaires, c.nom as clinique, c.adresse, c.code_postal, c.ville, c.date_entree
+		select c.id AS clinique_id, c.veterinaires, c.nom as clinique, c.adresse, c.code_postal, c.ville, c.date_entree, c.date_left, co.ctry_name as country
 		from cliniques c
+		join ed_country co on co.ctry_id = c.country_id
 		where c.obsolete is false
 		" . (($year != null) ? "and EXTRACT(YEAR from c.date_entree) < " . ($year+1) : "") . "
 		" . (($userClinicId != null) ? "and c.id = " . $userClinicId : "") . "
@@ -88,9 +89,19 @@ class CliniqueRepository implements CliniqueRepositoryInterface
 			) c 
 			left join
 			(
-				select cc.clinique_id AS clinique_id, cc.centrale_id, string_agg(cc.identifiant::character varying(100), '|' order by cc.identifiant) as identifiant_hors_web
+				select cc.clinique_id AS clinique_id, cc.centrale_id, 
+					string_agg(
+						(case
+							when cc.supplier_id is not null 
+								then concat(cc.identifiant::character varying(100), ' (', l.nom, ')')
+							else
+								cc.identifiant::character varying(100)
+						end), 
+						'|' order by cc.identifiant
+					) as identifiant_hors_web
 				from centrales c
 				left join centrale_clinique cc ON cc.centrale_id = c.id
+				left join laboratoires l on l.id = cc.supplier_id and l.obsolete is false
 				where cc.clinique_id = :id
 				and cc.web is false
 				group by clinique_id, centrale_id
@@ -143,17 +154,18 @@ class CliniqueRepository implements CliniqueRepositoryInterface
 	public function findAllForExportCSV($clinicIds)
 	{
 		$query = "
-		select clinique_id, veterinaires, clinique, adresse, code_postal, ville, date_entree, commentaire, 
+		select clinique_id, veterinaires, clinique, adresse, code_postal, ville, date_entree, date_left, country, commentaire, 
 		json_agg(json_build_object('centrale_nom', centrale_nom, 'centrale_id', centrale_id, 'identifiant', coalesce(identifiant_hors_web, ''))) as infos_hors_web, 
 		json_agg(json_build_object('centrale_nom', centrale_nom, 'centrale_id', centrale_id, 'identifiant', coalesce(identifiant_web, ''))) as infos_web
 		from
 		(
-			select c.clinique_id, c.veterinaires, c.clinique, c.adresse, c.code_postal, c.ville, c.date_entree, c.commentaire, c.centrale_id, c.centrale_nom, liste_centrales_hors_web.identifiant_hors_web, liste_centrales_web.identifiant_web
+			select c.clinique_id, c.veterinaires, c.clinique, c.adresse, c.code_postal, c.ville, c.date_entree, c.date_left, c.country, c.commentaire, c.centrale_id, c.centrale_nom, liste_centrales_hors_web.identifiant_hors_web, liste_centrales_web.identifiant_web
 			from
 			(
-				select c.id as clinique_id, c.veterinaires, c.nom as clinique, c.adresse, c.code_postal, c.ville, c.date_entree, c.commentaire, ce.id AS centrale_id, ce.nom AS centrale_nom
+				select c.id as clinique_id, c.veterinaires, c.nom as clinique, c.adresse, c.code_postal, c.ville, c.date_entree, c.date_left, co.ctry_name as country, c.commentaire, ce.id AS centrale_id, ce.nom AS centrale_nom
 				from centrales ce,
 				cliniques c
+				join ed_country co on co.ctry_id = c.country_id
 				where c.obsolete is false
 				and ce.obsolete is false
 				" . ($clinicIds != null ? "c.id in (" . implode(', ', $clinicIds) . ")" : "") . "
@@ -161,9 +173,19 @@ class CliniqueRepository implements CliniqueRepositoryInterface
 			) c 
 			left join
 			(
-				select cc.clinique_id AS clinique_id, cc.centrale_id, string_agg(cc.identifiant::character varying(100), '|' order by cc.identifiant) as identifiant_hors_web
+				select cc.clinique_id AS clinique_id, cc.centrale_id, 
+					string_agg(
+						(case
+							when cc.supplier_id is not null 
+								then concat(cc.identifiant::character varying(100), ' (', l.nom, ')')
+							else
+								cc.identifiant::character varying(100)
+						end), 
+						'|' order by cc.identifiant
+					) as identifiant_hors_web
 				from centrales c
 				left join centrale_clinique cc ON cc.centrale_id = c.id
+				left join laboratoires l on l.id = cc.supplier_id and l.obsolete is false
 				where cc.web is false
 				group by clinique_id, centrale_id
 			) liste_centrales_hors_web ON liste_centrales_hors_web.clinique_id = c.clinique_id AND liste_centrales_hors_web.centrale_id = c.centrale_id
@@ -176,7 +198,7 @@ class CliniqueRepository implements CliniqueRepositoryInterface
 				group by clinique_id, centrale_id
 			) liste_centrales_web ON liste_centrales_web.clinique_id = c.clinique_id AND liste_centrales_web.centrale_id = c.centrale_id
 		) t
-		group by clinique_id, veterinaires, clinique, adresse, code_postal, ville, date_entree, commentaire";
+		group by clinique_id, veterinaires, clinique, adresse, code_postal, ville, date_entree, date_left, country, commentaire";
 
 		$result = DB::select(DB::raw($query));
 
