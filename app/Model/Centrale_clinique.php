@@ -13,7 +13,9 @@ class Centrale_clinique extends Model
     	'clinique_id', 
     	'centrale_id', 
         'identifiant',
-        'web'
+        'web',
+        'nom',
+        'supplier_id'
     ];
 
     public $timestamps = true;

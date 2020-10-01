@@ -26,8 +26,8 @@
 			html_centralsWeb += '<td class="detail-row-title" style="width: 10%;">' + web_central["centrale_nom"] + ' (web)</td><td style="width: 10%;">' + web_codes.replace(/\|/g, ' ; ');
 			// Affichage du bouton pour l'administrateur
 			@if ((sizeof(Auth::user()->roles) >0) AND ("Administrateur" == Auth::user()->roles[0]['nom']))
-				html_centrals += (off_web_codes != '' && off_web_codes != ' ' ? '<br>' : '') + '<input type="text" placeholder="@lang("amadeo.clinics.add.code")" id="central-code-' + idRow + '-' + centId + '" data-centid="' + centId + '" data-web="false" ' + (off_web_codes != '' && off_web_codes != ' ' ? 'style="margin-top: 5px;" ' : '') + '/>';
-				html_centralsWeb += (web_codes != '' && web_codes != ' ' ? '<br>' : '') + '<input type="text" placeholder="@lang("amadeo.clinics.add.code")" id="central-code-' + idRow + '-' + centId + '-web" data-centid="' + centId + '" data-web="true" ' + (web_codes != '' && web_codes != ' ' ? 'style="margin-top: 5px;" ' : '') + '/>';
+				/*html_centrals += (off_web_codes != '' && off_web_codes != ' ' ? '<br>' : '') + '<input type="text" placeholder="@lang("amadeo.clinics.add.code")" id="central-code-' + idRow + '-' + centId + '" data-centid="' + centId + '" data-web="false" ' + (off_web_codes != '' && off_web_codes != ' ' ? 'style="margin-top: 5px;" ' : '') + '/>';
+				html_centralsWeb += (web_codes != '' && web_codes != ' ' ? '<br>' : '') + '<input type="text" placeholder="@lang("amadeo.clinics.add.code")" id="central-code-' + idRow + '-' + centId + '-web" data-centid="' + centId + '" data-web="true" ' + (web_codes != '' && web_codes != ' ' ? 'style="margin-top: 5px;" ' : '') + '/>';*/
 				//nbCol++;
 			@endif
 			html_centrals += '</td>';
@@ -41,15 +41,15 @@
 
 		// Affichage du commentaire
 		var comment = clinic["commentaire"];
-		var html_comment = '<tr><td class="detail-row-title" style="vertical-align: top; width: 10%;">@lang("amadeo.clinics.comments")</td><td colspan="' + (nbCol-1) + '"><textarea id="textarea-clinic-comment-' + idRow + '" rows="4" placeholder="@lang("amadeo.textarea.message")">' + (comment != null ? comment : '') + '</textarea></td></tr>';
+		var html_comment = '<tr><td class="detail-row-title" style="vertical-align: top; width: 10%;">@lang("amadeo.clinics.comments")</td><td colspan="' + (nbCol-1) + '"><textarea id="textarea-clinic-comment-' + idRow + '" rows="4" placeholder="@lang("amadeo.textarea.message")" disabled>' + (comment != null ? comment : '') + '</textarea></td></tr>';
 
 		var html_buttons = "";
-		@if ((sizeof(Auth::user()->roles) >0) AND ("Administrateur" == Auth::user()->roles[0]['nom']))
+		/*@if ((sizeof(Auth::user()->roles) >0) AND ("Administrateur" == Auth::user()->roles[0]['nom']))
 			html_buttons += '<tr><td colspan="' + nbCol + '"><div class="detail-row-buttons">'
 			+ '<div id="cancelButtonClinic-' + idRow + '" class="button"><a>@lang("amadeo.reset")</a><span class="btn_cancel"></span></div>'
 			+ '<div id="saveButtonClinic-' + idRow + '" class="button button_bold"><a>@lang("amadeo.save")</a><span class="btn_save"></span></div>'
 			+ '</div></td></tr>';
-		@endif
+		@endif*/
 
 		var html = '<table class="detail-row">'+ html_centrals + html_restricted_users + html_comment + html_buttons + '</table>';
 
@@ -271,7 +271,7 @@
 								row.child().addClass('child');
 								tr.addClass('shown');
 								@if ((sizeof(Auth::user()->roles) >0) AND ("Administrateur" == Auth::user()->roles[0]['nom']))
-									createSelectForRow(tr, idRow);
+									//createSelectForRow(tr, idRow);
 								@endif
 							}
 						});
@@ -486,7 +486,7 @@
 									row.child().addClass('child');
 									tr.addClass('shown');
 									@if ((sizeof(Auth::user()->roles) >0) AND ("Administrateur" == Auth::user()->roles[0]['nom']))
-										createSelectForRow(tr, idRow);
+										//createSelectForRow(tr, idRow);
 									@endif
 								}
 							});

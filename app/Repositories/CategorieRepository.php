@@ -99,10 +99,10 @@ class CategorieRepository implements CategorieRepositoryInterface
 	public function findByParams($moisDeb, $anneeDeb, $moisFin, $anneeFin, $cliniques, $anneesCliniques, $laboratoires, $types, $especes)
 	{
 		$dateDeb = Carbon::create($anneeDeb, $moisDeb, 1, 0, 0, 0);
-		$dateFin = Carbon::create($anneeFin, $moisFin, 28, 0, 0, 0);
+		$dateFin = Carbon::create($anneeFin, $moisFin, 1, 0, 0, 0)->endOfMonth();
 		$nbAnneeDiff = $dateDeb->diffInYears($dateFin) + 1;
 		$dateDebPrec = Carbon::create((int)$anneeDeb-$nbAnneeDiff, $moisDeb, 1, 0, 0, 0);
-	  	$dateFinPrec = Carbon::create((int)$anneeFin-$nbAnneeDiff, $moisFin, 28, 0, 0, 0);
+	  	$dateFinPrec = Carbon::create((int)$anneeFin-$nbAnneeDiff, $moisFin, 1, 0, 0, 0)->endOfMonth();
 
 		$query = "select distinct categories.id AS cat_id, categories.nom AS cat_nom, categories.annee, liste_especes.especes, COALESCE(laboratoires.nom, 'Multi-laboratoires') AS lab_nom,
 			coalesce(calcul_periode.ca_periode,0) AS ca_periode, 

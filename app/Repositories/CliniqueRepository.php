@@ -238,7 +238,7 @@ class CliniqueRepository implements CliniqueRepositoryInterface
 						LEFT JOIN centrale_produit_tarifs cpt ON cpt.centrale_produit_id = centrale_produit.id AND achats.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
 						WHERE objectifs.id = " . $objectifId . "
 						AND produits.invisible IS FALSE
-						AND achats.date BETWEEN to_date('01/01/" . ($annee-1) . "', 'DD/MM/YYYY') AND to_date('28/" . ($annee == date('Y') ? date('m') : '12') . "/" . $annee . "', 'DD/MM/YYYY')
+						AND achats.date BETWEEN to_date('01/01/" . ($annee-1) . "', 'DD/MM/YYYY') AND last_day(to_date('01/" . ($annee == date('Y') ? date('m') : '12') . "/" . $annee . "', 'DD/MM/YYYY'))
 						AND EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 					) liste_achats ON liste_achats.mois = cliniques_mois.mois::double precision and liste_achats.annee = cliniques_mois.annee::double precision AND liste_achats.clinique_id = cliniques_mois.clinique_id
 					group by cliniques_mois.clinique_id, cliniques_mois.clinique, cliniques_mois.mois, cliniques_mois.annee
@@ -362,14 +362,14 @@ class CliniqueRepository implements CliniqueRepositoryInterface
 			$query .= "and (a.date between '" . Carbon::create($startYear, $startMonth, 1, 0, 0, 0) . "' and '" . Carbon::create($endYear, $endMonth, 1, 0, 0, 0)->endOfMonth() . "') and (extract(month from a.date) between extract(month from o.date_debut) and extract(month from o.date_fin))";
 		} else 
 		{
-			$query .= "and a.obsolete IS FALSE AND EXTRACT(YEAR from a.date) = " . $year . " and (a.date between to_date('01/' || EXTRACT(MONTH from o.date_debut) || '/' || cat.annee, 'DD/MM/YYYY') and to_date('28/' || CASE cat.annee 
+			$query .= "and a.obsolete IS FALSE AND EXTRACT(YEAR from a.date) = " . $year . " and (a.date between to_date('01/' || EXTRACT(MONTH from o.date_debut) || '/' || cat.annee, 'DD/MM/YYYY') and last_day(to_date('01/' || CASE cat.annee 
 								WHEN EXTRACT(YEAR from current_date) THEN 
 									CASE 
 										WHEN EXTRACT(MONTH from o.date_fin) < " . $endMonth . " THEN EXTRACT(MONTH from o.date_fin)
 										ELSE " . $endMonth . "
 									END
 								ELSE EXTRACT(MONTH from o.date_fin)
-							END || '/' || cat.annee, 'DD/MM/YYYY'))";
+							END || '/' || cat.annee, 'DD/MM/YYYY')))";
 		}
 
 		$query .= "

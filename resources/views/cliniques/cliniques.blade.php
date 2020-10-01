@@ -49,8 +49,8 @@
 						<div id="buttonsGeneral" class="buttonsGeneral">
 							@if ((sizeof(Auth::user()->roles) >0) AND ("Administrateur" == Auth::user()->roles[0]['nom']))
 							<div id="downloadButtonGeneral" class="button" onclick='window.location="clinic-ajax/downloadClinicsCSV"'><a>@lang("amadeo.download")</a><span class="btn_download"></span></div>
-							<div id="addButtonGeneral" class="button"><a>@lang("amadeo.add")</a><span class="btn_add"></span></div>
-							<div id="deleteButtonGeneral" class="button"><a>@lang("amadeo.delete")</a><span class="btn_delete"></span></div>
+							<!--<div id="addButtonGeneral" class="button"><a>@lang("amadeo.add")</a><span class="btn_add"></span></div>
+							<div id="deleteButtonGeneral" class="button"><a>@lang("amadeo.delete")</a><span class="btn_delete"></span></div>-->
 							@endif
 						</div>
 					</div>

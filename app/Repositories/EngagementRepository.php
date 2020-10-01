@@ -73,7 +73,7 @@ class EngagementRepository implements EngagementRepositoryInterface
 						join categorie_produit_objectif on categorie_produit_objectif.objectif_id = objectifs.id
 						join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 						join produits on produits.id = categorie_produit.produit_id
-						left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and to_date('28/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY'))
+						left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY')))
 						join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
 						left join produit_valorisations on produit_valorisations.produit_id = produits.id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
 						left join centrale_produit on centrale_produit.id = achats.centrale_produit_id
@@ -96,7 +96,7 @@ class EngagementRepository implements EngagementRepositoryInterface
 						join categorie_produit_objectif on categorie_produit_objectif.objectif_id = objectifs.id
 						join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 						join produits on produits.id = categorie_produit.produit_id
-						left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY'))
+						left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY')))
 						join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
 						left join produit_valorisations on produit_valorisations.produit_id = produits.id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
 						left join centrale_produit on centrale_produit.id = achats.centrale_produit_id
@@ -218,7 +218,7 @@ class EngagementRepository implements EngagementRepositoryInterface
 					join categorie_produit_objectif cpo on cpo.objectif_id = o.id
 					join categorie_produit cp on cp.id = cpo.categorie_produit_id
 					join produits p on p.id = cp.produit_id
-					left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and (a.date between to_date('01/' || EXTRACT(MONTH from o.date_debut) || '/' || c.annee, 'DD/MM/YYYY') and to_date('28/' || EXTRACT(MONTH from o.date_fin) || '/' || c.annee, 'DD/MM/YYYY'))
+					left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and (a.date between to_date('01/' || EXTRACT(MONTH from o.date_debut) || '/' || c.annee, 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from o.date_fin) || '/' || c.annee, 'DD/MM/YYYY')))
 					join centrale_clinique cc on cc.id = a.centrale_clinique_id
 					left join produit_valorisations pv on pv.produit_id = p.id and ((a.date between pv.date_debut and pv.date_fin) or (a.date >= pv.date_debut and pv.date_fin is null))
 					left join centrale_produit cep on cep.id = a.centrale_produit_id
@@ -236,7 +236,7 @@ class EngagementRepository implements EngagementRepositoryInterface
 					join categorie_produit_objectif cpo on cpo.objectif_id = o.id
 					join categorie_produit cp on cp.id = cpo.categorie_produit_id
 					join produits p on p.id = cp.produit_id
-					left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and (a.date between to_date('01/' || EXTRACT(MONTH from o.date_debut) || '/' || (c.annee - 1), 'DD/MM/YYYY') and to_date('28/' || EXTRACT(MONTH from o.date_fin) || '/' || (c.annee - 1), 'DD/MM/YYYY'))
+					left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and (a.date between to_date('01/' || EXTRACT(MONTH from o.date_debut) || '/' || (c.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from o.date_fin) || '/' || (c.annee - 1), 'DD/MM/YYYY')))
 					join centrale_clinique cc on cc.id = a.centrale_clinique_id
 					left join produit_valorisations pv on pv.produit_id = p.id and ((a.date between pv.date_debut and pv.date_fin) or (a.date >= pv.date_debut and pv.date_fin is null))
 					left join centrale_produit cep on cep.id = a.centrale_produit_id
@@ -277,7 +277,7 @@ class EngagementRepository implements EngagementRepositoryInterface
 							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
-							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/" . $annee . "', 'DD/MM/YYYY') and to_date('28/' || EXTRACT(MONTH from objectifs.date_fin) || '/" . $annee . "', 'DD/MM/YYYY')
+							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/" . $annee . "', 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from objectifs.date_fin) || '/" . $annee . "', 'DD/MM/YYYY'))
 							and objectifs.obsolete IS FALSE 
 							and categories.annee = " . $annee . " 
 							and objectifs.type_valorisation_objectif_id = 1
@@ -317,7 +317,7 @@ class EngagementRepository implements EngagementRepositoryInterface
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
 							join centrale_produit on centrale_produit.centrale_id = centrale_clinique.centrale_id and centrale_produit.produit_id = categorie_produit.produit_id
 							join centrale_produit_tarifs cpt on cpt.centrale_produit_id = centrale_produit.id
-							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/" . $annee . ", 'DD/MM/YYYY') and to_date('28/' || EXTRACT(MONTH from objectifs.date_fin) || '/" . $annee . ", 'DD/MM/YYYY')
+							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/" . $annee . ", 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from objectifs.date_fin) || '/" . $annee . ", 'DD/MM/YYYY'))
 							and a.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
 							and objectifs.obsolete IS FALSE 
 							and categories.annee = " . $annee . " 
@@ -363,7 +363,7 @@ class EngagementRepository implements EngagementRepositoryInterface
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
 							join produit_valorisations on produit_valorisations.produit_id = categorie_produit.produit_id
 							join produits on produits.id = categorie_produit.produit_id
-							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/" . $annee . ", 'DD/MM/YYYY') and to_date('28/' || EXTRACT(MONTH from objectifs.date_fin) || '/" . $annee . ", 'DD/MM/YYYY')
+							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/" . $annee . ", 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from objectifs.date_fin) || '/" . $annee . ", 'DD/MM/YYYY'))
 							and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
 							and objectifs.obsolete IS FALSE 
 							and categories.annee = " . $annee . " 
@@ -457,7 +457,7 @@ class EngagementRepository implements EngagementRepositoryInterface
 							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 							join produits on produits.id = categorie_produit.produit_id
 							join laboratoires on laboratoires.id = produits.laboratoire_id 
-							left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and to_date('28/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY'))
+							left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY')))
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
 							left join produit_valorisations on produit_valorisations.produit_id = produits.id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
 							left join centrale_produit on centrale_produit.id = achats.centrale_produit_id

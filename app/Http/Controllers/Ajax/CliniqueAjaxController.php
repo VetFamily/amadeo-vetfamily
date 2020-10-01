@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Model\Centrale;
 use App\Model\Centrale_clinique;
 use App\Model\Clinique;
+use App\Model\EdSourceFormat;
 use App\Model\Engagement;
 use App\Repositories\CentraleRepository;
 use App\Repositories\CliniqueRepository;
@@ -114,26 +115,28 @@ class CliniqueAjaxController extends Controller
   {
     if ($centralsCodes != null)
     {
+      $clinic = Clinique::where('id', $id)->first();
+
       foreach ($centralsCodes as $centralCode) {
         $centId = $centralCode["centId"];
         $identifier = $centralCode["identifier"];
         $isWeb = (int)filter_var($centralCode["web"], FILTER_VALIDATE_BOOLEAN);
 
         // Search if identifier already exists in database : create if not exist
-        $centClinic = Centrale_clinique::where('centrale_id', $centId)->where('identifiant', $identifier)->first();
+        $centClinic = Centrale_clinique::select('centrale_clinique.*')->join('cliniques as c', 'c.id', '=', 'centrale_clinique.clinique_id')->where('c.country_id', $clinic["country_id"])->where('centrale_id', $centId)->where('identifiant', $identifier)->first();
         if ($centClinic == null)
         {
           $centClinicId = Centrale_clinique::create(['clinique_id' => $id, 'centrale_id' => $centId, 'identifiant' => $identifier, 'web' => $isWeb])->id;
         } else
         {
-          if ($centClinic["clinique_id"] != 99999)
+          if ($centClinic["clinique_id"] != EdSourceFormat::where('srcf_country_id', $clinic["country_id"])->pluck('srcf_fictive_clinic_id')->first())
           {
             $clinicName = Clinique::where('id', $centClinic["clinique_id"])->pluck('nom')->first();
             $centName = ucwords(strtolower(Centrale::where('id', $centId)->pluck('nom')->first()));
             return [ ["Le code centrale '" . $identifier . "' (" . $centName . ") existe déjà pour la clinique '" . $clinicName . "'" ] ];
           } else 
           {
-            $centClinic->clinique_id = $id;
+            $centClinic->clinique_id = $clinic->id;
             $centClinic->save();
           }
         }

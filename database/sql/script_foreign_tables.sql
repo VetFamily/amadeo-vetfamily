@@ -90,7 +90,7 @@ ALTER FOREIGN TABLE ed_laboratoires OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW laboratoires
 AS
-(SELECT id, nom, obsolete FROM ed_laboratoires where id in (3, 6, 8, 10, 11, 16, 20, 23, 25, 40) or id between 57 and 241)
+(SELECT id, nom, obsolete FROM ed_laboratoires where id not in (34, 46, 56))
 WITH DATA;
 ALTER MATERIALIZED VIEW laboratoires OWNER TO vetfamily;
 CREATE INDEX laboratoires_id_index ON laboratoires USING btree (id);
@@ -120,7 +120,7 @@ ALTER FOREIGN TABLE ed_centrales OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW centrales
 AS
-SELECT id, nom, obsolete FROM ed_centrales where id in (11, 13)
+SELECT id, nom, obsolete FROM ed_centrales where id in (1, 2, 3, 7, 11, 13, 15, 16, 17)
 WITH DATA;
 ALTER MATERIALIZED VIEW centrales OWNER TO vetfamily;
 CREATE INDEX centrales_id_index ON centrales USING btree (id);
@@ -159,15 +159,16 @@ CREATE FOREIGN TABLE ed_centrale_produit (
 	produit_id integer,
 	obsolete boolean,
 	date_creation date,
-	date_obsolescence date
+	date_obsolescence date,
+    country_id integer
 )
 SERVER "foreign_elia-digital_server"
-OPTIONS (schema_name 'public', table_name 'product_source_netherlands');
+OPTIONS (schema_name 'public', table_name 'product_source_vetfamily');
 ALTER FOREIGN TABLE ed_centrale_produit OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW centrale_produit
 AS
-SELECT id, code_produit, centrale_id, produit_id, obsolete, date_creation, date_obsolescence FROM ed_centrale_produit
+SELECT id, code_produit, centrale_id, produit_id, obsolete, date_creation, date_obsolescence, country_id FROM ed_centrale_produit
 WITH DATA;
 ALTER MATERIALIZED VIEW centrale_produit OWNER TO vetfamily;
 CREATE INDEX centrale_produit_id_index ON centrale_produit USING btree (id);
@@ -177,6 +178,7 @@ CREATE INDEX centrale_produit_produit_id_index ON centrale_produit USING btree (
 CREATE INDEX centrale_produit_obsolete_index ON centrale_produit USING btree (obsolete);
 CREATE INDEX centrale_produit_date_creation_index ON centrale_produit USING btree (date_creation);
 CREATE INDEX centrale_produit_date_obsolescence_index ON centrale_produit USING btree (date_obsolescence);
+CREATE INDEX centrale_produit_country_id_index ON centrale_produit USING btree (country_id);
 
 
 -- Centrale_produit_tarifs
@@ -268,7 +270,7 @@ CREATE FOREIGN TABLE ed_especes (
     obsolete boolean
 )
 SERVER "foreign_elia-digital_server"
-OPTIONS (schema_name 'public', table_name 'specie_netherlands');
+OPTIONS (schema_name 'public', table_name 'specie_vetfamily');
 ALTER FOREIGN TABLE ed_especes OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW especes
@@ -317,7 +319,7 @@ CREATE FOREIGN TABLE ed_produits (
     famille_therapeutique_id int4
 )
 SERVER "foreign_elia-digital_server"
-OPTIONS (schema_name 'public', table_name 'product_netherlands');
+OPTIONS (schema_name 'public', table_name 'product_vetfamily');
 ALTER FOREIGN TABLE ed_produits OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW produits
@@ -362,7 +364,7 @@ CREATE FOREIGN TABLE ed_types (
     obsolete boolean
 )
 SERVER "foreign_elia-digital_server"
-OPTIONS (schema_name 'public', table_name 'type_netherlands');
+OPTIONS (schema_name 'public', table_name 'type_vetfamily');
 ALTER FOREIGN TABLE ed_types OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW types
@@ -467,3 +469,46 @@ CREATE INDEX centrale_produit_encours_prix_unitaire_mois_index ON centrale_produ
 CREATE INDEX centrale_produit_encours_prix_unitaire_mois_date_index ON centrale_produit_encours USING btree (prix_unitaire_mois_date);
 CREATE INDEX centrale_produit_encours_prix_unitaire_max_index ON centrale_produit_encours USING btree (prix_unitaire_max);
 CREATE INDEX centrale_produit_encours_prix_unitaire_max_sdate_index ON centrale_produit_encours USING btree (prix_unitaire_max_date);
+
+
+
+CREATE OR REPLACE VIEW public.ed_product
+AS SELECT produits.id,
+    produits.denomination AS name,
+    produits.conditionnement AS packaging,
+    produits.code_gtin AS gtin_code,
+    produits.code_gtin_autre AS other_code_gtin,
+    produits.laboratoire_id AS supplier_id,
+    produits.valo_volume AS volume_valuation,
+    produits.unite_valo_volume AS volume_valuation_unit,
+    produits.famille_therapeutique_id AS therapeutic_class_id,
+    produits.obsolete,
+    produits.invisible
+   FROM produits;
+   
+ALTER VIEW ed_product OWNER TO vetfamily;
+
+   
+CREATE OR REPLACE VIEW public.ed_supplier
+AS SELECT laboratoires.id,
+    laboratoires.nom AS name,
+    laboratoires.obsolete
+   FROM laboratoires;
+ALTER VIEW ed_supplier OWNER TO vetfamily;
+
+   
+   
+CREATE OR REPLACE VIEW public.ed_source
+AS SELECT centrales.id,
+    centrales.nom AS name,
+    centrales.obsolete
+   FROM centrales;
+ALTER VIEW ed_source OWNER TO vetfamily;
+
+
+
+for tbl in `psql -qAt -c "select tablename from pg_tables where schemaname = 'public';" "amadeo-vetfamily"` ; do  psql -c "GRANT SELECT ON TABLE \"$tbl\" to datawarehouse" "amadeo-vetfamily" ; done
+for tbl in `psql -qAt -c "select sequence_name from information_schema.sequences where sequence_schema = 'public';" "amadeo-vetfamily"` ; do  psql -c "GRANT SELECT ON TABLE \"$tbl\" to datawarehouse " "amadeo-vetfamily" ; done
+for tbl in `psql -qAt -c "select table_name from information_schema.views where table_schema = 'public';" "amadeo-vetfamily"` ; do  psql -c "GRANT SELECT ON TABLE \"$tbl\" to datawarehouse" "amadeo-vetfamily" ; done
+for tbl in `psql -qAt -c "select foreign_table_name from information_schema.foreign_tables where foreign_table_schema = 'public';" "amadeo-vetfamily"` ; do psql -c "GRANT SELECT ON TABLE \"$tbl\" to datawarehouse" "amadeo-vetfamily" ; done
+for tbl in `psql -qAt -c "select matviewname from pg_matviews where schemaname = 'public';" "amadeo-vetfamily"` ; do psql -c "GRANT SELECT ON TABLE \"$tbl\" to datawarehouse" "amadeo-vetfamily" ; done

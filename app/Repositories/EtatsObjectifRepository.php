@@ -139,7 +139,7 @@ class EtatsObjectifRepository implements EtatsObjectifRepositoryInterface
 						join categorie_produit_objectif cpo on cpo.objectif_id = o.id 
 						join categorie_produit cpr on cpr.id = cpo.categorie_produit_id 
 						join produits p on p.id = cpr.produit_id
-						left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and (a.date between to_date('01/' || EXTRACT(MONTH from o.date_debut) || '/' || cat.annee, 'DD/MM/YYYY') and to_date('28/' || EXTRACT(MONTH from o.date_fin) || '/' || cat.annee, 'DD/MM/YYYY'))
+						left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and (a.date between to_date('01/' || EXTRACT(MONTH from o.date_debut) || '/' || cat.annee, 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from o.date_fin) || '/' || cat.annee, 'DD/MM/YYYY')))
 						join centrale_clinique cc on cc.id = a.centrale_clinique_id 
 						join cliniques c on c.id = cc.clinique_id
 						left join produit_valorisations pv on pv.produit_id = p.id and ((a.date between pv.date_debut and pv.date_fin) or (a.date >= pv.date_debut and pv.date_fin is null))
@@ -175,7 +175,7 @@ class EtatsObjectifRepository implements EtatsObjectifRepositoryInterface
 						join categorie_produit_objectif cpo on cpo.objectif_id = o.id 
 						join categorie_produit cpr on cpr.id = cpo.categorie_produit_id 
 						join produits p on p.id = cpr.produit_id
-						left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and (a.date between to_date('01/' || EXTRACT(MONTH from o.date_debut) || '/' || (cat.annee-1), 'DD/MM/YYYY') and to_date('28/' || EXTRACT(MONTH from o.date_fin) || '/' || (cat.annee-1), 'DD/MM/YYYY'))
+						left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and (a.date between to_date('01/' || EXTRACT(MONTH from o.date_debut) || '/' || (cat.annee-1), 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from o.date_fin) || '/' || (cat.annee-1), 'DD/MM/YYYY')))
 						join centrale_clinique cc on cc.id = a.centrale_clinique_id 
 						join cliniques c on c.id = cc.clinique_id
 						left join produit_valorisations pv on pv.produit_id = p.id and ((a.date between pv.date_debut and pv.date_fin) or (a.date >= pv.date_debut and pv.date_fin is null))

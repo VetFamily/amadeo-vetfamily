@@ -72,10 +72,10 @@ class AchatRepository implements AchatRepositoryInterface
 	public function findAllByProducts($startMonth, $startYear, $endMonth, $endYear, $byYear, $clinics, $products, $valorization, $centralPurchasing, $nbMonthDiff)
 	{
 		$startDate = Carbon::create($startYear, $startMonth, 1, 0, 0, 0);
-		$endDate = Carbon::create($endYear, $endMonth, 28, 0, 0, 0);
+		$endDate = Carbon::create($endYear, $endMonth, 1, 0, 0, 0)->endOfMonth();
 		$nbYearDiff = ($startYear != $endYear) ? ($endYear - $startYear) : 1;
 		$startDatePrec = Carbon::create((int)$startYear-$nbYearDiff, $startMonth, 1, 0, 0, 0);
-	  	$endDatePrec = Carbon::create((int)$endYear-$nbYearDiff, $endMonth, 28, 0, 0, 0);
+	  	$endDatePrec = Carbon::create((int)$endYear-$nbYearDiff, $endMonth, 1, 0, 0, 0)->endOfMonth();
 
 		switch ($valorization) {
 			case 1:
@@ -264,10 +264,10 @@ class AchatRepository implements AchatRepositoryInterface
 	public function findAllByLaboratories($startMonth, $startYear, $endMonth, $endYear, $byYear, $clinics, $products, $valorization, $centralPurchasing, $nbMonthDiff)
 	{
 		$startDate = Carbon::create($startYear, $startMonth, 1, 0, 0, 0);
-		$endDate = Carbon::create($endYear, $endMonth, 28, 0, 0, 0);
+		$endDate = Carbon::create($endYear, $endMonth, 1, 0, 0, 0)->endOfMonth();
 		$nbYearDiff = ($startYear != $endYear) ? ($endYear - $startYear) : 1;
 		$startDatePrec = Carbon::create((int)$startYear-$nbYearDiff, $startMonth, 1, 0, 0, 0);
-	  	$endDatePrec = Carbon::create((int)$endYear-$nbYearDiff, $endMonth, 28, 0, 0, 0);
+	  	$endDatePrec = Carbon::create((int)$endYear-$nbYearDiff, $endMonth, 1, 0, 0, 0)->endOfMonth();
 
 		switch ($valorization) {
 			case 1:
@@ -474,10 +474,10 @@ class AchatRepository implements AchatRepositoryInterface
 	public function findAllByClinics($startMonth, $startYear, $endMonth, $endYear, $byYear, $clinics, $products, $valorization, $centralPurchasing, $nbMonthDiff)
 	{
 		$startDate = Carbon::create($startYear, $startMonth, 1, 0, 0, 0);
-		$endDate = Carbon::create($endYear, $endMonth, 28, 0, 0, 0);
+		$endDate = Carbon::create($endYear, $endMonth, 1, 0, 0, 0)->endOfMonth();
 		$nbYearDiff = ($startYear != $endYear) ? ($endYear - $startYear) : 1;
 		$startDatePrec = Carbon::create((int)$startYear-$nbYearDiff, $startMonth, 1, 0, 0, 0);
-	  	$endDatePrec = Carbon::create((int)$endYear-$nbYearDiff, $endMonth, 28, 0, 0, 0);
+	  	$endDatePrec = Carbon::create((int)$endYear-$nbYearDiff, $endMonth, 1, 0, 0, 0)->endOfMonth();
 
 		switch ($valorization) {
 			case 1:
@@ -633,10 +633,10 @@ class AchatRepository implements AchatRepositoryInterface
 	public function findAllByCategories($startMonth, $startYear, $endMonth, $endYear, $byYear, $clinics, $products, $valorization, $centralPurchasing, $nbMonthDiff)
 	{
 		$startDate = Carbon::create($startYear, $startMonth, 1, 0, 0, 0);
-		$endDate = Carbon::create($endYear, $endMonth, 28, 0, 0, 0);
+		$endDate = Carbon::create($endYear, $endMonth, 1, 0, 0, 0)->endOfMonth();
 		$nbYearDiff = ($startYear != $endYear) ? ($endYear - $startYear) : 1;
 		$startDatePrec = Carbon::create((int)$startYear-$nbYearDiff, $startMonth, 1, 0, 0, 0);
-	  	$endDatePrec = Carbon::create((int)$endYear-$nbYearDiff, $endMonth, 28, 0, 0, 0);
+	  	$endDatePrec = Carbon::create((int)$endYear-$nbYearDiff, $endMonth, 1, 0, 0, 0)->endOfMonth();
 
 		if ((sizeof(Auth::user()->roles) >0) && ("Vétérinaire" == Auth::user()->roles[0]['nom']))
 		{

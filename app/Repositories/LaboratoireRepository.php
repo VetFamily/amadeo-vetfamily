@@ -129,7 +129,7 @@ class LaboratoireRepository implements LaboratoireRepositoryInterface
 	public function findCACliniqueById($laboratoireId, $cliniqueId, $moisDeb, $moisFin, $annee)
 	{
 		$dateDeb = Carbon::create($annee, $moisDeb, 1, 0, 0, 0);
-		$dateFin = Carbon::create($annee, $moisFin, 28, 0, 0, 0);
+		$dateFin = Carbon::create($annee, $moisFin, 1, 0, 0, 0)->endOfMonth();
 		
 		$query = "select laboratoires.id, COALESCE(achats.ca_periode, 0) AS ca, COALESCE(achats_remise.ca_periode, 0) AS ca_remise
 					from laboratoires

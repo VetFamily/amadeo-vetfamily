@@ -216,7 +216,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
 							join cliniques on cliniques.id = centrale_clinique.clinique_id
-							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and to_date('28/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY')		 
+							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY'))		 
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1) 
 							and cliniques.obsolete IS FALSE
@@ -237,16 +237,16 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							where achats.date between ";
 
 				if ($moisFin != null) {
-					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/' || CASE categories.annee 
+					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/' || CASE categories.annee 
 								 	WHEN EXTRACT(YEAR from current_date) THEN 
 								 		CASE 
 								 			WHEN EXTRACT(MONTH from objectifs.date_fin) < " . $moisFin . " THEN EXTRACT(MONTH from objectifs.date_fin)
 								 			ELSE " . $moisFin . "
 								 		END
 								 	ELSE EXTRACT(MONTH from objectifs.date_fin)
-								 END || '/' || (categories.annee - 1), 'DD/MM/YYYY')";
+								 END || '/' || (categories.annee - 1), 'DD/MM/YYYY'))";
 				} else {
-					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY')";
+					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY'))";
 				}
 
 				$query .= "					 
@@ -267,7 +267,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
 							join cliniques on cliniques.id = centrale_clinique.clinique_id
-							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY')
+							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY'))
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
@@ -291,7 +291,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 							join produits on produits.id = categorie_produit.produit_id
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE and achats.qte_payante_complet != 0
-							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and to_date('28/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY')
+							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY'))
 							and objectifs.id = " . $id . "
 							and produits.obsolete is false and produits.invisible is false
 						) t
@@ -306,7 +306,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join cliniques on cliniques.id = centrale_clinique.clinique_id
 							join centrale_produit on centrale_produit.id = achats.centrale_produit_id
 							join centrale_produit_tarifs cpt on cpt.centrale_produit_id = centrale_produit.id and achats.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
-							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and to_date('28/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY')
+							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY'))
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
@@ -326,12 +326,12 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							where achats.date between ";
 
 				if ($moisFin != null) {
-					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/' || CASE categories.annee 
+					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/' || CASE categories.annee 
 								 	WHEN EXTRACT(YEAR from current_date) THEN " . $moisFin . "
 								 	ELSE EXTRACT(MONTH from objectifs.date_fin)
-								 END || '/' || (categories.annee - 1), 'DD/MM/YYYY')";
+								 END || '/' || (categories.annee - 1), 'DD/MM/YYYY'))";
 				} else {
-					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY')";
+					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY'))";
 				}
 
 				$query .= "					 
@@ -352,12 +352,12 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							where achats.date between ";
 
 				if ($moisFin != null) {
-					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/' || CASE categories.annee 
+					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/' || CASE categories.annee 
 								 	WHEN EXTRACT(YEAR from current_date) THEN " . $moisFin . "
 								 	ELSE EXTRACT(MONTH from objectifs.date_fin)
-								 END || '/' || (categories.annee - 1), 'DD/MM/YYYY')";
+								 END || '/' || (categories.annee - 1), 'DD/MM/YYYY'))";
 				} else {
-					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY')";
+					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY'))";
 				}
 
 				$query .= "	
@@ -387,7 +387,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join cliniques on cliniques.id = centrale_clinique.clinique_id
 							left join centrale_produit on centrale_produit.id = achats.centrale_produit_id
 							left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = centrale_produit.id and achats.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
-							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and to_date('28/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY')
+							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY'))
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
@@ -410,12 +410,12 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							where achats.date between ";
 
 				if ($moisFin != null) {
-					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/' || CASE categories.annee 
+					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/' || CASE categories.annee 
 								 	WHEN EXTRACT(YEAR from current_date) THEN " . $moisFin . "
 								 	ELSE EXTRACT(MONTH from objectifs.date_fin)
-								 END || '/' || (categories.annee - 1), 'DD/MM/YYYY')";
+								 END || '/' || (categories.annee - 1), 'DD/MM/YYYY'))";
 				} else {
-					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY')";
+					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY'))";
 				}
 
 				$query .= "	
@@ -438,7 +438,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join cliniques on cliniques.id = centrale_clinique.clinique_id
 							left join centrale_produit on centrale_produit.id = achats.centrale_produit_id
 							left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = centrale_produit.id and achats.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
-							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY')
+							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY'))
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
@@ -478,7 +478,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 							join produits on produits.id = categorie_produit.produit_id
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE and achats.qte_payante_complet != 0
-							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and to_date('28/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY')
+							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY'))
 							and objectifs.id = " . $id . "
 							and produits.obsolete is false and produits.invisible is false
 						) t
@@ -493,7 +493,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join cliniques on cliniques.id = centrale_clinique.clinique_id
 							join produit_valorisations on produit_valorisations.produit_id = categorie_produit.produit_id
 							join produits on produits.id = categorie_produit.produit_id
-							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and to_date('28/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY')
+							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY'))
 							and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
@@ -514,12 +514,12 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							where achats.date between ";
 
 				if ($moisFin != null) {
-					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/' || CASE categories.annee 
+					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/' || CASE categories.annee 
 								 	WHEN EXTRACT(YEAR from current_date) THEN " . $moisFin . "
 								 	ELSE EXTRACT(MONTH from objectifs.date_fin)
-								 END || '/' || (categories.annee - 1), 'DD/MM/YYYY')";
+								 END || '/' || (categories.annee - 1), 'DD/MM/YYYY'))";
 				} else {
-					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY')";
+					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY'))";
 				}
 
 				$query .= "					 
@@ -540,12 +540,12 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							where achats.date between ";
 
 				if ($moisFin != null) {
-					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/' || CASE categories.annee 
+					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/' || CASE categories.annee 
 								 	WHEN EXTRACT(YEAR from current_date) THEN " . $moisFin . "
 								 	ELSE EXTRACT(MONTH from objectifs.date_fin)
-								 END || '/' || (categories.annee - 1), 'DD/MM/YYYY')";
+								 END || '/' || (categories.annee - 1), 'DD/MM/YYYY'))";
 				} else {
-					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY')";
+					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY'))";
 				}
 
 				$query .= "					 
@@ -577,7 +577,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join cliniques on cliniques.id = centrale_clinique.clinique_id
 							left join produit_valorisations on produit_valorisations.produit_id = categorie_produit.produit_id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
 							join produits on produits.id = categorie_produit.produit_id
-							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and to_date('28/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY')
+							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY'))
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
@@ -600,12 +600,12 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							where achats.date between ";
 
 				if ($moisFin != null) {
-					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/' || CASE categories.annee 
+					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/' || CASE categories.annee 
 								 	WHEN EXTRACT(YEAR from current_date) THEN " . $moisFin . "
 								 	ELSE EXTRACT(MONTH from objectifs.date_fin)
-								 END || '/' || (categories.annee - 1), 'DD/MM/YYYY')";
+								 END || '/' || (categories.annee - 1), 'DD/MM/YYYY'))";
 				} else {
-					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY')";
+					$query .= "to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY'))";
 				}
 
 				$query .= "					 
@@ -628,7 +628,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join cliniques on cliniques.id = centrale_clinique.clinique_id
 							left join produit_valorisations on produit_valorisations.produit_id = categorie_produit.produit_id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
 							join produits on produits.id = categorie_produit.produit_id
-							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY')
+							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY'))
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
@@ -816,14 +816,14 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									join categorie_produit_objectif on categorie_produit_objectif.objectif_id = objectifs.id 
 									join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id 
 									join produits on produits.id = categorie_produit.produit_id
-									left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and to_date('28/' || CASE categories.annee 
+									left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/' || CASE categories.annee 
 									 	WHEN EXTRACT(YEAR from current_date) THEN 
 									 		CASE 
 									 			WHEN EXTRACT(MONTH from objectifs.date_fin) < " . $moisFin . " THEN EXTRACT(MONTH from objectifs.date_fin)
 									 			ELSE " . $moisFin . "
 									 		END
 									 	ELSE EXTRACT(MONTH from objectifs.date_fin)
-									 END || '/' || categories.annee, 'DD/MM/YYYY'))
+									 END || '/' || categories.annee, 'DD/MM/YYYY')))
 									join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
 									join cliniques on cliniques.id = centrale_clinique.clinique_id
 									left join produit_valorisations on produit_valorisations.produit_id = produits.id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
@@ -927,14 +927,14 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									join categorie_produit_objectif on categorie_produit_objectif.objectif_id = objectifs.id 
 									join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id 
 									join produits on produits.id = categorie_produit.produit_id
-									left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and to_date('28/' || CASE categories.annee 
+									left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/' || CASE categories.annee 
 									 	WHEN EXTRACT(YEAR from current_date) THEN 
 									 		CASE 
 									 			WHEN EXTRACT(MONTH from objectifs.date_fin) < " . $moisFin . " THEN EXTRACT(MONTH from objectifs.date_fin)
 									 			ELSE " . $moisFin . "
 									 		END
 									 	ELSE EXTRACT(MONTH from objectifs.date_fin)
-									 END || '/' || categories.annee, 'DD/MM/YYYY'))
+									 END || '/' || categories.annee, 'DD/MM/YYYY')))
 									join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
 									join cliniques on cliniques.id = centrale_clinique.clinique_id
 									left join produit_valorisations on produit_valorisations.produit_id = produits.id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
@@ -1039,14 +1039,14 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									join categorie_produit_objectif on categorie_produit_objectif.objectif_id = objectifs.id 
 									join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id 
 									join produits on produits.id = categorie_produit.produit_id
-									left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and to_date('28/' || CASE categories.annee 
+									left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/' || CASE categories.annee 
 									 	WHEN EXTRACT(YEAR from current_date) THEN 
 									 		CASE 
 									 			WHEN EXTRACT(MONTH from objectifs.date_fin) < " . $moisFin . " THEN EXTRACT(MONTH from objectifs.date_fin)
 									 			ELSE " . $moisFin . "
 									 		END
 									 	ELSE EXTRACT(MONTH from objectifs.date_fin)
-									 END || '/' || categories.annee, 'DD/MM/YYYY'))
+									 END || '/' || categories.annee, 'DD/MM/YYYY')))
 									join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
 									join cliniques on cliniques.id = centrale_clinique.clinique_id
 									left join produit_valorisations on produit_valorisations.produit_id = produits.id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
@@ -1102,14 +1102,14 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									join categorie_produit_objectif on categorie_produit_objectif.objectif_id = objectifs.id 
 									join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id 
 									join produits on produits.id = categorie_produit.produit_id
-									left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and to_date('28/' || CASE categories.annee 
+									left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/' || CASE categories.annee 
 									 	WHEN EXTRACT(YEAR from current_date) THEN 
 									 		CASE 
 									 			WHEN EXTRACT(MONTH from objectifs.date_fin) < " . $moisFin . " THEN EXTRACT(MONTH from objectifs.date_fin)
 									 			ELSE " . $moisFin . "
 									 		END
 									 	ELSE EXTRACT(MONTH from objectifs.date_fin)
-									 END || '/' || categories.annee, 'DD/MM/YYYY'))
+									 END || '/' || categories.annee, 'DD/MM/YYYY')))
 									join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
 									join cliniques on cliniques.id = centrale_clinique.clinique_id
 									left join produit_valorisations on produit_valorisations.produit_id = produits.id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
@@ -1159,7 +1159,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									join categorie_produit_objectif on categorie_produit_objectif.objectif_id = objectifs.id 
 									join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id 
 									join produits on produits.id = categorie_produit.produit_id
-									left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and to_date('28/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY')
+									left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY'))
 									join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
 									join cliniques on cliniques.id = centrale_clinique.clinique_id
 									left join produit_valorisations on produit_valorisations.produit_id = produits.id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
