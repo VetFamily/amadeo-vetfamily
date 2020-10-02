@@ -12,7 +12,8 @@ class Categorie extends Model
     protected $fillable = [
         'nom', 
         'annee',
-        'laboratoire_id'
+        'laboratoire_id',
+        'country_id'
     ];
 
     public $timestamps = true;

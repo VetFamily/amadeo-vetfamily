@@ -783,7 +783,7 @@
 						                    var laboratoire = data.categorie[0]["laboratoire_id"] != null ? data.categorie[0]["laboratoire"] : "@lang('amadeo.categories.seller-multiple')";
 						                    
 											// Mise à jour du tableau
-						                    var index = $('#tab-categories').dataTable().fnAddData( [ null, data.categorie[0]["country"], data.categorie[0]["annee"], ata.categorie[0]["especes_noms"], laboratoire, data.categorie[0]["categorie"], data.categorie[0]["nb_produits"], data.categorie[0]["id"], data.categorie[0]["especes"], data.categorie[0]["laboratoire_id"], data.categorie[0]["country_id"] ] );
+						                    var index = $('#tab-categories').dataTable().fnAddData( [ null, data.categorie[0]["country"], data.categorie[0]["annee"], data.categorie[0]["especes_noms"], laboratoire, data.categorie[0]["categorie"], data.categorie[0]["nb_produits"], data.categorie[0]["id"], data.categorie[0]["especes"], data.categorie[0]["laboratoire_id"], data.categorie[0]["country_id"] ] );
 						                    $('#tab-categories tbody > tr.selected').first().removeClass('selected');
 
 						                    $( '.filter-column-5' ).val( data.categorie[0]["categorie"] );
