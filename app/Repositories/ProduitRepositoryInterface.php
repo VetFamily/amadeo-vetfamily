@@ -32,7 +32,7 @@ interface ProduitRepositoryInterface
 	/**
 	* Recherche la liste de tous les produits candidats d'une catégorie.
 	*/
-	public function findListCandidatsByLaboratoireAndCategorie($laboratoireId, $produitsId);
+	public function findListCandidatsByLaboratoireAndCategorie($countryId, $laboratoireId, $produitsId);
 
 	/**
 	* Recherche la liste de tous les produits de tous les laboratoires avec les estimations de RFA pour téléchargement au format Excel.

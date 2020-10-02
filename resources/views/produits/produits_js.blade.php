@@ -143,12 +143,12 @@
 				$('td', row).eq(1).find('div').addClass('texte');
 				$('td', row).eq(1).addClass('width-10');
 				$('td', row).eq(2).find('div').addClass('texte');
-				$('td', row).eq(2).find('div').attr('title', $('td', row).eq(1).find('div').html());
+				$('td', row).eq(2).find('div').attr('title', $('td', row).eq(2).find('div').html());
 				$('td', row).eq(2).addClass('width-20');
 				$('td', row).eq(3).find('div').addClass('texte');
-				$('td', row).eq(3).find('div').attr('title', $('td', row).eq(2).find('div').html().replace( '<i>', "" ).replace( '</i>', "" ));
+				$('td', row).eq(3).find('div').attr('title', $('td', row).eq(3).find('div').html().replace( '<i>', "" ).replace( '</i>', "" ));
 				$('td', row).eq(4).find('div').addClass('nombre');
-				$('td', row).eq(4).find('div').attr('title', $('td', row).eq(3).find('div').html().replace( '<i>', "" ).replace( '</i>', "" ));
+				$('td', row).eq(4).find('div').attr('title', $('td', row).eq(4).find('div').html().replace( '<i>', "" ).replace( '</i>', "" ));
 
 				if (data[6])
 				{

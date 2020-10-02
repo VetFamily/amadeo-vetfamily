@@ -149,6 +149,7 @@ return [
 
     'categories.title' => 'Suppliers categories management',
     'categories.search-empty' => 'No matching results found',
+    'categories.country' => 'Country',
     'categories.year' => 'Year',
     'categories.specie' => 'Specie',
     'categories.species' => 'Species',

@@ -79,10 +79,20 @@ class ProduitRepository implements ProduitRepositoryInterface
 	public function findListByCategorieId($categorieId)
 	{
 		$query = $this->produit
-					->select('produits.denomination', 'produits.conditionnement', 'produits.code_gtin', 'produits.id', 'produits.obsolete')
+					->select('produits.denomination', 'produits.conditionnement', 'produits.code_gtin', 'produits.id', 'produits.obsolete', DB::raw("string_agg(liste_centrales.centrale, ',' order by liste_centrales.centrale) AS source"))
 					->join('categorie_produit','categorie_produit.produit_id', '=', 'produits.id')
-					->where('categorie_produit.categorie_id', '=', $categorieId)
-					->where ('produits.invisible', '=', '0');
+					->join('categories','categorie_produit.categorie_id', '=', 'categories.id')
+					->join(DB::raw("(select distinct cp.produit_id, cp.country_id, ce.nom as centrale
+							from centrale_produit cp 
+							join centrales ce on ce.id = cp.centrale_id
+							where cp.obsolete is false
+						) liste_centrales"),function($join){
+						$join->on("liste_centrales.produit_id", "=", "produits.id");
+						$join->on("liste_centrales.country_id", "=", "categories.country_id");
+					})
+					->where('categories.id', '=', $categorieId)
+					->where ('produits.invisible', '=', '0')
+					->groupBy('produits.denomination', 'produits.conditionnement', 'produits.code_gtin', 'produits.id', 'produits.obsolete');
 
 		return $query->get();
 	}
@@ -133,12 +143,27 @@ class ProduitRepository implements ProduitRepositoryInterface
 		return DB::select(DB::raw($query));
 	}
 
-	public function findListCandidatsByLaboratoireAndCategorie($laboratoireId, $produitsId)
+	public function findListCandidatsByLaboratoireAndCategorie($countryId, $laboratoireId, $produitsId)
 	{
 		$query = $this->produit->distinct()
-					->select('denomination', 'conditionnement', 'code_gtin', 'id', 'obsolete')
-					->where ('invisible', '=', '0');
+					->select('denomination', 'conditionnement', 'code_gtin', 'id', 'obsolete', DB::raw("string_agg(liste_centrales.centrale, ',' order by liste_centrales.centrale) AS source"))
+					->join('ed_product_country', 'prco_product_id', '=', 'produits.id')
+					->join(DB::raw("(select distinct cp.produit_id, ce.nom as centrale
+							from centrale_produit cp 
+							join centrales ce on ce.id = cp.centrale_id
+							where cp.obsolete is false
+							and cp.country_id = " . $countryId . "
+						) liste_centrales"),function($join){
+						$join->on("liste_centrales.produit_id", "=", "produits.id");
+					})
+					->where ('invisible', '=', '0')
+					->groupBy('produits.denomination', 'produits.conditionnement', 'produits.code_gtin', 'produits.id', 'produits.obsolete');
 
+		if ($countryId != null)
+		{
+			$query->where('prco_country_id', '=', $countryId);
+		}
+			
 		if ($laboratoireId != null && !Session::get('user_is_super_admin'))
 		{
 			$query->where('laboratoire_id', '=', $laboratoireId);

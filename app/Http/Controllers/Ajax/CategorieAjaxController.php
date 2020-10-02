@@ -55,6 +55,7 @@ class CategorieAjaxController extends Controller
   public function store(Request $request, CategorieRepository $categorieRepository)
   {
     $validator = Validator::make($request->all(), [
+      'country' => 'required',
       'annee' => 'required|max:4',
       'nom' => 'required|max:255'
     ]);
@@ -63,7 +64,7 @@ class CategorieAjaxController extends Controller
 
     if ($validator->passes()) {
       // Création de la catégorie
-      $data = ['nom' => $request->nom, 'annee' => $request->annee];
+      $data = ['nom' => $request->nom, 'annee' => $request->annee, 'country_id' => $request->country];
 
       if ($request->laboratoire != 'Multi-laboratoires') {
         $data['laboratoire_id'] = $request->laboratoire;

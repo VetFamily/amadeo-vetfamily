@@ -149,6 +149,7 @@ return [
 
     'categories.title' => 'Gestion des catégories',
     'categories.search-empty' => 'Aucune categorie correspondante',
+    'categories.country' => 'Pays',
     'categories.year' => 'Année',
     'categories.specie' => 'Espèce',
     'categories.species' => 'Espèces',

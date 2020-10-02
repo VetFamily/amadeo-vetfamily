@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\AchatRepository;
 use App\Repositories\CentraleRepository;
 use App\Repositories\CliniqueRepository;
+use App\Repositories\CountryRepository;
 use App\Repositories\EspeceRepository;
 use App\Repositories\LaboratoireRepository;
 use App\Repositories\ParametrageRepository;
@@ -31,8 +32,9 @@ class HeaderController extends Controller
     private $typeObjectifRepository;
     private $typeValorisationObjectifRepository;
     private $laboratoireRepository;
+    private $countryRepository;
   
-    public function __construct(AchatRepository $achatRepository, ParametrageRepository $parametrageRepository, RoleRepository $roleRepository, EspeceRepository $especeRepository, CliniqueRepository $cliniqueRepository, TypeRepository $typeRepository, CentraleRepository $centraleRepository, TypeObjectifRepository $typeObjectifRepository, TypeValorisationObjectifRepository $typeValorisationObjectifRepository, LaboratoireRepository $laboratoireRepository)
+    public function __construct(AchatRepository $achatRepository, ParametrageRepository $parametrageRepository, RoleRepository $roleRepository, EspeceRepository $especeRepository, CliniqueRepository $cliniqueRepository, TypeRepository $typeRepository, CentraleRepository $centraleRepository, TypeObjectifRepository $typeObjectifRepository, TypeValorisationObjectifRepository $typeValorisationObjectifRepository, LaboratoireRepository $laboratoireRepository, CountryRepository $countryRepository)
     {
         $this->achatRepository = $achatRepository;
         $this->parametrageRepository = $parametrageRepository;
@@ -44,6 +46,7 @@ class HeaderController extends Controller
         $this->typeObjectifRepository = $typeObjectifRepository;
         $this->typeValorisationObjectifRepository = $typeValorisationObjectifRepository;
         $this->laboratoireRepository = $laboratoireRepository;
+        $this->countryRepository = $countryRepository;
     }
   
     public function getUserInformations()
@@ -107,6 +110,7 @@ class HeaderController extends Controller
         $this->getUserInformations();
         Session::put('laboratoires_liste', $this->laboratoireRepository->findAll());
         Session::put('list_of_species', $this->especeRepository->findAll());
+        Session::put('list_of_countries', $this->countryRepository->findAll());
 
     	return view('categories/categories');
     }

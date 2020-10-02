@@ -59,6 +59,7 @@
 							<thead>
 								<tr>
 									<th></th>
+									<th>@lang('amadeo.categories.country')</th>
 									<th>@lang('amadeo.categories.year')</th>
 									<th>@lang('amadeo.categories.species')</th>
 									<th>@lang('amadeo.categories.seller')</th>
@@ -67,6 +68,7 @@
 								</tr>
 								<tr id='forFilters'>
 									<th></th>
+									<th class='select-filter'></th>
 									<th class='select-filter'></th>
 									<th class='text-filter'></th>
 									<th class='select-filter'></th>
@@ -104,11 +106,14 @@
 								<h4 class="modal-title">@lang('amadeo.categories.add.title')</h4>
 						    </div>
 						    <div class="modal-body flex-column">
+						    	<div id="divCountryCategorie" class="form-group">
+					                <label class="label_text">@lang('amadeo.categories.country') <select id="selectCategorieCountry" autofocus><option value="">@lang('amadeo.list.message')</option></select></label>
+					            </div>
 						    	<div id="divAnneeCategorie" class="form-group">
-					                <label class="label_text">@lang('amadeo.categories.year') <input type="text" id="addCategorieAnnee" autofocus></label>
+					                <label class="label_text">@lang('amadeo.categories.year') <input type="text" id="addCategorieAnnee"></label>
 					            </div>
 					            <div id="divLaboratoireCategorie" class="form-group">
-					                <label class="label_text">@lang('amadeo.categories.seller') <select id="selectCategorieLaboratoire" autofocus><option value="">@lang('amadeo.list.message')</option></select></label>
+					                <label class="label_text">@lang('amadeo.categories.seller') <select id="selectCategorieLaboratoire"><option value="">@lang('amadeo.list.message')</option></select></label>
 					            </div>
 					            <div id="divNomCategorie" class="form-group">
 					                <label class="label_text">@lang('amadeo.categories.name') <input type="text" id="addCategorieNom"></label>
@@ -131,6 +136,9 @@
 								<h4 class="modal-title">@lang('amadeo.categories.copy.title')</h4>
 						    </div>
 						    <div class="modal-body flex-column">
+					            <div id="divCountryCategorie" class="form-group">
+					                <label class="label_text">@lang('amadeo.categories.country') <p id="copyCategorieCountry"></p></label>
+					            </div>
 						    	<div id="divAnneeCategorie" class="form-group">
 					                <label class="label_text">@lang('amadeo.categories.year') <input type="text" id="copyCategorieAnnee" autofocus></label>
 					            </div>

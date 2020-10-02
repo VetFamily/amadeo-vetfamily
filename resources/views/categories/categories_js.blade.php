@@ -6,21 +6,21 @@
 	function format ( row ) {
 		// Calcul du nombre de colonnes
 		var nbCol = "{{sizeof(Session::get('list_of_species'))}}";
-		var idRow = row[6];
+		var idRow = row[7];
 		
 		// Affichage des espèces
 		var html_especes = '<tr><td class="detail-row-title">@lang("amadeo.categories.species")</td>';
 		var liste_especes = null;
-		if (row[7] != null)
+		if (row[8] != null)
 		{
-			liste_especes = row[7].split("|")
+			liste_especes = row[8].split("|")
 		}
 		@foreach (Session::get('list_of_species') as $espece)
 			var espece_checked = false;
 			if (liste_especes != null && liste_especes.includes('{{ $espece->id }}'))
 				espece_checked = true;
-			html_especes += '<td><div class="checkbox-item-horizontal">' 
-							+ '<div class="checkboxContainer">' 
+			html_especes += '<td><div class="radio-item-horizontal">' 
+							+ '<div class="radioContainer">' 
 								+ '<input id="espece-' + idRow + '-{{ $espece->id }}"';
 			if (espece_checked)
 			{
@@ -29,17 +29,17 @@
 			@if ((sizeof(Auth::user()->roles) >0) AND ("Vétérinaire" == Auth::user()->roles[0]['nom']))
 				html_especes += ' disabled="disabled"'
 			@endif
-			html_especes += ' name="especes_' + idRow + '[]" type="checkbox" value="{{ $espece->id }}">' 
+			html_especes += ' name="especes_' + idRow + '[]" type="radio" value="{{ $espece->id }}">' 
 								+ '<label for="espece-' + idRow + '-{{ $espece->id }}"></label>' 
 							+ '</div>' 
-							+ '<div class="checkboxLabel">' 
+							+ '<div class="radioLabel">' 
 								+ '<label for="espece-' + idRow + '-{{ $espece->id }}">{{ $espece->nom }}</label>' 
 							+ '</div>' 
 						+ '</div></td>';
 		@endforeach
 		html_especes += '</tr>';
 
-		var html_produits = "<tr>" + "<td class='detail-row-title' style='vertical-align: top;'>@lang('amadeo.categories.products')</td>" + "<td colspan='" + (nbCol-1) + "' class='detail-row-subTable'><table id='tab-categorie-produits-" + idRow + "' class='' cellspacing='0' width='100%'><thead><tr><th>@lang('amadeo.products.name')</th><th>@lang('amadeo.products.packaging')</th><th>@lang('amadeo.products.gtin')</th></tr></thead></table></td><td style='border: 1px solid var(--dark-grey); border-left: none;'>";
+		var html_produits = "<tr>" + "<td class='detail-row-title' style='vertical-align: top;'>@lang('amadeo.categories.products')</td>" + "<td colspan='" + (nbCol-1) + "' class='detail-row-subTable'><table id='tab-categorie-produits-" + idRow + "' class='' cellspacing='0' width='100%'><thead><tr><th>@lang('amadeo.products.source')</th><th>@lang('amadeo.products.name')</th><th>@lang('amadeo.products.packaging')</th><th>@lang('amadeo.products.gtin')</th></tr></thead></table></td><td style='border: 1px solid var(--dark-grey); border-left: none;'>";
 
 		@if ((sizeof(Auth::user()->roles) >0) AND ("Vétérinaire" != Auth::user()->roles[0]['nom']))
 			html_produits += '<div class="detail-row-subTable-buttons">'
@@ -74,7 +74,7 @@
 	*/
 	function loadDatatableProduits(rowData)
 	{
-		var idRow = rowData[6];
+		var idRow = rowData[7];
     	// Récupération des informations
     	var params = {
 			"_token": document.getElementsByName("_token")[0].value,
@@ -86,7 +86,7 @@
 	        data: $.param(params),
 		    success: function(json) {
 		    	var data = jQuery.map(json, function(el, i) {
-				  return [[el.denomination, el.conditionnement, el.code_gtin, el.id, el.obsolete]];
+				  return [[el.source, el.denomination, el.conditionnement, el.code_gtin, el.id, el.obsolete]];
 				});
 
 			    // DataTable
@@ -100,25 +100,38 @@
 		            "searching": false,
 		            "sScrollY": "50vh",
 		            "bScrollCollapse": true,
-		            "order": [[ 0, "asc" ], [ 1, "asc" ]],
-					"aoColumns": [ {"sWidth": "45%"}, {"sWidth": "45%"}, {"sWidth": "10%"} ],
+		            "order": [[ 1, "asc" ], [ 2, "asc" ]],
+					"aoColumns": [ 
+						{
+							"render": function ( data, type, row ) { 
+								return data.capitalize(); 
+							},
+							"sWidth": "10%"
+						}, 
+						{"sWidth": "45%"}, 
+						{"sWidth": "45%"}, 
+						{"sWidth": "10%"} 
+					],
 					"aaData": data,
 					"createdRow": function ( row, data, index ) {
 						$('td', row).each(function(){
 							$(this).html('<div>' + $(this).html() + '</div>');
 						});
-						$('td', row).eq(0).addClass('width-30');
+						$('td', row).eq(0).addClass('width-10');
 						$('td', row).eq(0).find('div').addClass('texte');
-						$('td', row).eq(0).find('div').attr('title', $('td', row).eq(0).find('div').html());
 						$('td', row).eq(1).addClass('width-30');
 						$('td', row).eq(1).find('div').addClass('texte');
 						$('td', row).eq(1).find('div').attr('title', $('td', row).eq(1).find('div').html());
+						$('td', row).eq(2).addClass('width-30');
+						$('td', row).eq(2).find('div').addClass('texte');
+						$('td', row).eq(2).find('div').attr('title', $('td', row).eq(2).find('div').html());
 
-						if (data[4])
+						if (data[5])
 						{
 							$('td', row).eq(0).find('div').addClass('obsolete');
 							$('td', row).eq(1).find('div').addClass('obsolete');
 							$('td', row).eq(2).find('div').addClass('obsolete');
+							$('td', row).eq(3).find('div').addClass('obsolete');
 						}
 			        },
 			        initComplete: function () {
@@ -147,17 +160,18 @@
                     $( '#tab-categorie-produits-' + idRow + ' tbody tr' ).each(function() {
                     	if ($('#tab-categorie-produits-' + idRow).DataTable().data().count())
                     	{
-                    		ids.push($('#tab-categorie-produits-' + idRow).DataTable().row( $(this) ).data()[3]);
+                    		ids.push($('#tab-categorie-produits-' + idRow).DataTable().row( $(this) ).data()[4]);
                     	}
                     });
                     
 			    	var params = {
 						"_token": document.getElementsByName("_token")[0].value,
-						"laboratoire": rowData[8],
+						"country": rowData[10],
+						"laboratoire": rowData[9],
 						"produits": ids
 					};
 
-					$( '#tableProductsModal' ).html("<table id='tab-categorie-produits-candidats-" + idRow + "' class='' cellspacing='0' width='100%'><thead><tr><th>@lang('amadeo.products.name')</th><th>@lang('amadeo.products.packaging')</th></tr><tr id='forFiltersModal'><th class='text-filter'></th><th class='text-filter'></th></tr></thead></table>");
+					$( '#tableProductsModal' ).html("<table id='tab-categorie-produits-candidats-" + idRow + "' class='' cellspacing='0' width='100%'><thead><tr><th>@lang('amadeo.products.source')</th><th>@lang('amadeo.products.name')</th><th>@lang('amadeo.products.packaging')</th></tr><tr id='forFiltersModal'><th class='text-filter'><th class='text-filter'></th><th class='text-filter'></th></tr></thead></table>");
 
 					$( '#divButtonListeProduits' ).html('<div class="confirm-buttons-modal"><div id="saveButtonCategorieProduit-' + idRow + '" class="button"><a>@lang("amadeo.validate")</a><span class="btn_save"></span></div></div>');
 
@@ -168,7 +182,7 @@
 				        data: $.param(params),
 					    success: function(json) {
 					    	var data = jQuery.map(json, function(el, i) {
-							  return [[el.denomination, el.conditionnement, el.code_gtin, el.id, el.obsolete]];
+							  return [[el.source, el.denomination, el.conditionnement, el.code_gtin, el.id, el.obsolete]];
 							});
 
 						    // DataTable
@@ -184,7 +198,16 @@
 					            "info": false,
 					            "sScrollY": "50vh",
 					            "bScrollCollapse": true,
-					            "order": [[ 0, "asc" ], [ 1, "asc" ]],
+					            "order": [[ 1, "asc" ], [ 2, "asc" ]],
+								"aoColumns": [ 
+									{
+										"render": function ( data, type, row ) { 
+											return data.capitalize(); 
+										}
+									}, 
+									null, 
+									null
+								],
 								"aaData": data,
 								"createdRow": function ( row, data, index ) {
 									$('tr', row).eq(0).removeClass('selected');
@@ -193,17 +216,20 @@
 										$(this).html('<div>' + $(this).html() + '</div>');
 									});
 
-									$('td', row).eq(0).addClass('width-30');
+									$('td', row).eq(0).addClass('width-10');
 									$('td', row).eq(0).find('div').addClass('texte');
-									$('td', row).eq(0).find('div').attr('title', $('td', row).eq(0).find('div').html());
 									$('td', row).eq(1).addClass('width-30');
 									$('td', row).eq(1).find('div').addClass('texte');
 									$('td', row).eq(1).find('div').attr('title', $('td', row).eq(1).find('div').html());
+									$('td', row).eq(2).addClass('width-30');
+									$('td', row).eq(2).find('div').addClass('texte');
+									$('td', row).eq(2).find('div').attr('title', $('td', row).eq(2).find('div').html());
 
-									if (data[4])
+									if (data[5])
 									{
 										$('td', row).eq(0).find('div').addClass('obsolete');
 										$('td', row).eq(1).find('div').addClass('obsolete');
+										$('td', row).eq(2).find('div').addClass('obsolete');
 									}
 						        },
 						        initComplete: function () {
@@ -270,7 +296,7 @@
 						    	for (i=0 ; i<data.length ; i++){
 						    		// Mise à jour du tableau
 						    		var obj = data[i];
-			                    	$('#tab-categorie-produits-' + idRow).DataTable().row.add( [ obj[0], obj[1], obj[2], obj[3], obj[4] ] ).draw();
+			                    	$('#tab-categorie-produits-' + idRow).DataTable().row.add( [ obj[0], obj[1], obj[2], obj[3], obj[4], obj[5] ] ).draw();
 			                    };
 			                    $('#tab-categorie-produits-candidats-' + idRow).DataTable().rows( '.selected' ).remove().draw( false );
 			                    $( '#addCategorieProduitModal' ).modal('hide');
@@ -323,7 +349,7 @@
 	function createSelectForRow(tr, idRow)
 	{
 		tr.find('div').each(function(index) {
-	    	if (index==4)
+	    	if (index == 5)
 	    	{
 	    		// Nom modifiable
 	    		var input = $('<input type="text" id="row-' + idRow + '-nom" value="' + $(this).html() + '" style="width:100%;" />');
@@ -361,7 +387,7 @@
 		    	  	}
 				  @endforeach
 
-				  return [[null, el.annee, especes, el.laboratoire, el.categorie, el.nb_produits, el.id, el.especes, el.laboratoire_id]];
+				  return [[null, el.country, el.annee, especes, el.laboratoire, el.categorie, el.nb_produits, el.id, el.especes, el.laboratoire_id, el.country_id]];
 				});
 
 			    // DataTable
@@ -381,8 +407,8 @@
 						"targets": 0,
 						"orderable": false
 					} ],
-					"order": [[ 1, "desc" ], [ 3, "asc" ], [ 4, "asc" ]],
-					"aoColumns": [ {"sWidth": "4%"}, {"sWidth": "10%"}, {"sWidth": "15%"}, {"sWidth": "15%"}, {"sWidth": "41%"}, {"sWidth": "15%"} ],
+					"order": [[ 1, "desc" ], [ 2, "desc" ], [ 4, "asc" ], [ 5, "asc" ]],
+					"aoColumns": [ {"sWidth": "4%"}, {"sWidth": "10%"}, {"sWidth": "10%"}, {"sWidth": "15%"}, {"sWidth": "15%"}, {"sWidth": "41%"}, {"sWidth": "15%"} ],
 					"aaData": data,
 					"createdRow": function ( row, data, index ) {
 						$('td', row).each(function(){
@@ -390,10 +416,10 @@
 						});
 						// Affichage du bouton 'Détail'
 						$('td', row).eq(0).find('div').addClass('details-control');
-						$('td', row).eq(4).addClass('width-50');
-						$('td', row).eq(4).find('div').addClass('texte');
-						$('td', row).eq(4).find('div').attr('title', $('td', row).find('div').eq(4).html());
-						$('td', row).eq(5).find('div').addClass('nombre');
+						$('td', row).eq(5).addClass('width-50');
+						$('td', row).eq(5).find('div').addClass('texte');
+						$('td', row).eq(5).find('div').attr('title', $('td', row).find('div').eq(5).html());
+						$('td', row).eq(6).find('div').addClass('nombre');
 			        },
 					initComplete: function () {
 			            var api = this.api();
@@ -446,11 +472,11 @@
 					    	if (index == 0)
 					    	{
 					    		$(this).html('<div class="details-control"></div>');
-					    	} else if (index == 4)
+					    	} else if (index == 5)
 					    	{
 					    		$(this).addClass('width-50');
 					    		$(this).html('<div class="texte" title="' + $(this).html() + '">' + $(this).html() + '</div>');
-					    	} else if (index == 5)
+					    	} else if (index == 6)
 					    	{
 					    		$(this).html('<div class="nombre">' + $(this).html() + '</div>');
 					    	} else
@@ -465,11 +491,11 @@
 			            // Open this row
 			            row.child( '<div>' + format( row.data() ) + '</div>' ).show();
 			            loadDatatableProduits(row.data());
-			            loadDivCommentaires(row.data()[6]);
+			            loadDivCommentaires(row.data()[7]);
 			            row.child().addClass('child');
 			            tr.addClass('shown');
 			            @if ((sizeof(Auth::user()->roles) >0) AND ("Vétérinaire" != Auth::user()->roles[0]['nom']))
-			            	createSelectForRow(tr, row.data()[6]);
+			            	createSelectForRow(tr, row.data()[7]);
 			            @endif
 			        }
 			    } );
@@ -490,9 +516,18 @@
 				    	$( '#addCategorieModal' ).draggable({
 					    	handle: ".modal-header"
 					  	});
+				    	$('#selectCategorieCountry').val('');
 				    	$('#selectCategorieLaboratoire').val('');
 				    	$('#addCategorieNom').val('');
 
+				    	var $selectCountry = $( '#selectCategorieCountry' ); 
+				    	$selectCountry.find( 'option' ).remove();
+	    				$selectCountry.append('<option value="">@lang("amadeo.list.message")</option>');
+
+	    				@foreach (Session::get('list_of_countries') as $country)
+	    					$selectCountry.append('<option value="{{ $country->ctry_id }}">{{ $country->ctry_name }}</option>');
+						@endforeach
+						
 				    	var annee = (new Date().getMonth() < 8) ? new Date().getFullYear() : (new Date().getFullYear()) + 1;
 			    		$( '#addCategorieAnnee' ).val(annee);
 			    		
@@ -530,15 +565,16 @@
 
 				    		var annee = (new Date().getMonth() < 8) ? new Date().getFullYear() : (new Date().getFullYear()) + 1;
 				    		var select = table.row( $('#tab-categories tbody > tr.selected').first());
+				    		$( '#copyCategorieCountry' ).html(select.data()[1]);
 				    		$( '#copyCategorieAnnee' ).val(annee);
-				    		$( '#copyCategorieLaboratoire' ).html(select.data()[3]);
-				    		$( '#copyCategorieAncienNom' ).html(select.data()[4]);
-				    		$( '#copyCategorieNom' ).val(select.data()[4]);
+				    		$( '#copyCategorieLaboratoire' ).html(select.data()[4]);
+				    		$( '#copyCategorieAncienNom' ).html(select.data()[5]);
+				    		$( '#copyCategorieNom' ).val(select.data()[5]);
 					    	
 					    	// Récupération des informations
 					    	var params = {
 								"_token": document.getElementsByName("_token")[0].value,
-								"categorie": select.data()[6]
+								"categorie": select.data()[7]
 							};
 
 							$.ajax({
@@ -611,10 +647,12 @@
 		            		function()
 		            		{
 						    	// Récupération des informations
+						    	var selectedCountry = $( '#selectCategorieCountry' ).find('option:selected');
 						    	var selectedLaboratoire = $( '#selectCategorieLaboratoire' ).find('option:selected');
 
 						    	var params = {
 									"_token": document.getElementsByName("_token")[0].value,
+									"country": selectedCountry.val(),
 									"laboratoire": selectedLaboratoire.val(),
 									"nom": document.getElementById("addCategorieNom").value,
 									"annee": document.getElementById("addCategorieAnnee").value
@@ -645,7 +683,7 @@
 
 						                    // Mise à jour du tableau
 						                    var laboratoire = data.categorie[0]["laboratoire_id"] != null ? data.categorie[0]["laboratoire"] : "@lang('amadeo.categories.seller-multiple')";
-						                    var index = $('#tab-categories').dataTable().fnAddData( [ null, data.categorie[0]["annee"], null, laboratoire, data.categorie[0]["categorie"], data.categorie[0]["nb_produits"], data.categorie[0]["id"], null, data.categorie[0]["laboratoire_id"] ] );
+						                    var index = $('#tab-categories').dataTable().fnAddData( [ null, data.categorie[0]["country"], data.categorie[0]["annee"], null, laboratoire, data.categorie[0]["categorie"], data.categorie[0]["nb_produits"], data.categorie[0]["id"], null, data.categorie[0]["laboratoire_id"], data.categorie[0]["country_id"] ] );
 
 						                    if ($( '#selectFilter-1 option[value="' + laboratoire + '"]' ).length == 0)
 						                    {
@@ -666,12 +704,13 @@
 						                    }
 
 						                    $( '.filter-column-1 option[value=""]' ).prop( 'selected', true ).trigger('change');
-						                    $( '.filter-column-2' ).val( '' );
-						                    $( '.filter-column-2' ).trigger($.Event('keyup', { keycode: 13 }));
-						                    $( '.filter-column-3 option[value=""]' ).prop( 'selected', true ).trigger('change');
-						                    $( '.filter-column-4' ).val( data.categorie[0]["categorie"] );
-						                    $( '.filter-column-4' ).focus();
-						                    $( '.filter-column-4' ).trigger($.Event('keyup', { keycode: 13 }));
+						                    $( '.filter-column-2 option[value=""]' ).prop( 'selected', true ).trigger('change');
+						                    $( '.filter-column-3' ).val( '' );
+						                    $( '.filter-column-3' ).trigger($.Event('keyup', { keycode: 13 }));
+						                    $( '.filter-column-4 option[value=""]' ).prop( 'selected', true ).trigger('change');
+						                    $( '.filter-column-5' ).val( data.categorie[0]["categorie"] );
+						                    $( '.filter-column-5' ).focus();
+						                    $( '.filter-column-5' ).trigger($.Event('keyup', { keycode: 13 }));
 						                    
 						                    $("td div.details-control", $('#tab-categories').dataTable().fnGetNodes( index )).click();
 
@@ -709,11 +748,12 @@
 								
 						    	var params = {
 									"_token": document.getElementsByName("_token")[0].value,
-									"laboratoire": select.data()[8],
+									"country": select.data()[10],
+									"laboratoire": select.data()[9],
 									"nom": document.getElementById("copyCategorieNom").value,
 									"annee": document.getElementById("copyCategorieAnnee").value,
 									"produits": produits,
-									"especes": select.data()[7] != null ? select.data()[7].split("|") : null
+									"especes": select.data()[8] != null ? select.data()[8].split("|") : null
 								};
 								
 						    	$.ajax({
@@ -742,34 +782,13 @@
 						                    // Affichage du laboratoire
 						                    var laboratoire = data.categorie[0]["laboratoire_id"] != null ? data.categorie[0]["laboratoire"] : "@lang('amadeo.categories.seller-multiple')";
 						                    
-						                    // Affichage des espèces
-						                    var especes = "";
-											var isFirst = true;
-											var liste_especes = null;
-											if (data.categorie[0]["especes"] != null)
-											{
-												liste_especes = data.categorie[0]["especes"].split("|");
-											}
-											@foreach (Session::get('list_of_species') as $espece)
-												if (liste_especes != null && liste_especes.includes('{{ $espece->id }}'))
-												{
-													if (isFirst)
-													{
-														isFirst = false;
-													} else {
-														especes += ", ";
-													}
-													especes += '{{ $espece->nom }}';
-												}
-											@endforeach
-
 											// Mise à jour du tableau
-						                    var index = $('#tab-categories').dataTable().fnAddData( [ null, data.categorie[0]["annee"], especes, laboratoire, data.categorie[0]["categorie"], data.categorie[0]["nb_produits"], data.categorie[0]["id"], data.categorie[0]["especes"], data.categorie[0]["laboratoire_id"] ] );
+						                    var index = $('#tab-categories').dataTable().fnAddData( [ null, data.categorie[0]["country"], data.categorie[0]["annee"], ata.categorie[0]["especes_noms"], laboratoire, data.categorie[0]["categorie"], data.categorie[0]["nb_produits"], data.categorie[0]["id"], data.categorie[0]["especes"], data.categorie[0]["laboratoire_id"], data.categorie[0]["country_id"] ] );
 						                    $('#tab-categories tbody > tr.selected').first().removeClass('selected');
 
-						                    $( '.filter-column-4' ).val( data.categorie[0]["categorie"] );
-						                    $( '.filter-column-4' ).focus();
-						                    $( '.filter-column-4' ).trigger($.Event('keyup', { keycode: 13 }));
+						                    $( '.filter-column-5' ).val( data.categorie[0]["categorie"] );
+						                    $( '.filter-column-5' ).focus();
+						                    $( '.filter-column-5' ).trigger($.Event('keyup', { keycode: 13 }));
 						                    
 						                    $("td div.details-control", $('#tab-categories').dataTable().fnGetNodes( index )).click();
 						                }
@@ -785,7 +804,7 @@
 				    	var ids = [];
 
 				    	$('#tab-categories tbody > tr.selected').each(function() {
-                        	ids.push(table.row( $(this) ).data()[6]);
+                        	ids.push(table.row( $(this) ).data()[7]);
                         });
                         
 				    	if (ids.length > 0)
@@ -859,11 +878,11 @@
 						    	if (index == 0)
 						    	{
 						    		$(this).html('<div class="details-control"></div>');
-						    	} else if (index == 4)
+						    	} else if (index == 5)
 						    	{
 						    		$(this).addClass('width-50');
 						    		$(this).html('<div class="texte" title="' + $(this).html() + '">' + $(this).html() + '</div>');
-						    	} else if (index == 5)
+						    	} else if (index == 6)
 						    	{
 						    		$(this).html('<div class="nombre">' + $(this).html() + '</div>');
 						    	} else
@@ -872,8 +891,8 @@
 						    	}
 						    });
 						    loadDatatableProduits(row.data());
-			            	loadDivCommentaires(row.data()[6]);
-							createSelectForRow(tr, row.data()[6]);
+			            	loadDivCommentaires(row.data()[7]);
+							createSelectForRow(tr, row.data()[7]);
 					        row.child( '<div>' + format( row.data() ) + '</div>' ).show();
 				            row.child().addClass('child');
 	            		},
@@ -888,7 +907,7 @@
 			    	var rowPrevData = table.row( trPrev ).data();
 
 			    	// Récupération des informations
-			    	var id = rowPrevData[6];
+			    	var id = rowPrevData[7];
 			    	var nom = trPrev.children().find('input').eq(0).val();
 			    	var especes = getCheckboxRadioValueByName('especes_' + id + '[]');
 			    	var produits = [];
@@ -897,7 +916,7 @@
                     	{
                     		produits.push({
                     			"categorie_id": id,
-                    			"produit_id": $('#tab-categorie-produits-' + id).DataTable().row( $(this) ).data()[3]
+                    			"produit_id": $('#tab-categorie-produits-' + id).DataTable().row( $(this) ).data()[4]
                     		});
                     	}
                     });
@@ -964,11 +983,11 @@
 											}
 										@endforeach
 
-					                    rowPrevData[4] = params["nom"];
+					                    rowPrevData[5] = params["nom"];
 									    trPrev.children().eq(4).attr('title', params["nom"]);
-					                    rowPrevData[2] = especes;
-								    	rowPrevData[5] = produits.length;
-								    	rowPrevData[7] = params["especes"].join("|");
+					                    rowPrevData[3] = especes;
+								    	rowPrevData[6] = produits.length;
+								    	rowPrevData[8] = params["especes"].join("|");
 
 								    	$('#tab-categories').dataTable().fnUpdate(rowPrevData,trPrev,undefined,false);
 
@@ -977,11 +996,11 @@
 									    	if (index == 0)
 									    	{
 									    		$(this).html('<div class="details-control"></div>');
-									    	} else if (index == 4)
+									    	} else if (index == 5)
 									    	{
 									    		$(this).addClass('width-50');
 									    		$(this).html('<div class="texte" title="' + $(this).html() + '">' + $(this).html() + '</div>');
-									    	} else if (index == 5)
+									    	} else if (index == 6)
 									    	{
 									    		$(this).html('<div class="nombre">' + $(this).html() + '</div>');
 									    	} else

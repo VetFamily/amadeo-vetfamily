@@ -97,7 +97,7 @@ class CategorieProduitAjaxController extends Controller
   public function showListOfProducts(Request $request, ProduitRepository $produitRepository)
   {
     // Recherche des produits candidats
-    $produits = $produitRepository->findListCandidatsByLaboratoireAndCategorie($request->laboratoire, $request->produits);
+    $produits = $produitRepository->findListCandidatsByLaboratoireAndCategorie($request->country, $request->laboratoire, $request->produits);
     
     return response()->json($produits);
   }

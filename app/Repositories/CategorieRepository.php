@@ -20,7 +20,8 @@ class CategorieRepository implements CategorieRepositoryInterface
 	public function findAll($laboratoireId)
 	{
 		$query = $this->categorie
-        			->select('categories.nom AS categorie', 'categories.annee AS annee', DB::raw("COALESCE(laboratoires.nom, 'Multi-laboratoires') AS laboratoire"), DB::raw("count(categorie_produit.id) AS nb_produits"), 'categories.id', 'liste_especes.especes', 'categories.laboratoire_id')
+					->select('categories.nom AS categorie', 'categories.annee AS annee', DB::raw("COALESCE(laboratoires.nom, 'Multi-laboratoires') AS laboratoire"), DB::raw("count(categorie_produit.id) AS nb_produits"), 'categories.id', 'liste_especes.especes', 'liste_especes.especes_noms', 'categories.laboratoire_id', 'categories.country_id', 'ctry_name as country')
+					->join('ed_country', 'ctry_id', '=', 'categories.country_id')
         			->leftJoin('laboratoires','laboratoires.id', '=', 'categories.laboratoire_id')
         			->leftJoin('categorie_produit', 'categorie_produit.categorie_id', '=' ,'categories.id')
         			->leftJoin('produits', function($join)
@@ -29,14 +30,15 @@ class CategorieRepository implements CategorieRepositoryInterface
         					$join->where('produits.invisible', '=', '0');
 
         				})
-					->leftJoin(DB::raw("(select categorie_espece.categorie_id, string_agg(categorie_espece.espece_id::character, '|') AS especes
-						    from categorie_espece
-						    group by categorie_espece.categorie_id
+					->leftJoin(DB::raw("(select ce.categorie_id, string_agg(ce.espece_id::character, '|') AS especes, string_agg(e.nom, ',' order by e.nom) AS especes_noms
+							from categorie_espece ce
+							join especes e on e.id = ce.espece_id
+						    group by ce.categorie_id
 						) liste_especes"),function($join){
 						$join->on("liste_especes.categorie_id","=","categories.id");
 					})
 					->where('categories.obsolete', '=', '0')
-					->groupBy('categorie', 'laboratoire', 'categories.id', 'liste_especes.especes');
+					->groupBy('categorie', 'laboratoire', 'categories.id', 'liste_especes.especes', 'liste_especes.especes_noms', 'country_id', 'country');
 
 		if ($laboratoireId != null)
 		{
@@ -49,7 +51,8 @@ class CategorieRepository implements CategorieRepositoryInterface
 	public function findById($id)
 	{
 		$query = $this->categorie
-        			->select('categories.nom AS categorie', 'categories.annee AS annee', DB::raw("COALESCE(laboratoires.nom, 'Multi-laboratoires') AS laboratoire"), DB::raw("count(categorie_produit.id) AS nb_produits"), 'categories.id', 'liste_especes.especes', 'categories.laboratoire_id')
+        			->select('categories.nom AS categorie', 'categories.annee AS annee', DB::raw("COALESCE(laboratoires.nom, 'Multi-laboratoires') AS laboratoire"), DB::raw("count(categorie_produit.id) AS nb_produits"), 'categories.id', 'liste_especes.especes', 'liste_especes.especes_noms', 'categories.laboratoire_id', 'categories.country_id', 'ctry_name as country')
+					->join('ed_country', 'ctry_id', '=', 'categories.country_id')
         			->leftJoin('laboratoires','laboratoires.id', '=', 'categories.laboratoire_id')
         			->leftJoin('categorie_produit', 'categorie_produit.categorie_id', '=' ,'categories.id')
         			->leftJoin('produits', function($join)
@@ -58,15 +61,16 @@ class CategorieRepository implements CategorieRepositoryInterface
         					$join->where('produits.invisible', '=', '0');
 
         				})
-					->leftJoin(DB::raw("(select categorie_espece.categorie_id, string_agg(categorie_espece.espece_id::character, '|') AS especes
-						    from categorie_espece
-						    group by categorie_espece.categorie_id
+					->leftJoin(DB::raw("(select ce.categorie_id, string_agg(ce.espece_id::character, '|') AS especes, string_agg(e.nom, ',' order by e.nom) AS especes_noms
+							from categorie_espece ce
+							join especes e on e.id = ce.espece_id
+							group by ce.categorie_id
 						) liste_especes"),function($join){
 						$join->on("liste_especes.categorie_id","=","categories.id");
 					})
 					->where('categories.obsolete', '=', '0')
 					->where('categories.id', '=', $id)
-					->groupBy('categorie', 'laboratoire', 'categories.id', 'liste_especes.especes');
+					->groupBy('categorie', 'laboratoire', 'categories.id', 'liste_especes.especes', 'liste_especes.especes_noms', 'country_id', 'country');
 
         return $query->get();
 	}
