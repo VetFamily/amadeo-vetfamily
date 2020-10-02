@@ -141,7 +141,7 @@ class EtatsObjectifRepository implements EtatsObjectifRepositoryInterface
 						join produits p on p.id = cpr.produit_id
 						left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and (a.date between to_date('01/' || EXTRACT(MONTH from o.date_debut) || '/' || cat.annee, 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from o.date_fin) || '/' || cat.annee, 'DD/MM/YYYY')))
 						join centrale_clinique cc on cc.id = a.centrale_clinique_id 
-						join cliniques c on c.id = cc.clinique_id
+						join cliniques c on c.id = cc.clinique_id and c.country_id = cat.country_id
 						left join produit_valorisations pv on pv.produit_id = p.id and ((a.date between pv.date_debut and pv.date_fin) or (a.date >= pv.date_debut and pv.date_fin is null))
 						left join centrale_produit cp on cp.id = a.centrale_produit_id
 						left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = cp.id and a.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
@@ -177,7 +177,7 @@ class EtatsObjectifRepository implements EtatsObjectifRepositoryInterface
 						join produits p on p.id = cpr.produit_id
 						left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and (a.date between to_date('01/' || EXTRACT(MONTH from o.date_debut) || '/' || (cat.annee-1), 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from o.date_fin) || '/' || (cat.annee-1), 'DD/MM/YYYY')))
 						join centrale_clinique cc on cc.id = a.centrale_clinique_id 
-						join cliniques c on c.id = cc.clinique_id
+						join cliniques c on c.id = cc.clinique_id and c.country_id = cat.country_id
 						left join produit_valorisations pv on pv.produit_id = p.id and ((a.date between pv.date_debut and pv.date_fin) or (a.date >= pv.date_debut and pv.date_fin is null))
 						left join centrale_produit cp on cp.id = a.centrale_produit_id
 						left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = cp.id and a.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
@@ -253,6 +253,7 @@ class EtatsObjectifRepository implements EtatsObjectifRepositoryInterface
 								join cliniques c on c.id = cc.clinique_id
 									and extract(year from c.date_entree) <= cat.annee
 									and c.obsolete is false
+									and c.country_id = cat.country_id
 								left join produit_valorisations pv on pv.produit_id = p.id
 									and ((a.date between pv.date_debut and pv.date_fin) or (a.date >= pv.date_debut and pv.date_fin is null))
 								left join centrale_produit cp on cp.id = a.centrale_produit_id
@@ -297,6 +298,7 @@ class EtatsObjectifRepository implements EtatsObjectifRepositoryInterface
 								join cliniques c on c.id = cc.clinique_id
 									and extract(year from c.date_entree) <= cat.annee
 									and c.obsolete is false
+									and c.country_id = cat.country_id
 								left join produit_valorisations pv on pv.produit_id = p.id
 									and ((a.date between pv.date_debut and pv.date_fin) or (a.date >= pv.date_debut and pv.date_fin is null))
 								left join centrale_produit cp on cp.id = a.centrale_produit_id
@@ -371,6 +373,7 @@ class EtatsObjectifRepository implements EtatsObjectifRepositoryInterface
 								join cliniques c on c.id = cc.clinique_id
 									and extract(year from c.date_entree) <= cat.annee
 									and c.obsolete is false
+									and c.country_id = cat.country_id
 								left join produit_valorisations pv on pv.produit_id = p.id
 									and ((a.date between pv.date_debut and pv.date_fin) or (a.date >= pv.date_debut and pv.date_fin is null))
 								left join centrale_produit cp on cp.id = a.centrale_produit_id
@@ -415,6 +418,7 @@ class EtatsObjectifRepository implements EtatsObjectifRepositoryInterface
 								join cliniques c on c.id = cc.clinique_id
 									and extract(year from c.date_entree) <= cat.annee
 									and c.obsolete is false
+									and c.country_id = cat.country_id
 								left join produit_valorisations pv on pv.produit_id = p.id
 									and ((a.date between pv.date_debut and pv.date_fin) or (a.date >= pv.date_debut and pv.date_fin is null))
 								left join centrale_produit cp on cp.id = a.centrale_produit_id

@@ -237,6 +237,7 @@ class CliniqueRepository implements CliniqueRepositoryInterface
 						WHERE c.obsolete is false
 						and o.id = " . $objectifId . "
 						and EXTRACT(YEAR from c.date_entree) < (cat.annee + 1)
+						and c.country_id = cat.country_id
 					) cliniques_mois
 					LEFT JOIN
 					(
@@ -253,7 +254,7 @@ class CliniqueRepository implements CliniqueRepositoryInterface
 						JOIN produits ON produits.id = categorie_produit.produit_id
 						JOIN achats ON achats.produit_id = produits.id AND achats.obsolete IS FALSE
 						JOIN centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
-						JOIN cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.obsolete is false
+						JOIN cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.obsolete is false and cliniques.country_id = categories.country_id
 						LEFT JOIN produit_valorisations ON produit_valorisations.produit_id = achats.produit_id AND ((achats.date between produit_valorisations.date_debut AND produit_valorisations.date_fin) 
 							or (achats.date >= produit_valorisations.date_debut AND produit_valorisations.date_fin is null))
 						LEFT JOIN centrale_produit ON centrale_produit.id = achats.centrale_produit_id
@@ -396,7 +397,7 @@ class CliniqueRepository implements CliniqueRepositoryInterface
 
 		$query .= "
 							join centrale_clinique cc on cc.id = a.centrale_clinique_id 
-							join cliniques c on c.id = cc.clinique_id
+							join cliniques c on c.id = cc.clinique_id and c.country_id = cat.country_id
 							left join produit_valorisations pv on pv.produit_id = p.id and ((a.date between pv.date_debut and pv.date_fin) or (a.date >= pv.date_debut and pv.date_fin is null))
 							left join centrale_produit cp on cp.id = a.centrale_produit_id
 							left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = cp.id and a.date = cpt.date_creation and cpt.qte_tarif::numeric = 1

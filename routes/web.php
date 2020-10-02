@@ -81,7 +81,8 @@ Route::get('objectifs',
 	['as' => 'page.objectifs', 'middleware' => 'auth', 'uses' => 'Commun\HeaderController@showObjectifs']);
 Route::get('downloadObjectifParCliniquesCSV/{objectifId}/{annee}', 
 	['as' => 'page.objectifs-downloadParCliniquesCSV', 'middleware' => 'auth', 'uses' => 'Statistiques\StatistiquesObjectifsController@downloadObjectifParCliniquesCSV']);
-Route::post('getCategoriesObjectifAjax', ['middleware' => 'auth', 'uses' => 'UtilsController@searchCategorieByAnneeAndLaboratoire']);
+Route::post('getCategoriesObjectifAjax', ['middleware' => 'auth', 'uses' => 'UtilsController@searchCategorieByCountryAndYearAndSupplier']);
+Route::post('getLaboratoiresObjectifAjax', ['middleware' => 'auth', 'uses' => 'UtilsController@searchSuppliersByCountryAndYear']);
 Route::resource('objectif-ajax', 'Ajax\ObjectifAjaxController');
 Route::resource('objectif-produit-ajax', 'Ajax\ObjectifProduitAjaxController');
 

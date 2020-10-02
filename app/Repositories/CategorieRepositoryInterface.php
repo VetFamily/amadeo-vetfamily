@@ -16,5 +16,5 @@ interface CategorieRepositoryInterface
 
 	public function findByParams($moisDeb, $anneeDeb, $moisFin, $anneeFin, $cliniques, $anneesCliniques, $laboratoires, $types, $especes);
 
-	public function findByAnneeAndLaboratoire($annee, $laboratoireId);
+	public function findByCountryAndYearAndSupplier($countryId, $year, $supplierId);
 }

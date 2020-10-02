@@ -57,7 +57,7 @@ class LaboratoireRepository implements LaboratoireRepositoryInterface
 								join laboratoires l on l.id = p.laboratoire_id
 								left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and (a.date between '" . $startDate . "' and '" . $endDate . "') and (extract(month from a.date) between extract(month from o.date_debut) and extract(month from o.date_fin))
 								join centrale_clinique cc on cc.id = a.centrale_clinique_id 
-								join cliniques c on c.id = cc.clinique_id
+								join cliniques c on c.id = cc.clinique_id and c.country_id = categories.country_id
 								left join produit_valorisations pv on pv.produit_id = p.id and ((a.date between pv.date_debut and pv.date_fin) or (a.date >= pv.date_debut and pv.date_fin is null))
 								left join centrale_produit cp on cp.id = a.centrale_produit_id
 								left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = cp.id and a.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
@@ -109,7 +109,7 @@ class LaboratoireRepository implements LaboratoireRepositoryInterface
 							join categories on categories.id = categorie_produit.categorie_id
 							join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE 
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
-							join cliniques on cliniques.id = centrale_clinique.clinique_id
+							join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 							where laboratoires.obsolete is false
 							and objectifs.obsolete is false
 							and produits.invisible is false
@@ -160,7 +160,7 @@ class LaboratoireRepository implements LaboratoireRepositoryInterface
 							join categories on categories.id = categorie_produit.categorie_id
 							join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and achats.date between '" . $dateDeb . "' and '" . $dateFin . "'
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
-							join cliniques on cliniques.id = centrale_clinique.clinique_id
+							join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 							where laboratoires.id = " . $laboratoireId . "
 							and produits.invisible is false
 							and cliniques.id = " . $cliniqueId . "
@@ -174,5 +174,17 @@ class LaboratoireRepository implements LaboratoireRepositoryInterface
 		return DB::select(DB::raw($query));
 	}
 
+	public function findByCategoryForCountryAndYear($countryId, $year)
+	{
+		$query = $this->laboratoire
+					->select('laboratoires.id', 'laboratoires.nom', DB::raw('upper(laboratoires.nom)'))
+					->join('categories', 'categories.laboratoire_id', '=', 'laboratoires.id')
+					->where('laboratoires.obsolete', '=', '0')
+					->where('categories.annee', '=', $year)
+					->where('categories.country_id', '=', $countryId)
+					->orderBy(DB::raw('upper(laboratoires.nom)'));
+
+        return $query->distinct()->get();
+	}
 
 }

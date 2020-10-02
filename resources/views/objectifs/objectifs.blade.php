@@ -62,6 +62,7 @@
 							<thead>
 								<tr>
 									<th></th>
+									<th>@lang('amadeo.categories.country')</th>
 									<th>@lang('amadeo.categories.year')</th>
 									<th>@lang('amadeo.categories.specie')</th>
 									<th>@lang('amadeo.categories.seller')</th>
@@ -77,6 +78,7 @@
 								</tr>
 								<tr id='forFilters'>
 									<th class='star-filter'></th>
+									<th class='select-filter'></th>
 									<th class='select-filter'></th>
 									<th class='text-filter'></th>
 									<th class='select-filter'></th>
@@ -103,6 +105,9 @@
 								<h4 class="modal-title">@lang('amadeo.targets.add.title')</h4>
 						    </div>
 						    <div class="modal-body flex-column">
+						    	<div id="divCountryObjectif" class="form-group">
+					                <label class="label_text">@lang('amadeo.categories.country') <select id="selectObjectifCountry" autofocus><option value="">@lang("amadeo.list.message")</option></select></label>
+					            </div>
 						    	<div id="divAnneeObjectif" class="form-group">
 					                <label class="label_text">@lang('amadeo.categories.year') <input type="text" id="addObjectifAnnee"></label>
 					            </div>
@@ -133,6 +138,9 @@
 								<h4 class="modal-title">@lang('amadeo.targets.copy.title')</h4>
 						    </div>
 						    <div class="modal-body flex-column">
+						    	<div id="divCountryObjectif" class="form-group">
+					                <label class="label_text">@lang('amadeo.categories.country') <p id="copyObjectifCountry"></label>
+					            </div>
 						    	<div id="divAnneeObjectif" class="form-group">
 					                <label class="label_text">@lang('amadeo.categories.year') <p id="copyObjectifAnnee"></label>
 					            </div>

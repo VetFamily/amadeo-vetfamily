@@ -128,7 +128,7 @@ class CategorieRepository implements CategorieRepositoryInterface
 					join produits on produits.id = categorie_produit.produit_id
 					left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between '" . $dateDeb . "' and '" . $dateFin . "')
 					join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
-					join cliniques on cliniques.id = centrale_clinique.clinique_id
+					join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 					join produit_type on produits.id = produit_type.produit_id 
 					join types on types.id = produit_type.type_id and types.id " . ($types != null && count($types) > 0 ? ("in (".implode(",", $types).")") : "is null") . " 
 					join espece_produit on produits.id = espece_produit.produit_id 
@@ -150,7 +150,7 @@ class CategorieRepository implements CategorieRepositoryInterface
 					join produits on produits.id = categorie_produit.produit_id
 					left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and (achats.date between '" . $dateDebPrec . "' and '" . $dateFinPrec . "')
 					join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
-					join cliniques on cliniques.id = centrale_clinique.clinique_id
+					join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 					join produit_type on produits.id = produit_type.produit_id 
 					join types on types.id = produit_type.type_id and types.id " . ($types != null && count($types) > 0 ? ("in (".implode(",", $types).")") : "is null") . " 
 					join espece_produit on produits.id = espece_produit.produit_id 
@@ -171,16 +171,17 @@ class CategorieRepository implements CategorieRepositoryInterface
         return $result;
 	}
 
-	public function findByAnneeAndLaboratoire($annee, $laboratoireId)
+	public function findByCountryAndYearAndSupplier($countryId, $year, $supplierId)
 	{
 		$query = $this->categorie
-					->select('categories.id', 'categories.nom', 'categories.annee', 'categories.laboratoire_id')
+					->select('categories.id', 'categories.nom', 'categories.annee', 'categories.laboratoire_id', DB::raw('upper(left(categories.nom, 1))'))
 					->where('categories.obsolete', '=', '0')
-					->where('annee', '=', $annee)
-					->where('laboratoire_id', '=', $laboratoireId)
+					->where('annee', '=', $year)
+					->where('laboratoire_id', '=', $supplierId)
+					->where('country_id', '=', $countryId)
 					->orderBy(DB::raw('upper(left(categories.nom, 1))'));
 
-        return $query->get();
+        return $query->distinct()->get();
 	}
 
 }

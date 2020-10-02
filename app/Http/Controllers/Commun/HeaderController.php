@@ -122,6 +122,7 @@ class HeaderController extends Controller
         Session::put('list_of_species', $this->especeRepository->findAll());
         Session::put('types_objectif_liste', $this->typeObjectifRepository->findAll());
         Session::put('types_valorisations_liste', $this->typeValorisationObjectifRepository->findAll());
+        Session::put('list_of_countries', $this->countryRepository->findAll());
         
         return view('objectifs/objectifs');
     }

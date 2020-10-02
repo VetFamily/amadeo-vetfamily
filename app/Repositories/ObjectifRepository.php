@@ -112,9 +112,10 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 
 	public function findByLaboratoireIdAndMoisFin($laboratoireId, $moisFin)
 	{
-		$query = "select distinct o.id as id, o.nom as objectif, o.valeur as valeur, o.suivi, o.type_objectif_id AS type_obj, o.pourcentage_remise, o.pourcentage_remise_source, cat.annee as annee, cat.nom as categorie, l.nom as laboratoire, liste_especes.especes, liste_especes.especes_noms, o.valeur_ca AS ca_periode, o.valeur_ca_prec AS ca_periode_prec, o.manque_valo_periode, o.manque_valo_periode_prec, o.ecart, o.ecart_unite 
+		$query = "select distinct o.id as id, o.nom as objectif, o.valeur as valeur, o.suivi, o.type_objectif_id AS type_obj, o.pourcentage_remise, o.pourcentage_remise_source, cat.annee as annee, cat.nom as categorie, l.nom as laboratoire, liste_especes.especes, liste_especes.especes_noms, o.valeur_ca AS ca_periode, o.valeur_ca_prec AS ca_periode_prec, o.manque_valo_periode, o.manque_valo_periode_prec, o.ecart, o.ecart_unite, ctry_name as country
 			from objectifs o
 			join categories cat on cat.id = o.categorie_id 
+			join ed_country ctry on ctry_id = cat.country_id
 			left join laboratoires l on l.id = cat.laboratoire_id 
 			left join (
 				select categorie_espece.categorie_id, string_agg(categorie_espece.espece_id::character, '|') AS especes, string_agg(especes.nom::character varying(100), ', ' order by especes.nom) AS especes_noms
@@ -153,9 +154,10 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 			 	WHEN 'Valorisation en volume' THEN liste_produits.unite_valo_volume
 			 	ELSE NULL
 			 END) AS unite_valo_volume, 
-			objectifs.suivi, objectifs.sans_engagement, objectifs.type_objectif_id AS type_obj, EXTRACT(MONTH from objectifs.date_debut) AS mois_debut, EXTRACT(MONTH from objectifs.date_fin) AS mois_fin, objectifs.type_valorisation_objectif_id AS type_val_obj, objectifs.pourcentage_decote, objectifs.pourcentage_remise, objectifs.pourcentage_remise_source, objectifs.valorisation_laboratoire, objectifs.valorisation_remise, objectifs.remise_additionnelle, objectifs.objectif_conditionne_id AS obj_conditionne, objectifs.objectif_precedent_id AS obj_precedent, objectifs.incrementiel, obj_suivant.id AS obj_suivant, categories.annee as annee, categories.nom as categorie, laboratoires.nom as laboratoire, liste_especes.especes, liste_especes.especes_noms, objectifs.valeur_ca AS ca_periode, objectifs.valeur_ca_prec AS ca_periode_prec, objectifs.valeur_ca_total_prec AS ca_periode_total_prec, objectifs.manque_valo_periode, objectifs.manque_valo_periode_prec 
+			objectifs.suivi, objectifs.sans_engagement, objectifs.type_objectif_id AS type_obj, EXTRACT(MONTH from objectifs.date_debut) AS mois_debut, EXTRACT(MONTH from objectifs.date_fin) AS mois_fin, objectifs.type_valorisation_objectif_id AS type_val_obj, objectifs.pourcentage_decote, objectifs.pourcentage_remise, objectifs.pourcentage_remise_source, objectifs.valorisation_laboratoire, objectifs.valorisation_remise, objectifs.remise_additionnelle, objectifs.objectif_conditionne_id AS obj_conditionne, objectifs.objectif_precedent_id AS obj_precedent, objectifs.incrementiel, obj_suivant.id AS obj_suivant, ctry_name as country, categories.annee as annee, categories.nom as categorie, laboratoires.nom as laboratoire, liste_especes.especes, liste_especes.especes_noms, objectifs.valeur_ca AS ca_periode, objectifs.valeur_ca_prec AS ca_periode_prec, objectifs.valeur_ca_total_prec AS ca_periode_total_prec, objectifs.manque_valo_periode, objectifs.manque_valo_periode_prec 
 			from objectifs 
 			join categories on categories.id = objectifs.categorie_id 
+			join ed_country ctry on ctry_id = categories.country_id
 			left join laboratoires on laboratoires.id = categories.laboratoire_id 
 			left join (
 				select categorie_espece.categorie_id, string_agg(categorie_espece.espece_id::character, '|') AS especes, string_agg(especes.nom::character varying(100), ', ' order by especes.nom) AS especes_noms
@@ -189,15 +191,16 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 
 	public function findCAById($id, $typeValorisation, $moisFin)
 	{
-		$query = "select id, nom, annee, categorie, laboratoire, especes, especes_noms, ca_periode, ca_periode_prec, ca_periode_total_prec, manque_valo_periode, manque_valo_periode_prec
+		$query = "select id, nom, country, annee, categorie, laboratoire, especes, especes_noms, ca_periode, ca_periode_prec, ca_periode_total_prec, manque_valo_periode, manque_valo_periode_prec
 				from ( ";
 
 		switch ($typeValorisation) {
 			case 1:
 				$query .= "
-					(select objectifs.id as id, objectifs.nom, categories.annee as annee, categories.nom as categorie, laboratoires.nom as laboratoire, liste_especes.especes, liste_especes.especes_noms, calcul_periode.ca_periode AS ca_periode, calcul_periode_prec.ca_periode AS ca_periode_prec, calcul_periode_total_prec.ca_periode AS ca_periode_total_prec, objectifs.manque_valo_periode AS manque_valo_periode, objectifs.manque_valo_periode_prec AS manque_valo_periode_prec 
+					(select objectifs.id as id, objectifs.nom, ctry_name as country, categories.annee as annee, categories.nom as categorie, laboratoires.nom as laboratoire, liste_especes.especes, liste_especes.especes_noms, calcul_periode.ca_periode AS ca_periode, calcul_periode_prec.ca_periode AS ca_periode_prec, calcul_periode_total_prec.ca_periode AS ca_periode_total_prec, objectifs.manque_valo_periode AS manque_valo_periode, objectifs.manque_valo_periode_prec AS manque_valo_periode_prec 
 					from objectifs 
 					join categories on categories.id = objectifs.categorie_id 
+					join ed_country ctry on ctry_id = categories.country_id
 					left join laboratoires on laboratoires.id = categories.laboratoire_id 
 					left join (
 						select categorie_espece.categorie_id, string_agg(categorie_espece.espece_id::character varying(10), '|' order by categorie_espece.espece_id) AS especes, string_agg(especes.nom::character varying(100), ', ' order by especes.nom) AS especes_noms
@@ -215,7 +218,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
-							join cliniques on cliniques.id = centrale_clinique.clinique_id
+							join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY'))		 
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1) 
@@ -233,7 +236,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
-							join cliniques on cliniques.id = centrale_clinique.clinique_id
+							join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 							where achats.date between ";
 
 				if ($moisFin != null) {
@@ -266,7 +269,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
-							join cliniques on cliniques.id = centrale_clinique.clinique_id
+							join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY'))
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
@@ -278,7 +281,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 
 			case 2:
 				$query .= "
-					(select objectifs.id as id, objectifs.nom, categories.annee as annee, categories.nom as categorie, laboratoires.nom as laboratoire, liste_especes.especes, liste_especes.especes_noms, calcul_periode.ca_periode AS ca_periode, calcul_periode_prec.ca_periode AS ca_periode_prec, calcul_periode_total_prec.ca_periode AS ca_periode_total_prec, produits_periode.manque AS manque_valo_periode, produits_periode_prec.manque AS manque_valo_periode_prec  
+					(select objectifs.id as id, objectifs.nom, ctry_name as country, categories.annee as annee, categories.nom as categorie, laboratoires.nom as laboratoire, liste_especes.especes, liste_especes.especes_noms, calcul_periode.ca_periode AS ca_periode, calcul_periode_prec.ca_periode AS ca_periode_prec, calcul_periode_total_prec.ca_periode AS ca_periode_total_prec, produits_periode.manque AS manque_valo_periode, produits_periode_prec.manque AS manque_valo_periode_prec  
 					from
 					(
 						select (CASE WHEN count(*) > 0 THEN true ELSE false END) AS manque
@@ -303,7 +306,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
-							join cliniques on cliniques.id = centrale_clinique.clinique_id
+							join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 							join centrale_produit on centrale_produit.id = achats.centrale_produit_id
 							join centrale_produit_tarifs cpt on cpt.centrale_produit_id = centrale_produit.id and achats.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
 							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY'))
@@ -346,7 +349,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
-							join cliniques on cliniques.id = centrale_clinique.clinique_id
+							join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 							join centrale_produit on centrale_produit.id = achats.centrale_produit_id
 							join centrale_produit_tarifs cpt on cpt.centrale_produit_id = centrale_produit.id and achats.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
 							where achats.date between ";
@@ -368,6 +371,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 					) produits_periode_prec,
 					objectifs 
 					join categories on categories.id = objectifs.categorie_id 
+					join ed_country ctry on ctry_id = categories.country_id
 					left join laboratoires on laboratoires.id = categories.laboratoire_id 
 					left join (
 						select categorie_espece.categorie_id, string_agg(categorie_espece.espece_id::character varying(10), '|' order by categorie_espece.espece_id) AS especes, string_agg(especes.nom::character varying(100), ', ' order by especes.nom) AS especes_noms
@@ -384,7 +388,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
-							join cliniques on cliniques.id = centrale_clinique.clinique_id
+							join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 							left join centrale_produit on centrale_produit.id = achats.centrale_produit_id
 							left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = centrale_produit.id and achats.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
 							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY'))
@@ -404,7 +408,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
-							join cliniques on cliniques.id = centrale_clinique.clinique_id
+							join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 							left join centrale_produit on centrale_produit.id = achats.centrale_produit_id
 							left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = centrale_produit.id and achats.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
 							where achats.date between ";
@@ -435,7 +439,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
-							join cliniques on cliniques.id = centrale_clinique.clinique_id
+							join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 							left join centrale_produit on centrale_produit.id = achats.centrale_produit_id
 							left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = centrale_produit.id and achats.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
 							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY'))
@@ -449,7 +453,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 
 			case 3:
 				$query .= "
-					(select objectifs.id as id, objectifs.nom, categories.annee as annee, categories.nom as categorie, laboratoires.nom as laboratoire, liste_especes.especes, liste_especes.especes_noms,
+					(select objectifs.id as id, objectifs.nom, ctry_name as country, categories.annee as annee, categories.nom as categorie, laboratoires.nom as laboratoire, liste_especes.especes, liste_especes.especes_noms,
 						(CASE objectifs.valorisation_laboratoire 
 						 	WHEN 'Valorisation en euros' THEN calcul_periode.ca_periode_valo1
 						 	WHEN 'Valorisation en volume' THEN calcul_periode.ca_periode_valo2
@@ -490,7 +494,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
-							join cliniques on cliniques.id = centrale_clinique.clinique_id
+							join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 							join produit_valorisations on produit_valorisations.produit_id = categorie_produit.produit_id
 							join produits on produits.id = categorie_produit.produit_id
 							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY'))
@@ -534,7 +538,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
-							join cliniques on cliniques.id = centrale_clinique.clinique_id
+							join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 							join produit_valorisations on produit_valorisations.produit_id = categorie_produit.produit_id
 							join produits on produits.id = categorie_produit.produit_id
 							where achats.date between ";
@@ -557,6 +561,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 					) produits_periode_prec,
 					objectifs 
 					join categories on categories.id = objectifs.categorie_id 
+					join ed_country ctry on ctry_id = categories.country_id
 					left join laboratoires on laboratoires.id = categories.laboratoire_id 
 					left join (
 						select categorie_espece.categorie_id, string_agg(categorie_espece.espece_id::character varying(10), '|' order by categorie_espece.espece_id) AS especes, string_agg(especes.nom::character varying(100), ', ' order by especes.nom) AS especes_noms
@@ -574,7 +579,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
-							join cliniques on cliniques.id = centrale_clinique.clinique_id
+							join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 							left join produit_valorisations on produit_valorisations.produit_id = categorie_produit.produit_id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
 							join produits on produits.id = categorie_produit.produit_id
 							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/'  || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY'))
@@ -594,7 +599,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
-							join cliniques on cliniques.id = centrale_clinique.clinique_id
+							join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 							left join produit_valorisations on produit_valorisations.produit_id = categorie_produit.produit_id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
 							join produits on produits.id = categorie_produit.produit_id
 							where achats.date between ";
@@ -625,7 +630,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							join categorie_produit on categorie_produit.id = categorie_produit_objectif.categorie_produit_id
 							join achats on achats.produit_id = categorie_produit.produit_id and achats.obsolete IS FALSE
 							join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id
-							join cliniques on cliniques.id = centrale_clinique.clinique_id
+							join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 							left join produit_valorisations on produit_valorisations.produit_id = categorie_produit.produit_id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
 							join produits on produits.id = categorie_produit.produit_id
 							where achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY'))
@@ -639,9 +644,10 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 
 			default:
 				$query .= " 
-					(select objectifs.id as id, objectifs.nom, categories.annee as annee, categories.nom as categorie, laboratoires.nom as laboratoire, liste_especes.especes, liste_especes.especes_noms, NULL AS ca_periode, NULL AS ca_periode_prec, NULL AS ca_periode_total_prec, objectifs.manque_valo_periode AS manque_valo_periode, objectifs.manque_valo_periode_prec AS manque_valo_periode_prec  
+					(select objectifs.id as id, objectifs.nom, ctry_name as country, categories.annee as annee, categories.nom as categorie, laboratoires.nom as laboratoire, liste_especes.especes, liste_especes.especes_noms, NULL AS ca_periode, NULL AS ca_periode_prec, NULL AS ca_periode_total_prec, objectifs.manque_valo_periode AS manque_valo_periode, objectifs.manque_valo_periode_prec AS manque_valo_periode_prec  
 					from objectifs 
 					join categories on categories.id = objectifs.categorie_id 
+					join ed_country ctry on ctry_id = categories.country_id
 					left join laboratoires on laboratoires.id = categories.laboratoire_id 
 					left join (
 						select categorie_espece.categorie_id, string_agg(categorie_espece.espece_id::character varying(10), '|' order by categorie_espece.espece_id) AS especes, string_agg(especes.nom::character varying(100), ', ' order by especes.nom) AS especes_noms
@@ -715,7 +721,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 								join produits p on p.id = cpr.produit_id
 								left outer join achats a on a.produit_id = p.id and a.obsolete IS FALSE and (a.date between '" . $startDate . "' and '" . $endDate . "') and (extract(month from a.date) between extract(month from o.date_debut) and extract(month from o.date_fin))
 								join centrale_clinique cc on cc.id = a.centrale_clinique_id 
-								join cliniques c on c.id = cc.clinique_id and c.obsolete is false
+								join cliniques c on c.id = cc.clinique_id and c.obsolete is false and c.country_id = cat.country_id
 								left join produit_valorisations pv on pv.produit_id = p.id and ((a.date between pv.date_debut and pv.date_fin) or (a.date >= pv.date_debut and pv.date_fin is null))
 								left join centrale_produit cp on cp.id = a.centrale_produit_id
 								left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = cp.id and a.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
@@ -825,7 +831,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									 	ELSE EXTRACT(MONTH from objectifs.date_fin)
 									 END || '/' || categories.annee, 'DD/MM/YYYY')))
 									join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
-									join cliniques on cliniques.id = centrale_clinique.clinique_id
+									join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 									left join produit_valorisations on produit_valorisations.produit_id = produits.id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
 									left join centrale_produit on centrale_produit.id = achats.centrale_produit_id
 									left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = centrale_produit.id and achats.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
@@ -936,7 +942,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									 	ELSE EXTRACT(MONTH from objectifs.date_fin)
 									 END || '/' || categories.annee, 'DD/MM/YYYY')))
 									join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
-									join cliniques on cliniques.id = centrale_clinique.clinique_id
+									join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 									left join produit_valorisations on produit_valorisations.produit_id = produits.id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
 									left join centrale_produit on centrale_produit.id = achats.centrale_produit_id
 									left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = centrale_produit.id and achats.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
@@ -1048,7 +1054,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									 	ELSE EXTRACT(MONTH from objectifs.date_fin)
 									 END || '/' || categories.annee, 'DD/MM/YYYY')))
 									join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
-									join cliniques on cliniques.id = centrale_clinique.clinique_id
+									join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 									left join produit_valorisations on produit_valorisations.produit_id = produits.id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
 									left join centrale_produit on centrale_produit.id = achats.centrale_produit_id
 									left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = centrale_produit.id and achats.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
@@ -1111,7 +1117,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									 	ELSE EXTRACT(MONTH from objectifs.date_fin)
 									 END || '/' || categories.annee, 'DD/MM/YYYY')))
 									join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
-									join cliniques on cliniques.id = centrale_clinique.clinique_id
+									join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 									left join produit_valorisations on produit_valorisations.produit_id = produits.id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
 									left join centrale_produit on centrale_produit.id = achats.centrale_produit_id
 									left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = centrale_produit.id and achats.date = cpt.date_creation and cpt.qte_tarif::numeric = 1
@@ -1161,7 +1167,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									join produits on produits.id = categorie_produit.produit_id
 									left outer join achats on achats.produit_id = produits.id and achats.obsolete IS FALSE and achats.date between to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || (categories.annee - 1), 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || (categories.annee - 1), 'DD/MM/YYYY'))
 									join centrale_clinique on centrale_clinique.id = achats.centrale_clinique_id 
-									join cliniques on cliniques.id = centrale_clinique.clinique_id
+									join cliniques on cliniques.id = centrale_clinique.clinique_id and cliniques.country_id = categories.country_id
 									left join produit_valorisations on produit_valorisations.produit_id = produits.id and ((achats.date between produit_valorisations.date_debut and produit_valorisations.date_fin) or (achats.date >= produit_valorisations.date_debut and produit_valorisations.date_fin is null))
 									left join centrale_produit on centrale_produit.id = achats.centrale_produit_id
 									left join centrale_produit_tarifs cpt on cpt.centrale_produit_id = centrale_produit.id and achats.date = cpt.date_creation and cpt.qte_tarif::numeric = 1

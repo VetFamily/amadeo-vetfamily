@@ -4,14 +4,14 @@
 	* Formate le détail d'une ligne.
 	*/
 	function format ( row, rowsData, target ) {
-		var idRow = row[13];
-		var isPalier = (row[5][0] == 1) ? false : true;
+		var idRow = row[14];
+		var isPalier = (row[6][0] == 1) ? false : true;
 
 		// Type d'objectif
 		var html_types = '<tr><td id="tdTypeObjectif-' + idRow + '" class="detail-row-title" style="width: 20%">' + "@lang('amadeo.targets.type')" + '</td>';
 		var type_checked = false;
 		@foreach (Session::get('types_objectif_liste') as $type)
-			if ((row[5][0] != null && row[5][0] == '{{ $type->id }}') || (row[5][0] == null && '{{ $type->id }}' == '1'))
+			if ((row[6][0] != null && row[6][0] == '{{ $type->id }}') || (row[6][0] == null && '{{ $type->id }}' == '1'))
 				type_checked = true;
 			else
 				type_checked = false;
@@ -47,7 +47,7 @@
 			html_periode += (start_month != null ? new Date("{{date('Y')}}", start_month-1).toLocaleString("en", { month: "long" }) : new Date("{{date('Y')}}", 0).toLocaleString("en", { month: "long" })) + ' à ' + (end_month != null ? new Date("{{date('Y')}}", end_month-1).toLocaleString("fr", { month: "long" }) : new Date("{{date('Y')}}", 11).toLocaleString("fr", { month: "long" }));
 		@endif
 
-		html_periode += '</div></td><td id="objectif-ca-prec">Total N-1 : <span class="' + (row[16] ? 'orange' : '') + '">' + (amount_prev_total != null ? numberWithSpaces(amount_prev_total) : '-') + '</span></td><td></td></tr>';
+		html_periode += '</div></td><td id="objectif-ca-prec">Total N-1 : <span class="' + (row[17] ? 'orange' : '') + '">' + (amount_prev_total != null ? numberWithSpaces(amount_prev_total) : '-') + '</span></td><td></td></tr>';
 
 		// Remise : pourcentage et indicateur "additionnelle"
 		var rebate = target["pourcentage_remise"];
@@ -92,15 +92,15 @@
 		@if ((sizeof(Auth::user()->roles) >0) AND ("Administrateur" == Auth::user()->roles[0]['nom']))
 			html_condition += '<select id="select-obj-conditionne-' + idRow + '"><option value=""></option>';
 			for (var i = 0; i < rowsData.length; i++) {
-				// Si l'année et le laboratoire correspondent à l'objectif actuel, ajout dans la liste déroulante
-				if (row[1] == rowsData[i][1] && row[3] == rowsData[i][3] && rowsData[i][13] != row[13])
+				// Si le pays, l'année et le laboratoire correspondent à l'objectif actuel, ajout dans la liste déroulante
+				if (row[1] == rowsData[i][1] && row[2] == rowsData[i][2] && row[4] == rowsData[i][4] && rowsData[i][14] != row[14])
 				{
-					html_condition += '<option value="' + rowsData[i][13] + '"';
-					if (conditionned == rowsData[i][13])
+					html_condition += '<option value="' + rowsData[i][14] + '"';
+					if (conditionned == rowsData[i][14])
 					{
 						html_condition += ' selected'
 					}
-					html_condition += '>' + (rowsData[i][5][1]).replace(/(.{40})..+/, "$1&hellip;") + '</option>';
+					html_condition += '>' + (rowsData[i][6][1]).replace(/(.{40})..+/, "$1&hellip;") + '</option>';
 				}
 			}
 			html_condition += '</select>';
@@ -108,8 +108,8 @@
 			if (conditionned != null)
 			{
 				for (var i = 0; i < rowsData.length; i++) {
-					if (conditionned == rowsData[i][13])
-						html_condition += (rowsData[i][5][1]).replace(/(.{40})..+/, "$1&hellip;");
+					if (conditionned == rowsData[i][14])
+						html_condition += (rowsData[i][6][1]).replace(/(.{40})..+/, "$1&hellip;");
 				}
 			} else
 			{
@@ -129,15 +129,15 @@
 			html_palier_precedent += '<select id="select-obj-prec-' + idRow + '"><option value=""></option>';
 			
 			for (var i = 0; i < rowsData.length; i++) {
-				// Si l'année, le laboratoire et la catégorie correspondent à l'objectif actuel, ajout dans la liste déroulante
-				if (row[1] == rowsData[i][1] && row[3] == rowsData[i][3] && row[4] == rowsData[i][4] && rowsData[i][13] != row[13])
+				// Si le pays, l'année, le laboratoire et la catégorie correspondent à l'objectif actuel, ajout dans la liste déroulante
+				if (row[1] == rowsData[i][1] && row[2] == rowsData[i][2] && row[4] == rowsData[i][4] && row[5] == rowsData[i][5] && rowsData[i][14] != row[14])
 				{
-					html_palier_precedent += '<option value="' + rowsData[i][13] + '"';
-					if (previous == rowsData[i][13])
+					html_palier_precedent += '<option value="' + rowsData[i][14] + '"';
+					if (previous == rowsData[i][14])
 					{
 						html_palier_precedent += ' selected';
 					}
-					html_palier_precedent +='>' + (rowsData[i][5][1]).replace(/(.{40})..+/, "$1&hellip;") + '</option>';
+					html_palier_precedent +='>' + (rowsData[i][6][1]).replace(/(.{40})..+/, "$1&hellip;") + '</option>';
 				}
 			}
 			html_palier_precedent += '</select>';
@@ -145,8 +145,8 @@
 			if (previous != null)
 			{
 				for (var i = 0; i < rowsData.length; i++) {
-					if (previous == rowsData[i][13])
-						html_palier_precedent += (rowsData[i][5][1]).replace(/(.{40})..+/, "$1&hellip;");
+					if (previous == rowsData[i][14])
+						html_palier_precedent += (rowsData[i][6][1]).replace(/(.{40})..+/, "$1&hellip;");
 				}
 			} else
 			{
@@ -179,9 +179,9 @@
 		var obj_suivant_nom = null;
 		for (var i = 0; i < rowsData.length; i++) {
 			// Si l'objectif correspond à l'objectif suivant
-			if (next == rowsData[i][13])
+			if (next == rowsData[i][14])
 			{
-				obj_suivant_nom = (rowsData[i][5][1]).replace(/(.{40})..+/, "$1&hellip;");
+				obj_suivant_nom = (rowsData[i][6][1]).replace(/(.{40})..+/, "$1&hellip;");
 			}
 		}
 		html_palier_suivant += '><td class="detail-row-title">@lang("amadeo.targets.next")</td><td>' + obj_suivant_nom + '</td><td></td><td></td></tr>';
@@ -214,7 +214,7 @@
 	*/
 	function loadDatatableProduits(rowData)
 	{
-		var idRow = rowData[13];
+		var idRow = rowData[14];
     	// Récupération des informations
     	var params = {
 			"_token": document.getElementsByName("_token")[0].value,
@@ -352,14 +352,14 @@
 		tr.find('div').each(function(index) {
 	    	var value = data[index];
 				
-	    	if (index==5)
+	    	if (index==6)
 	    	{
 	    		// Nom modifiable
-	    		var input = $('<input type="text" id="row-' + data[13] + '-denomination" value="' + value[1] + '" style="width:100%;" />');
-	    	} else if (index==6)
+	    		var input = $('<input type="text" id="row-' + data[14] + '-denomination" value="' + value[1] + '" style="width:100%;" />');
+	    	} else if (index==7)
 	    	{
 	    		// Valeur modifiable
-	    		var input = $('<input type="text" id="row-' + data[13] + '-valeur" value="' + value + '" style="width:100%;" />');
+	    		var input = $('<input type="text" id="row-' + data[14] + '-valeur" value="' + value + '" style="width:100%;" />');
 	    	}
 	    	$(this).html(input);
 	    	
@@ -385,7 +385,7 @@
 					var evol = (el.ca_periode_prec != null && el.ca_periode_prec != 0 ? ((el.ca_periode*100/el.ca_periode_prec)-100).toFixed(2) : "-");
 
 					if (el.annee > 2017)
-						return [[ el.suivi, el.annee, el.especes_noms, el.laboratoire, el.categorie, [el.type_obj, el.objectif], el.valeur != null ? (el.valeur).replace( /\./, "," ) : 0, numberWithSpaces(el.pourcentage_remise*1 + el.pourcentage_remise_source*1), numberWithSpaces(el.ecart_unite), (el.ecart != null ? numberWithSpaces(el.ecart) : "-"), el.ca_periode, el.ca_periode_prec, numberWithSpaces(evol), el.id, el.especes, el.manque_valo_periode, el.manque_valo_periode_prec ]];
+						return [[ el.suivi, el.country, el.annee, el.especes_noms, el.laboratoire, el.categorie, [el.type_obj, el.objectif], el.valeur != null ? (el.valeur).replace( /\./, "," ) : 0, numberWithSpaces(el.pourcentage_remise*1 + el.pourcentage_remise_source*1), numberWithSpaces(el.ecart_unite), (el.ecart != null ? numberWithSpaces(el.ecart) : "-"), el.ca_periode, el.ca_periode_prec, numberWithSpaces(evol), el.id, el.especes, el.manque_valo_periode, el.manque_valo_periode_prec ]];
 				});
 
 			    // DataTable
@@ -405,7 +405,7 @@
 						"targets": 0,
 						"orderable": false
 					}],
-					"order": [[ 1, "desc" ], [ 3, "asc" ], [ 4, "asc" ], [ 5, "asc" ]],
+					"order": [[ 2, "desc" ], [ 4, "asc" ], [ 5, "asc" ], [ 6, "asc" ]],
 					"aoColumns": [ 
 						{ 
 							"render": function ( data, type, row ) {
@@ -422,15 +422,16 @@
 								html += 'style="width:20px;"></a>';
 
 								html += '<a href="{{ url("downloadObjectifParCliniquesCSV/objectifId/annee") }}" style="margin-left: 2px;cursor: pointer;"><img src="/images/TELECHARGER_TURQUOISE.svg" width="20" height="20" alt="@lang("amadeo.targets.download-clinics")" title="@lang("amadeo.targets.download-clinics")"></a>';
-								html = html.replace('objectifId', row[13]);
-								html = html.replace('annee', row[1]);
+								html = html.replace('objectifId', row[14]);
+								html = html.replace('annee', row[2]);
 
 								html += '</div><p style="display:none;">' + data + '</p>';
 
 								return html;
 	   						}
 	   					}, 
-   						null, 
+						null,
+						null, 
 						null, 
 						null, 
 						null, 
@@ -514,33 +515,29 @@
 						$('td', row).eq(3).addClass('width-10');
 						$('td', row).eq(3).find('div').addClass('texte');
 						$('td', row).eq(3).find('div').attr('title', $('td', row).eq(3).find('div').html());
-						$('td', row).eq(4).addClass('width-15');
+						$('td', row).eq(4).addClass('width-10');
 						$('td', row).eq(4).find('div').addClass('texte');
 						$('td', row).eq(4).find('div').attr('title', $('td', row).eq(4).find('div').html());
-						$('td', row).eq(5).addClass('width-20');
+						$('td', row).eq(5).addClass('width-15');
 						$('td', row).eq(5).find('div').addClass('texte');
-						$('td', row).eq(5).find('div').attr('title', data[5][1]);
-						$('td', row).eq(6).addClass('width-5');
-						$('td', row).eq(6).find('div').addClass('nombre');
-						$('td', row).eq(6).find('div').css('padding-left', '5px');
-						$('td', row).eq(6).find('div').css('padding-right', '5px');
+						$('td', row).eq(5).find('div').attr('title', $('td', row).eq(5).find('div').html());
+						$('td', row).eq(6).addClass('width-20');
+						$('td', row).eq(6).find('div').addClass('texte');
+						$('td', row).eq(6).find('div').attr('title', data[6][1]);
 						$('td', row).eq(7).addClass('width-5');
 						$('td', row).eq(7).find('div').addClass('nombre');
 						$('td', row).eq(7).find('div').css('padding-left', '5px');
 						$('td', row).eq(7).find('div').css('padding-right', '5px');
-						$('td', row).eq(8).find('div').addClass('nombre' + ($('td', row).eq(8).find('div').html().replace( /,/, "." ).replace( / /g, "" ).replace( /€/, "" ) > 0 ? ' positif' : ($('td', row).eq(8).find('div').html().replace( /,/, "." ).replace( / /g, "" ).replace( /€/, "" ) < 0 ? ' negatif' : '')));
+						$('td', row).eq(8).addClass('width-5');
+						$('td', row).eq(8).find('div').addClass('nombre');
 						$('td', row).eq(8).find('div').css('padding-left', '5px');
 						$('td', row).eq(8).find('div').css('padding-right', '5px');
-						$('td', row).eq(9).find('div').addClass('nombre' + ($('td', row).eq(9).find('div').html().replace( /,/, "." ).replace( / /g, "" ).replace( /%/, "" ) > 0 ? ' positif' : ($('td', row).eq(9).find('div').html().replace( /,/, "." ).replace( / /g, "" ).replace( /%/, "" ) < 0 ? ' negatif' : '')));
+						$('td', row).eq(9).find('div').addClass('nombre' + ($('td', row).eq(9).find('div').html().replace( /,/, "." ).replace( / /g, "" ).replace( /€/, "" ) > 0 ? ' positif' : ($('td', row).eq(9).find('div').html().replace( /,/, "." ).replace( / /g, "" ).replace( /€/, "" ) < 0 ? ' negatif' : '')));
 						$('td', row).eq(9).find('div').css('padding-left', '5px');
 						$('td', row).eq(9).find('div').css('padding-right', '5px');
-						$('td', row).eq(10).find('div').addClass('nombre');
+						$('td', row).eq(10).find('div').addClass('nombre' + ($('td', row).eq(10).find('div').html().replace( /,/, "." ).replace( / /g, "" ).replace( /%/, "" ) > 0 ? ' positif' : ($('td', row).eq(10).find('div').html().replace( /,/, "." ).replace( / /g, "" ).replace( /%/, "" ) < 0 ? ' negatif' : '')));
 						$('td', row).eq(10).find('div').css('padding-left', '5px');
 						$('td', row).eq(10).find('div').css('padding-right', '5px');
-						if (data[15])
-						{
-							$('td', row).eq(10).find('div').addClass('orange');
-						}
 						$('td', row).eq(11).find('div').addClass('nombre');
 						$('td', row).eq(11).find('div').css('padding-left', '5px');
 						$('td', row).eq(11).find('div').css('padding-right', '5px');
@@ -548,9 +545,16 @@
 						{
 							$('td', row).eq(11).find('div').addClass('orange');
 						}
-						$('td', row).eq(12).find('div').addClass('nombre' + ($('td', row).eq(12).find('div').html().replace( /,/, "." ).replace( / /g, "" ).replace( /%/, "" ) > 0 ? ' positif' : ($('td', row).eq(12).find('div').html().replace( /,/, "." ).replace( / /g, "" ).replace( /%/, "" ) < 0 ? ' negatif' : '')));
+						$('td', row).eq(12).find('div').addClass('nombre');
 						$('td', row).eq(12).find('div').css('padding-left', '5px');
 						$('td', row).eq(12).find('div').css('padding-right', '5px');
+						if (data[17])
+						{
+							$('td', row).eq(12).find('div').addClass('orange');
+						}
+						$('td', row).eq(13).find('div').addClass('nombre' + ($('td', row).eq(13).find('div').html().replace( /,/, "." ).replace( / /g, "" ).replace( /%/, "" ) > 0 ? ' positif' : ($('td', row).eq(13).find('div').html().replace( /,/, "." ).replace( / /g, "" ).replace( /%/, "" ) < 0 ? ' negatif' : '')));
+						$('td', row).eq(13).find('div').css('padding-left', '5px');
+						$('td', row).eq(13).find('div').css('padding-right', '5px');
 			        },
 					initComplete: function () {
 			            var api = this.api();
@@ -623,31 +627,31 @@
 				    	$('#tab-objectifs').dataTable().fnUpdate(row.data(),tr,undefined,false);
 
 			            tr.children().each(function(index) {
-					    	if (index == 2 || index == 3)
+					    	if (index == 1 || index == 3 || index == 4)
 					    	{
 					    		$(this).addClass('width-10');
 					    		$(this).html('<div class="texte" title="' + $(this).html() + '">' + $(this).html() + '</div>');
-					    	} else if (index == 4)
+					    	} else if (index == 5)
 					    	{
 					    		$(this).addClass('width-15');
 					    		$(this).html('<div class="texte" title="' + $(this).html() + '">' + $(this).html() + '</div>');
-					    	} else if (index == 5)
+					    	} else if (index == 6)
 					    	{
 					    		$(this).addClass('width-20');
-					    		$(this).html('<div class="texte" title="' + row.data()[5][1] + '">' + $(this).html() + '</div>');
-					    	} else if (index == 6 || index == 7)
+					    		$(this).html('<div class="texte" title="' + row.data()[6][1] + '">' + $(this).html() + '</div>');
+					    	} else if (index == 7 || index == 8)
 					    	{
 					    		$(this).addClass('width-5');
 					    		$(this).html('<div class="nombre" title="' + $(this).html() + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
-					    	} else if (index == 8 || index == 9 || index == 12)
+					    	} else if (index == 9 || index == 10 || index == 13)
 					    	{
 					    		$(this).html('<div class="nombre' + ($(this).html().replace( /,/, "." ).replace( / /g, "" ).replace( /€/, "" ).replace( /%/, "" ) > 0 ? ' positif' : ($(this).html().replace( /,/, "." ).replace( / /g, "" ).replace( /€/, "" ).replace( /%/, "" ) < 0 ? ' negatif' : '')) + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
-					    	} else if (index == 10)
-					    	{
-					    		$(this).html('<div class="nombre' + (row.data()[15] ? ' orange' : '') + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
 					    	} else if (index == 11)
 					    	{
 					    		$(this).html('<div class="nombre' + (row.data()[16] ? ' orange' : '') + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
+					    	} else if (index == 12)
+					    	{
+					    		$(this).html('<div class="nombre' + (row.data()[17] ? ' orange' : '') + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
 					    	} else if (index > 0)
 					    	{
 					    		$(this).html('<div>' + $(this).html() + '</div>');
@@ -665,7 +669,7 @@
 						};
 
 						// Création de l'URL
-						var idRow = row.data()[13];
+						var idRow = row.data()[14];
 						var url = '{{ route("objectif-ajax.show", "id") }}';
 						url = url.replace('id', idRow);
 						
@@ -713,56 +717,97 @@
 
 			    // Ouverture du modal lors de l'action sur le bouton 'Ajouter'
 			    $('#addButtonGeneral').click( function () {
-			    	var annee = (new Date().getMonth() < 8) ? new Date().getFullYear() : (new Date().getFullYear()) + 1;
-		    		$( '#addObjectifAnnee' ).val(annee);
-		    		$( '#addObjectifAnnee' ).change(function() 
+			    	var $selectCountry = $( '#selectObjectifCountry' ); 
+			    	$selectCountry.find( 'option' ).remove();
+    				$selectCountry.append('<option value="">@lang("amadeo.list.message")</option>');
+
+    				@foreach (Session::get('list_of_countries') as $country)
+    					$selectCountry.append('<option value="{{ $country->ctry_id }}">{{ $country->ctry_name }}</option>');
+    				@endforeach
+
+    				$selectCountry.change(function() 
     				{
-    					var laboratoire = $( '#selectObjectifLaboratoire' ).val();
-    					if (this.value != '' && laboratoire != null && laboratoire != '')
+    					var year = document.getElementById("addObjectifAnnee").value;
+    					if (this.value != '' && year != null && year != '')
     					{
     						var params = {
 								"_token": document.getElementsByName("_token")[0].value,
-								"annee": this.value,
-								"laboratoire": laboratoire
+								"year": year,
+								"country": this.value
 							};
 
 							$.ajax({
-							    url: "getCategoriesObjectifAjax", 
+							    url: "getLaboratoiresObjectifAjax", 
 							    type: "POST",
 						        data: $.param(params),
 							    success: function(json) {
-							    	var categories = JSON.parse(json);
+							    	var suppliers = JSON.parse(json);
 
+							    	var $selectLaboratoire = $( '#selectObjectifLaboratoire' ); 
+							    	$selectLaboratoire.find( 'option' ).remove();
+				    				$selectLaboratoire.append('<option value="">@lang("amadeo.list.message")</option>');
+
+				    				for (var i = 0; i < suppliers.length; i++) {
+				    					var supplier = suppliers[i];
+				    					$selectLaboratoire.append('<option value="' + supplier["id"] + '">' + supplier["nom"] + '</option>');
+				    				}
+									
 							    	var $selectCategorie = $( '#selectObjectifCategorie' ); 
 							    	$selectCategorie.find( 'option' ).remove();
 				    				$selectCategorie.append('<option value="">@lang("amadeo.list.message")</option>');
+							    }
+							});
+    					}
+    				});
 
-				    				for (var i = 0; i < categories.length; i++) {
-				    					var categorie = categories[i];
-				    					$selectCategorie.append('<option value="' + categorie["id"] + '">' + categorie["nom"] + '</option>');
-				    				}
+			    	var year = (new Date().getMonth() < 8) ? new Date().getFullYear() : (new Date().getFullYear()) + 1;
+		    		$( '#addObjectifAnnee' ).val(year);
+		    		$( '#addObjectifAnnee' ).change(function() 
+    				{
+    					var country = $( '#selectObjectifCountry' ).val();
+    					if (this.value != '' && country != null && country != '')
+    					{
+    						var params = {
+								"_token": document.getElementsByName("_token")[0].value,
+								"year": this.value,
+								"country": country
+							};
+
+							$.ajax({
+							    url: "getLaboratoiresObjectifAjax", 
+							    type: "POST",
+						        data: $.param(params),
+							    success: function(json) {
+							    	var suppliers = JSON.parse(json);
+
+							    	var $selectLaboratoire = $( '#selectObjectifLaboratoire' ); 
+							    	$selectLaboratoire.find( 'option' ).remove();
+				    				$selectLaboratoire.append('<option value="">@lang("amadeo.list.message")</option>');
+
+				    				for (var i = 0; i < suppliers.length; i++) {
+				    					var supplier = suppliers[i];
+				    					$selectLaboratoire.append('<option value="' + supplier["id"] + '">' + supplier["nom"] + '</option>');
+									}
+									
+							    	var $selectCategorie = $( '#selectObjectifCategorie' ); 
+							    	$selectCategorie.find( 'option' ).remove();
+				    				$selectCategorie.append('<option value="">@lang("amadeo.list.message")</option>');
 							    }
 							});
     					}
     				});
 		    		
-			    	var $selectLaboratoire = $( '#selectObjectifLaboratoire' ); 
-			    	$selectLaboratoire.find( 'option' ).remove();
-    				$selectLaboratoire.append('<option value="">@lang("amadeo.list.message")</option>');
-
-    				@foreach (Session::get('laboratoires_liste') as $laboratoire)
-    					$selectLaboratoire.append('<option value="{{ $laboratoire->id }}">{{ $laboratoire->nom }}</option>');
-    				@endforeach
-
-    				$selectLaboratoire.change(function() 
+    				$( '#selectObjectifLaboratoire' ).change(function() 
     				{
-    					var annee = document.getElementById("addObjectifAnnee").value;
-    					if (this.value != '' && annee != null && annee != '')
+    					var country = $( '#selectObjectifCountry' ).find('option:selected');
+    					var year = document.getElementById("addObjectifAnnee").value;
+    					if (this.value != '' && year != null && year != '' && country.val() != '')
     					{
     						var params = {
 								"_token": document.getElementsByName("_token")[0].value,
-								"annee": annee,
-								"laboratoire": this.value
+								"country": country.val(),
+								"year": year,
+								"supplier": this.value
 							};
 
 							$.ajax({
@@ -786,6 +831,7 @@
     				});
 
 			    	$('#addObjectifModal').modal('show');
+			    	$('#selectObjectifCountry').val('');
 			    	$('#selectObjectifLaboratoire').val('');
 			    	$('#selectObjectifCategorie').val('');
 			    	$('#addObjectifNom').val('');
@@ -838,7 +884,7 @@
 					                    jQuery('#addObjectifModal').modal('hide');	
 
 					                    // Mise à jour du tableau
-					                    var index = $('#tab-objectifs').dataTable().fnAddData( [ true, data.objectif[0]["annee"], data.objectif[0]["especes_noms"], data.objectif[0]["laboratoire"], data.objectif[0]["categorie"], [1, data.objectif[0]["nom"]], 0, 0, null, null, null, null, null, data.objectif[0]["id"], data.objectif[0]["especes"], false, false ] );
+					                    var index = $('#tab-objectifs').dataTable().fnAddData( [ true, data.objectif[0]["country"], data.objectif[0]["annee"], data.objectif[0]["especes_noms"], data.objectif[0]["laboratoire"], data.objectif[0]["categorie"], [1, data.objectif[0]["nom"]], 0, 0, null, null, null, null, null, data.objectif[0]["id"], data.objectif[0]["especes"], false, false ] );
 										
 					                    $('#tab-objectifs thead tr#forFilters th.star-filter').find('a').removeClass('objectif-non-suivi');
 							    		$('#tab-objectifs thead tr#forFilters th.star-filter').find('a').addClass('objectif-suivi');
@@ -847,14 +893,15 @@
 					                    table.columns(0).search( 'true' ).draw();
 
 					                    $( '.filter-column-1 option[value=""]' ).prop( 'selected', true ).trigger('change');
-					                    $( '.filter-column-2' ).val( '' );
-					                    $( '.filter-column-2' ).trigger($.Event('keyup', { keycode: 13 }));
-					                    $( '.filter-column-3 option[value=""]' ).prop( 'selected', true ).trigger('change');
-					                    $( '.filter-column-4' ).val( '' );
-					                    $( '.filter-column-4' ).trigger($.Event('keyup', { keycode: 13 }));
-					                    $( '.filter-column-5' ).val( data.objectif[0]["nom"] );
-					                    $( '.filter-column-5' ).focus();
+					                    $( '.filter-column-2 option[value=""]' ).prop( 'selected', true ).trigger('change');
+					                    $( '.filter-column-3' ).val( '' );
+					                    $( '.filter-column-3' ).trigger($.Event('keyup', { keycode: 13 }));
+					                    $( '.filter-column-4 option[value=""]' ).prop( 'selected', true ).trigger('change');
+					                    $( '.filter-column-5' ).val( '' );
 					                    $( '.filter-column-5' ).trigger($.Event('keyup', { keycode: 13 }));
+					                    $( '.filter-column-6' ).val( data.objectif[0]["nom"] );
+					                    $( '.filter-column-6' ).focus();
+					                    $( '.filter-column-6' ).trigger($.Event('keyup', { keycode: 13 }));
 					                    
 					                    $("a.details-control", $('#tab-objectifs').dataTable().fnGetNodes( index )).click();
 					                }
@@ -873,11 +920,12 @@
 
 			    		var annee = (new Date().getMonth() < 8) ? new Date().getFullYear() : (new Date().getFullYear()) + 1;
 			    		var select = table.row( $('#tab-objectifs tbody > tr.selected').first());
-			    		$( '#copyObjectifAnnee' ).html(select.data()[1]);
-			    		$( '#copyObjectifLaboratoire' ).html(select.data()[3]);
-			    		$( '#copyObjectifCategorie' ).html(select.data()[4]);
-			    		$( '#copyObjectifAncienNom' ).html(select.data()[5][1]);
-			    		$( '#copyObjectifNom' ).val(select.data()[5][1]);
+			    		$( '#copyObjectifCountry' ).html(select.data()[1]);
+			    		$( '#copyObjectifAnnee' ).html(select.data()[2]);
+			    		$( '#copyObjectifLaboratoire' ).html(select.data()[4]);
+			    		$( '#copyObjectifCategorie' ).html(select.data()[5]);
+			    		$( '#copyObjectifAncienNom' ).html(select.data()[6][1]);
+			    		$( '#copyObjectifNom' ).val(select.data()[6][1]);
 				    	
 				    	$( '#divNomObjectif' ).removeClass("has-error");
 				    	$( '#nom-error' ).html( "" );
@@ -885,7 +933,7 @@
 				    	// Récupération des informations
 				    	var params = {
 							"_token": document.getElementsByName("_token")[0].value,
-							"objectif": select.data()[13]
+							"objectif": select.data()[14]
 						};
 
 						$.ajax({
@@ -966,7 +1014,7 @@
 					    	var params = {
 								"_token": document.getElementsByName("_token")[0].value,
 								"isCopy": 1,
-								"ancien_objectif": select.data()[13],
+								"ancien_objectif": select.data()[14],
 								"nom": document.getElementById("copyObjectifNom").value
 							};
 							
@@ -997,7 +1045,7 @@
 										var evol = (data.obj[0]["ca_periode_prec"] != null && data.obj[0]["ca_periode_prec"] != 0 ? ((data.obj[0]["ca_periode"]*100/data.obj[0]["ca_periode_prec"])-100).toFixed(2) : "-");
 
 					                    // Mise à jour du tableau
-										var index = $('#tab-objectifs').dataTable().fnAddData( [ data.obj[0]["suivi"], data.obj[0]["annee"], data.obj[0]["especes_noms"], data.obj[0]["laboratoire"], data.obj[0]["categorie"], [data.obj[0]["type_obj"], data.obj[0]["objectif"]], data.obj[0]["valeur"] != null ? (data.obj[0]["valeur"]).replace( /\./, "," ) : 0, numberWithSpaces(data.obj[0]["pourcentage_remise"]*1 + data.obj[0]["pourcentage_remise_source"]*1), numberWithSpaces(data.obj[0]["ecart_unite"]), (data.obj[0]["ecart"] != null ? numberWithSpaces(data.obj[0]["ecart"]) : "-"), data.obj[0]["ca_periode"], data.obj[0]["ca_periode_prec"], numberWithSpaces(evol), data.obj[0]["id"], data.obj[0]["especes"], data.obj[0]["manque_valo_periode"], data.obj[0]["manque_valo_periode_prec"] ] );
+										var index = $('#tab-objectifs').dataTable().fnAddData( [ data.obj[0]["suivi"], data.obj[0]["country"], data.obj[0]["annee"], data.obj[0]["especes_noms"], data.obj[0]["laboratoire"], data.obj[0]["categorie"], [data.obj[0]["type_obj"], data.obj[0]["objectif"]], data.obj[0]["valeur"] != null ? (data.obj[0]["valeur"]).replace( /\./, "," ) : 0, numberWithSpaces(data.obj[0]["pourcentage_remise"]*1 + data.obj[0]["pourcentage_remise_source"]*1), numberWithSpaces(data.obj[0]["ecart_unite"]), (data.obj[0]["ecart"] != null ? numberWithSpaces(data.obj[0]["ecart"]) : "-"), data.obj[0]["ca_periode"], data.obj[0]["ca_periode_prec"], numberWithSpaces(evol), data.obj[0]["id"], data.obj[0]["especes"], data.obj[0]["manque_valo_periode"], data.obj[0]["manque_valo_periode_prec"] ] );
 										
 										if (data.obj[0]["suivi"])
 										{
@@ -1016,14 +1064,15 @@
 										}
 
 					                    $( '.filter-column-1 option[value=""]' ).prop( 'selected', true ).trigger('change');
-					                    $( '.filter-column-2' ).val( '' );
-					                    $( '.filter-column-2' ).trigger($.Event('keyup', { keycode: 13 }));
-					                    $( '.filter-column-3 option[value=""]' ).prop( 'selected', true ).trigger('change');
-					                    $( '.filter-column-4' ).val( '' );
-					                    $( '.filter-column-4' ).trigger($.Event('keyup', { keycode: 13 }));
-					                    $( '.filter-column-5' ).val( data.obj[0]["objectif"] );
-					                    $( '.filter-column-5' ).focus();
+					                    $( '.filter-column-2 option[value=""]' ).prop( 'selected', true ).trigger('change');
+					                    $( '.filter-column-3' ).val( '' );
+					                    $( '.filter-column-3' ).trigger($.Event('keyup', { keycode: 13 }));
+					                    $( '.filter-column-4 option[value=""]' ).prop( 'selected', true ).trigger('change');
+					                    $( '.filter-column-5' ).val( '' );
 					                    $( '.filter-column-5' ).trigger($.Event('keyup', { keycode: 13 }));
+					                    $( '.filter-column-6' ).val( data.obj[0]["objectif"] );
+					                    $( '.filter-column-6' ).focus();
+					                    $( '.filter-column-6' ).trigger($.Event('keyup', { keycode: 13 }));
 					                    
 										$("a.details-control", $('#tab-objectifs').dataTable().fnGetNodes( index )).click();
 										table.rows().every(function() {
@@ -1042,7 +1091,7 @@
 			    	var ids = [];
 
 			    	$('#tab-objectifs tbody > tr.selected').each(function() {
-                    	ids.push(table.row( $(this) ).data()[13]);
+                    	ids.push(table.row( $(this) ).data()[14]);
                     });
                 
 			    	if (ids.length > 0)
@@ -1118,7 +1167,7 @@
 			    	
 					// Création de l'URL
 			    	var url = '{{ route("objectif-ajax.update", "id") }}';
-			    	url = url.replace('id', row.data()[13]);
+			    	url = url.replace('id', row.data()[14]);
 			    			    	   	
 			    	// Enregistrement en BDD
 		    		var params = {
@@ -1136,31 +1185,31 @@
 							$('#tab-objectifs').dataTable().fnUpdate(row.data(),tr,undefined,false);
 
 							tr.children().each(function(index) {
-								if (index == 2 || index == 3)
+								if (index == 1 || index == 3 || index == 4)
 								{
 									$(this).addClass('width-10');
 									$(this).html('<div class="texte" title="' + $(this).html() + '">' + $(this).html() + '</div>');
-								} else if (index == 4)
+								} else if (index == 5)
 								{
 									$(this).addClass('width-15');
 									$(this).html('<div class="texte" title="' + $(this).html() + '">' + $(this).html() + '</div>');
-								} else if (index == 5)
+								} else if (index == 6)
 								{
 									$(this).addClass('width-20');
-									$(this).html('<div class="texte" title="' + row.data()[5][1] + '">' + $(this).html() + '</div>');
-								} else if (index == 6 || index == 7)
+									$(this).html('<div class="texte" title="' + row.data()[6][1] + '">' + $(this).html() + '</div>');
+								} else if (index == 7 || index == 8)
 								{
 									$(this).addClass('width-5');
 									$(this).html('<div class="nombre" title="' + $(this).html() + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
-								} else if (index == 8 || index == 9 || index == 12)
+								} else if (index == 9 || index == 10 || index == 13)
 								{
 									$(this).html('<div class="nombre' + ($(this).html().replace( /,/, "." ).replace( / /g, "" ).replace( /€/, "" ).replace( /%/, "" ) > 0 ? ' positif' : ($(this).html().replace( /,/, "." ).replace( / /g, "" ).replace( /€/, "" ).replace( /%/, "" ) < 0 ? ' negatif' : '')) + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
-								} else if (index == 10)
-								{
-									$(this).html('<div class="nombre' + (row.data()[15] ? ' orange' : '') + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
 								} else if (index == 11)
 								{
 									$(this).html('<div class="nombre' + (row.data()[16] ? ' orange' : '') + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
+								} else if (index == 12)
+								{
+									$(this).html('<div class="nombre' + (row.data()[17] ? ' orange' : '') + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
 								} else if (index > 0)
 								{
 									$(this).html('<div>' + $(this).html() + '</div>');
@@ -1188,31 +1237,31 @@
 				            $('#tab-objectifs').dataTable().fnUpdate(row.data(),tr,undefined,false);
 											
 				            tr.children().each(function(index) {
-						    	if (index == 2 || index == 3)
+						    	if (index == 1 || index == 3 || index == 4)
 						    	{
 						    		$(this).addClass('width-10');
 						    		$(this).html('<div class="texte" title="' + $(this).html() + '">' + $(this).html() + '</div>');
-						    	} else if (index == 4)
+						    	} else if (index == 5)
 						    	{
 						    		$(this).addClass('width-15');
 						    		$(this).html('<div class="texte" title="' + $(this).html() + '">' + $(this).html() + '</div>');
-						    	} else if (index == 5)
+						    	} else if (index == 6)
 						    	{
 						    		$(this).addClass('width-20');
-						    		$(this).html('<div class="texte" title="' + row.data()[5][1] + '">' + $(this).html() + '</div>');
-						    	} else if (index == 6 || index == 7)
+						    		$(this).html('<div class="texte" title="' + row.data()[6][1] + '">' + $(this).html() + '</div>');
+						    	} else if (index == 7 || index == 8)
 								{
 									$(this).addClass('width-5');
 									$(this).html('<div class="nombre" title="' + $(this).html() + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
-								} else if (index == 8 || index == 9 || index == 12)
+								} else if (index == 9 || index == 10 || index == 13)
 								{
 									$(this).html('<div class="nombre' + ($(this).html().replace( /,/, "." ).replace( / /g, "" ).replace( /€/, "" ).replace( /%/, "" ) > 0 ? ' positif' : ($(this).html().replace( /,/, "." ).replace( / /g, "" ).replace( /€/, "" ).replace( /%/, "" ) < 0 ? ' negatif' : '')) + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
-								} else if (index == 10)
-								{
-									$(this).html('<div class="nombre' + (row.data()[15] ? ' orange' : '') + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
 								} else if (index == 11)
+								{
+									$(this).html('<div class="nombre' + (row.data()[16] ? ' orange' : '') + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
+								} else if (index == 12)
 						    	{
-						    		$(this).html('<div class="nombre' + (row.data()[16] ? ' orange' : '') + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
+						    		$(this).html('<div class="nombre' + (row.data()[17] ? ' orange' : '') + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
 						    	} else if (index > 0)
 						    	{
 						    		$(this).html('<div>' + $(this).html() + '</div>');
@@ -1225,7 +1274,7 @@
 							};
 
 							// Création de l'URL
-							var idRow = row.data()[13];
+							var idRow = row.data()[14];
 							var url = '{{ route("objectif-ajax.show", "id") }}';
 							url = url.replace('id', idRow);
 							
@@ -1271,7 +1320,7 @@
 			    	var rowPrevData = table.row( trPrev ).data();
 
 			    	// Récupération des informations
-			    	var id = rowPrevData[13];
+			    	var id = rowPrevData[14];
 			    	var nom = trPrev.children().find('input').eq(0).val();
 			    	var valeur = trPrev.children().find('input').eq(1).val();
 			    	var typeObjectif = $('input[name=types_obj_' + id + ']:checked').val();
@@ -1341,7 +1390,7 @@
 						    	var params = {
 									"_token": document.getElementsByName("_token")[0].value,
 							    	"isSuivi": 0,
-							    	"annee": rowPrevData[1],
+							    	"annee": rowPrevData[2],
 									"nom": nom,
 							    	"valeur": (valeur != null && valeur != '') ? valeur.replace( /,/, "." ) : 0,
 							    	"typeObjectif": typeObjectif,
@@ -1375,56 +1424,56 @@
 											var evol = data.objectif[0]["ca_periode_prec"] != null && data.objectif[0]["ca_periode_prec"] != 0 ? ((data.objectif[0]["ca_periode"]*100/data.objectif[0]["ca_periode_prec"])-100).toFixed(2) : "-";
 
 									        // Mise à jour du tableau
-									        rowPrevData[5] = [params["typeObjectif"], params["nom"]];
-									        trPrev.children().eq(5).attr('title', params["nom"]);
-											rowPrevData[6] = params["valeur"];
-											rowPrevData[7] = numberWithSpaces(params["remise"]*1 + params["remiseSource"]*1);
-						                    rowPrevData[8] = numberWithSpaces(data.objectif[0]["ecart_unite"]);
-						                    rowPrevData[9] = data.objectif[0]["ecart"] != null ? numberWithSpaces(data.objectif[0]["ecart"]) : "-";
-						                    rowPrevData[10] = data.objectif[0]["ca_periode"];
-						                    rowPrevData[11] = data.objectif[0]["ca_periode_prec"];
-						                    rowPrevData[12] = numberWithSpaces(evol);
-						                    rowPrevData[15] = data.objectif[0]["manque_valo_periode"];
-											rowPrevData[16] = data.objectif[0]["manque_valo_periode_prec"];
+									        rowPrevData[6] = [params["typeObjectif"], params["nom"]];
+									        trPrev.children().eq(6).attr('title', params["nom"]);
+											rowPrevData[7] = params["valeur"];
+											rowPrevData[8] = numberWithSpaces(params["remise"]*1 + params["remiseSource"]*1);
+						                    rowPrevData[9] = numberWithSpaces(data.objectif[0]["ecart_unite"]);
+						                    rowPrevData[10] = data.objectif[0]["ecart"] != null ? numberWithSpaces(data.objectif[0]["ecart"]) : "-";
+						                    rowPrevData[11] = data.objectif[0]["ca_periode"];
+						                    rowPrevData[12] = data.objectif[0]["ca_periode_prec"];
+						                    rowPrevData[13] = numberWithSpaces(evol);
+						                    rowPrevData[16] = data.objectif[0]["manque_valo_periode"];
+											rowPrevData[17] = data.objectif[0]["manque_valo_periode_prec"];
 											
-									    	if (rowPrevData[15])
-									    	{
-									    		trPrev.children().eq(9).addClass('orange');
-									    	}
-
 									    	if (rowPrevData[16])
 									    	{
 									    		trPrev.children().eq(10).addClass('orange');
 									    	}
 
+									    	if (rowPrevData[17])
+									    	{
+									    		trPrev.children().eq(11).addClass('orange');
+									    	}
+
 									    	$('#tab-objectifs').dataTable().fnUpdate(rowPrevData,trPrev,undefined,false);
 
 								            trPrev.children().each(function(index) {
-										    	if (index == 2 || index == 3)
+										    	if (index == 1 || index == 3 || index == 4)
 										    	{
 										    		$(this).addClass('width-10');
 										    		$(this).html('<div class="texte" title="' + $(this).html() + '">' + $(this).html() + '</div>');
-										    	} else if (index == 4)
+										    	} else if (index == 5)
 										    	{
 										    		$(this).addClass('width-15');
 										    		$(this).html('<div class="texte" title="' + $(this).html() + '">' + $(this).html() + '</div>');
-										    	} else if (index == 5)
+										    	} else if (index == 6)
 										    	{
 										    		$(this).addClass('width-20');
-										    		$(this).html('<div class="texte" title="' + rowPrevData[5][1] + '">' + $(this).html() + '</div>');
-										    	} else if (index == 6 || index == 7)
+										    		$(this).html('<div class="texte" title="' + rowPrevData[6][1] + '">' + $(this).html() + '</div>');
+										    	} else if (index == 7 || index == 8)
 										    	{
 										    		$(this).addClass('width-5');
 										    		$(this).html('<div class="nombre" title="' + $(this).html() + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
-										    	} else if (index == 8 || index == 9 || index == 12)
+										    	} else if (index == 9 || index == 10 || index == 13)
 										    	{
 										    		$(this).html('<div class="nombre' + ($(this).html().replace( /,/, "." ).replace( / /g, "" ).replace( /€/, "" ).replace( /%/, "" ) > 0 ? ' positif' : ($(this).html().replace( /,/, "." ).replace( / /g, "" ).replace( /€/, "" ).replace( /%/, "" ) < 0 ? ' negatif' : '')) + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
-										    	} else if (index == 10)
-										    	{
-										    		$(this).html('<div class="nombre' + (rowPrevData[15] ? ' orange' : '') + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
 										    	} else if (index == 11)
 										    	{
 										    		$(this).html('<div class="nombre' + (rowPrevData[16] ? ' orange' : '') + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
+										    	} else if (index == 12)
+										    	{
+										    		$(this).html('<div class="nombre' + (rowPrevData[17] ? ' orange' : '') + '" style="padding-left: 5px; padding-right: 5px;">' + $(this).html() + '</div>');
 										    	} else if (index > 0)
 										    	{
 										    		$(this).html('<div>' + $(this).html() + '</div>');
