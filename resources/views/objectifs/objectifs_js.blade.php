@@ -58,7 +58,7 @@
 		@else
 			html_remise += (rebate != null ? rebate : 0);
 		@endif
-		html_remise += ' %</td><td><div class="checkbox-item-horizontal">' 
+		html_remise += ' % on gross sales</td><td><div class="checkbox-item-horizontal">' 
 							+ '<div class="checkboxContainer">' 
 								+ '<input id="remise-add-obj-' + idRow + '" name="remises_obj_' + idRow + '" type="checkbox" value="1"';
 		if (add_rebate)
@@ -78,13 +78,23 @@
 
 		// Remise : pourcentage et indicateur "additionnelle"
 		var rebate_source = target["pourcentage_remise_source"];
+		var central_rebate_type = target["central_rebate_type"];
 		var html_remise_source = '<tr><td class="detail-row-title">@lang("amadeo.targets.rebate-source")</td><td>';
 		@if ((sizeof(Auth::user()->roles) >0) AND ("Administrateur" == Auth::user()->roles[0]['nom']))
-		html_remise_source += '<input type="text" id="input-remise-source-' + idRow + '" name="input-remise-source-' + idRow + '" value="' + (rebate_source != null ? numberWithSpaces(rebate_source) : 0) + '" style="width: 50%;">';
+			html_remise_source += '<input type="text" id="input-remise-source-' + idRow + '" name="input-remise-source-' + idRow + '" value="' + (rebate_source != null ? numberWithSpaces(rebate_source) : 0) + '" style="width: 50%;">% on <select id="input-remise-central-' + idRow + '-type">';
+			@foreach (['gross', 'net'] as $type)
+			html_remise_source += '<option value="{{ $type }}"';
+			if (central_rebate_type == "{{ $type }}")
+			{
+				html_remise_source += ' selected'
+			}
+			html_remise_source += '>{{ $type }}</option>';
+			@endforeach
+			html_remise_source += '</select>'
 		@else
-		html_remise_source += (rebate_source != null ? rebate_source : 0);
+		html_remise_source += (rebate_source != null ? rebate_source : 0) + ' % on ' + central_rebate_type;
 		@endif
-		html_remise_source += ' %</td><td></td><td></tr>';
+		html_remise_source += ' sales</td><td></td><td></tr>';
 
 		// Objectif conditionnant
 		var conditionned = target["obj_conditionne"];
@@ -1329,6 +1339,7 @@
         			var remise = document.getElementById('input-remise-' + id).value;
 					var remiseAdditionnelle = $('input[name=remises_obj_' + id + ']:checked').val();
         			var remiseSource = document.getElementById('input-remise-source-' + id).value;
+        			var remiseCentralType = document.getElementById('input-remise-central-' + id + '-type').value;
         			var idObjConditionne, paliersIncrementiels;
         			if (document.getElementById('select-obj-conditionne-' + id) != null)
         			{
@@ -1398,7 +1409,8 @@
 				        			"moisFin": moisFin,
 				        			"remise": (remise != null && remise != '') ? remise.replace( /,/, "." ) : 0,
 				        			"remiseAdditionnelle": (remiseAdditionnelle != null && remiseAdditionnelle.length > 0) ? 1 : 0,
-				        			"remiseSource": (remiseSource != null && remiseSource != '') ? remiseSource.replace( /,/, "." ) : 0,
+									"remiseSource": (remiseSource != null && remiseSource != '') ? remiseSource.replace( /,/, "." ) : 0,
+									"remiseCentralType": remiseCentralType,
 				        			"idObjConditionne": (idObjConditionne != null && idObjConditionne != "") ? idObjConditionne : null,
 				        			"idObjPrecedent": (typeObjectif != 1 && idObjPrecedent != null && idObjPrecedent != "") ? idObjPrecedent : null,
 				        			"paliersIncrementiels": (typeObjectif != 1 && paliersIncrementiels != null && paliersIncrementiels.length > 0) ? 1 : 0,

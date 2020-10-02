@@ -30,6 +30,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 			'date_fin' => Carbon::create($request->annee, $request->moisFin, getLastDay($request->annee, $request->moisFin), 0, 0, 0),
 			'pourcentage_remise' => $request->remise,
 			'pourcentage_remise_source' => $request->remiseSource,
+			'central_rebate_type' => $request->remiseCentralType, 
 			'remise_additionnelle' => $request->remiseAdditionnelle,
 			'objectif_conditionne_id' => $request->idObjConditionne,
 			'objectif_precedent_id' => $request->idObjPrecedent,
@@ -135,7 +136,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 	public function findDetailById($id)
 	{
 		$query = "
-		select distinct o.id as id, (CASE WHEN o.date_debut is not null then EXTRACT(MONTH from o.date_debut) else null end) AS mois_debut, (CASE WHEN o.date_fin is not null then EXTRACT(MONTH from o.date_fin) else null end) AS mois_fin, o.pourcentage_remise, o.pourcentage_remise_source, o.remise_additionnelle, o.objectif_conditionne_id AS obj_conditionne, o.objectif_precedent_id AS obj_precedent, o.incrementiel, obj_suivant.id AS obj_suivant, o.valeur_ca_total_prec AS ca_periode_total_prec
+		select distinct o.id as id, (CASE WHEN o.date_debut is not null then EXTRACT(MONTH from o.date_debut) else null end) AS mois_debut, (CASE WHEN o.date_fin is not null then EXTRACT(MONTH from o.date_fin) else null end) AS mois_fin, o.pourcentage_remise, o.pourcentage_remise_source, o.central_rebate_type, o.remise_additionnelle, o.objectif_conditionne_id AS obj_conditionne, o.objectif_precedent_id AS obj_precedent, o.incrementiel, obj_suivant.id AS obj_suivant, o.valeur_ca_total_prec AS ca_periode_total_prec
 			from objectifs o
 			left join objectifs obj_suivant on obj_suivant.objectif_precedent_id = o.id
 			where o.obsolete IS FALSE 

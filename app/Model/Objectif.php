@@ -34,7 +34,8 @@ class Objectif extends Model
 		'etat_objectif_id',
 		'ecart',
 		'ecart_unite',
-		'poids'
+		'poids',
+		'central_rebate_type'
 	];
 
 	public $timestamps = true;
