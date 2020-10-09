@@ -15,6 +15,11 @@ class CentraleRepository implements CentraleRepositoryInterface
 		$this->centrale = $centrale;
 	}
 
+	public function findAllForSelect()
+	{
+        return $this->centrale->select(['id', 'nom as name'])->orderBy('nom')->get()->toJson();
+	}
+
 	public function findAll()
 	{
         return $this->centrale->where('obsolete', '=', '0')->orderBy('nom')->get();

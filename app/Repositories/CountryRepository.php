@@ -18,7 +18,7 @@ class CountryRepository implements CountryRepositoryInterface
 
 	public function findAllForSelect()
 	{
-        return $this->country->select(['ctry_id as id', 'ctry_nom as name'])->orderBy('ctry_name')->get()->toJson();
+        return $this->country->select(['ctry_id as id', 'ctry_name as name'])->orderBy('ctry_name')->get()->toJson();
 	}
 
 	public function findAll()

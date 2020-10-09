@@ -1972,6 +1972,33 @@
       return false;
     });      
 
+    // Add countries values
+    var $countriesList = $( '#downloadPurchasesCountry' ); 
+    $countriesList.find( 'option' ).remove();
+    $countriesList.append('<option value="">Sélectionner...</option>');
+    var list_of_countries = $.parseJSON("{{ htmlspecialchars(Session::get('select_of_countries')) }}".replace( /&quot;/g, '"' ));
+    list_of_countries.forEach(country => {
+      $countriesList.append('<option value="' + country["id"] + '">' + country["name"] + '</option>');
+    });
+    
+    // Add sources values
+    var $sourcesList = $( '#downloadPurchasesSource' ); 
+    $sourcesList.find( 'option' ).remove();
+    $sourcesList.append('<option value="">Sélectionner...</option>');
+    var list_of_sources = $.parseJSON("{{ htmlspecialchars(Session::get('select_of_sources')) }}".replace( /&quot;/g, '"' ));
+    list_of_sources.forEach(source => {
+      $sourcesList.append('<option value="' + source["id"] + '">' + source["name"] + '</option>');
+    });
+    
+    // Add suppliers values
+    var $suppliersList = $( '#downloadPurchasesSupplier' ); 
+    $suppliersList.find( 'option' ).remove();
+    $suppliersList.append('<option value="">Sélectionner...</option>');
+    var list_of_suppliers = $.parseJSON("{{ htmlspecialchars(Session::get('list_of_laboratories')) }}".replace( /&quot;/g, '"' ));
+    list_of_suppliers.forEach(supplier => {
+      $suppliersList.append('<option value="' + supplier["id"] + '">' + supplier["name"] + '</option>');
+    });
+    
     $("#downloadPurchasesButton").click(function(){
       // Open popup
       $('#downloadPurchasesModal').modal("show");
@@ -1982,9 +2009,12 @@
 
     $("#launchButtonDownloadPurchases").click(function(){
       // Récupération des paramètres du formulaire
-      var annee = getSelectValueById("downloadPurchasesYear");
+      var year = getSelectValueById("downloadPurchasesYear");
+      var country = getSelectValueById("downloadPurchasesCountry");
+      var source = getSelectValueById("downloadPurchasesSource");
+      var supplier = getSelectValueById("downloadPurchasesSupplier");
 
-      document.location.href="downloadPurchasesCSV/" + annee;
+      document.location.href="downloadPurchasesCSV/" + year + '/' + country + '/' + (source != "" ? source : 0) + '/' + (supplier != "" ? supplier : 0);
 
       bootoast.toast({
         message: "@lang('amadeo.download-progress')",

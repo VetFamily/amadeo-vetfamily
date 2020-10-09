@@ -23,14 +23,30 @@ class AchatRepository implements AchatRepositoryInterface
 	/*
 	* Returns all purchases
 	*/
-	public function findAll($year)
+	public function findAll($year, $countryId, $sourceId, $supplierId)
 	{
-		$query = "select distinct a.id as achat_id, c.id AS clinique_id, c.veterinaires AS veterinaires, c.nom AS clinique, extract(year from c.date_entree) AS annee, l.nom AS laboratoire, p.id AS produit_id, CONCAT(p.denomination, ' ', p.conditionnement) AS produit_nom, p.code_gtin AS produit_gtin, liste_types.types, liste_especes.especes, ft.classe1_code, ft.classe1_nom, ft.classe2_code, ft.classe2_nom, ft.classe3_code, ft.classe3_nom, a.date AS date, a.qte_payante_complet AS qte_payante, a.qte_gratuite_complet AS qte_gratuite, a.ca_complet AS ca, ce.nom AS centrale, a.total_rebate_euro as total_rebate, (a.clinic_rebate_percent * a.ca_complet) as clinic_rebate, (a.source_rebate_percent * a.ca_complet) as central_rebate, liste_categories.categories
-				from achats a
-				join produits p on p.id = a.produit_id
+		$params = [
+			"year" => $year,
+			"countryId" => $countryId,
+		];
+
+		if ($sourceId != 0)
+		{
+			$params["sourceId"] = $sourceId;
+		}
+
+		if ($supplierId != 0)
+		{
+			$params["supplierId"] = $supplierId;
+		}
+
+		$query = "select distinct purr_id, c.id AS clinic_id, c.veterinaires, c.nom AS clinic_name, c.date_entree as entry_date, c.date_left, l.nom AS supplier, p.id AS product_id, CONCAT(p.denomination, ' ', p.conditionnement) AS product_name, p.code_gtin AS product_gtin, liste_types.types, liste_especes.especes as species, ft.classe1_code, ft.classe1_nom, ft.classe2_code, ft.classe2_nom, ft.classe3_code, ft.classe3_nom, purc_date, purc_paid_unit, purc_free_unit, purc_gross, purc_net, ce.nom AS centrale, liste_categories.categories, purc_currency, purc_clinic_rebate_percent, purc_clinic_rebate, purc_clinic_rebate_amadeo, purc_central_rebate_percent, purc_central_rebate, purc_central_rebate_amadeo, purc_double_net, purc_valorization
+				from ed_purchases_ref purr
+				left join ed_purchase purc on purc_purchase_ref_id = purr_id
+				join produits p on p.id = purr_product_id
 				left join familles_therapeutiques ft on ft.id = p.famille_therapeutique_id
 				join laboratoires l on l.id = p.laboratoire_id
-				join centrale_clinique cc on cc.id = a.centrale_clinique_id
+				join centrale_clinique cc on cc.id = purr_source_clinic_id
 				join centrales ce on ce.id = cc.centrale_id
 				join cliniques c on c.id = cc.clinique_id
 				left join
@@ -54,14 +70,17 @@ class AchatRepository implements AchatRepositoryInterface
 					join categorie_produit cp on cp.categorie_id = cat.id 
 					group by cp.produit_id
 				) liste_categories on liste_categories.produit_id = p.id
-				where a.obsolete IS FALSE
-				and ((a.qte_payante_complet != 0) or (a.qte_gratuite_complet != 0) or (a.ca_complet != 0))
+				where " . ($supplierId != 0 ? "l.id = :supplierId " : "l.obsolete is false") . "
+				and purr_obsolete IS FALSE
+				and ((purc_paid_unit != 0) or (purc_paid_unit != 0) or ((purc_gross != 0) or (purc_net != 0)))
 				and p.invisible IS FALSE
 				and c.obsolete IS FALSE
-				and a.date between '" . Carbon::createFromDate($year, 1, 1) . "' and '" . Carbon::createFromDate($year, 12, 31) . "'
-				order by date, clinique, laboratoire, produit_nom, centrale";
+				and EXTRACT(YEAR from purc_date) = :year
+				and c.country_id = :countryId
+				" . ($sourceId != 0 ? "and cc.centrale_id = :sourceId " : "") . "
+				order by purc_date, clinic_name, supplier, product_name, centrale";
 			
-		$result = DB::select(DB::raw($query));
+		$result = DB::select(DB::raw($query), $params);
 
 		return $result;
 	}

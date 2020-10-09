@@ -85,6 +85,8 @@ class HeaderController extends Controller
         Session::put('list_of_species', $this->especeRepository->findAll());
         Session::put('list_of_central_purchasing', $this->centraleRepository->findAll());
         Session::put('last_date', $this->achatRepository->findLastDateOfPurchasesByYear(null));
+        Session::put('select_of_countries', $this->countryRepository->findAllForSelect());
+        Session::put('select_of_sources', $this->centraleRepository->findAllForSelect());
         
         return view('statistiques/statistiques');
     }

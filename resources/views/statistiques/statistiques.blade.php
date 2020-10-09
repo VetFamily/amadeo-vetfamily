@@ -113,6 +113,15 @@
 						    	<div id="divPurchasesYear" class="form-group">
 					                <label class="label_text">@lang('amadeo.year') {{ Form::selectYear('downloadPurchasesYear', date('Y'), 2018, date('Y'), ['id' => 'downloadPurchasesYear']) }}</label>
 					            </div>
+					            <div id="divPurchasesCountry" class="form-group">
+					                <label class="label_text">@lang('amadeo.purchases.country') <select id="downloadPurchasesCountry" autofocus><option value="">Sélectionner...</option></select></label>
+					            </div>
+					            <div id="divPurchasesSource" class="form-group">
+					                <label class="label_text">@lang('amadeo.purchases.source') <select id="downloadPurchasesSource" autofocus><option value="">Sélectionner...</option></select></label>
+					            </div>
+					            <div id="divPurchasesSupplier" class="form-group">
+					                <label class="label_text">@lang('amadeo.purchases.supplier') <select id="downloadPurchasesSupplier" autofocus><option value="">Sélectionner...</option></select></label>
+					            </div>
 						    </div>
 						    <div class="modal-footer">
 						    	<div class="confirm-buttons-modal">
