@@ -79,7 +79,7 @@
     // Create the drop-down list
     var json = [];
     var years = [];
-    for (year=2010 ; year < ((new Date()).getFullYear() + 2) ; year++)
+    for (year=2000 ; year < ((new Date()).getFullYear() + 2) ; year++)
     {
       var selected = false;
       if ((sessionStorage.getItem(currentScreen + "-clinicYears") == null && year < ((new Date()).getFullYear() + 1)) 

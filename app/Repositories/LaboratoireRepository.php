@@ -48,7 +48,7 @@ class LaboratoireRepository implements LaboratoireRepositoryInterface
 							join categorie_produit_objectif cpo on cpo.objectif_id = o.id
 							join categorie_produit cpr on cpr.id = cpo.categorie_produit_id
 							join (
-								select distinct l.id as lab_id, o.id as obj_id, p.id as prod_id, a.id, a.ca_complet AS ca_total_achat, (pv.valo_euro * a.qte_payante_complet) AS ca_total_labo, (cpt.prix_unitaire_hors_promo * a.qte_payante_complet) AS ca_total_centrale
+								select distinct categories.laboratoire_id as lab_id, o.id as obj_id, p.id as prod_id, a.id, a.ca_complet AS ca_total_achat, (pv.valo_euro * a.qte_payante_complet) AS ca_total_labo, (cpt.prix_unitaire_hors_promo * a.qte_payante_complet) AS ca_total_centrale
 								from objectifs o
 								join categories on categories.id = o.categorie_id
 								join categorie_produit_objectif cpo on cpo.objectif_id = o.id

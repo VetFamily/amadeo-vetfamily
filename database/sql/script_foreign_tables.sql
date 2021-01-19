@@ -52,7 +52,8 @@ OPTIONS (user 'readonly', password 'IbegTaj8');
 CREATE FOREIGN TABLE public.ft_ed_country (
 	id int4 NOT NULL,
 	"name" varchar(255) NOT NULL,
-	default_language_id int4 NOT NULL
+	default_language_id int4 NOT NULL,
+	currency varchar(5) NOT NULL
 )
 SERVER "foreign_elia-digital_server"
 OPTIONS (schema_name 'public', table_name 'country');
@@ -62,7 +63,8 @@ CREATE MATERIALIZED VIEW public.ed_country
 TABLESPACE pg_default
 AS SELECT ft_ed_country.id AS ctry_id,
     ft_ed_country.name AS ctry_name,
-    ft_ed_country.default_language_id AS ctry_default_language_id
+    ft_ed_country.default_language_id AS ctry_default_language_id,
+	ft_ed_country.currency AS ctry_currency
    FROM ft_ed_country
 WITH DATA;
 ALTER MATERIALIZED VIEW ed_country OWNER TO vetfamily;
@@ -71,6 +73,7 @@ ALTER MATERIALIZED VIEW ed_country OWNER TO vetfamily;
 CREATE INDEX ed_ed_country_default_language_id_idx ON public.ed_country USING btree (ctry_default_language_id);
 CREATE INDEX ed_ed_country_id_idx ON public.ed_country USING btree (ctry_id);
 CREATE INDEX ed_ed_country_name_idx ON public.ed_country USING btree (ctry_name);
+CREATE INDEX ed_ed_country_currency_idx ON public.ed_country USING btree (ctry_currency);
 
 
 -- Familles thérapeutiques
@@ -106,11 +109,35 @@ CREATE INDEX familles_therapeutiques_classe3_nom_index ON familles_therapeutique
 CREATE INDEX familles_therapeutiques_obsolete_index ON familles_therapeutiques USING btree (obsolete);
 
 
+-- Cirrina pricing conditions
+CREATE FOREIGN TABLE public.ft_ed_cirrina_pricing_conditions (
+	cpdb_id int4 NOT NULL,
+	cpdb_name varchar(255) NOT NULL,
+	cpdb_cirrina_source_id integer NULL
+)
+SERVER "foreign_elia-digital_server"
+OPTIONS (schema_name 'public', table_name 'ed_cirrina_pricing_conditions');
+ALTER FOREIGN TABLE ft_ed_cirrina_pricing_conditions OWNER TO vetfamily;
+
+CREATE MATERIALIZED VIEW public.ed_cirrina_pricing_conditions
+TABLESPACE pg_default
+AS SELECT cpdb_id, cpdb_name, cpdb_cirrina_source_id FROM ft_ed_cirrina_pricing_conditions
+WITH DATA;
+ALTER MATERIALIZED VIEW ed_cirrina_pricing_conditions OWNER TO vetfamily;
+
+-- View indexes:
+CREATE INDEX ed_ed_cirrina_pricing_conditions_cpdb_id_idx ON public.ed_cirrina_pricing_conditions USING btree (cpdb_id);
+CREATE INDEX ed_ed_cirrina_pricing_conditions_cpdb_name_idx ON public.ed_cirrina_pricing_conditions USING btree (cpdb_name);
+CREATE INDEX ed_ed_cirrina_pricing_conditions_cpdb_cirrina_source_id_idx ON public.ed_cirrina_pricing_conditions USING btree (cpdb_cirrina_source_id);
+
+
 -- Laboratoires
 CREATE FOREIGN TABLE ed_laboratoires (
 	id integer not NULL,
     nom character varying(255),
     obsolete boolean
+	created_at timestamp,
+	updated_at timestamp
 )
 SERVER "foreign_elia-digital_server"
 OPTIONS (schema_name 'public', table_name 'laboratoires');
@@ -118,21 +145,25 @@ ALTER FOREIGN TABLE ed_laboratoires OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW laboratoires
 AS
-(SELECT id, nom, obsolete FROM ed_laboratoires where id not in (34, 46, 56))
+(SELECT id, nom, obsolete, created_at, updated_at FROM ed_laboratoires where id not in (34, 46))
 WITH DATA;
 ALTER MATERIALIZED VIEW laboratoires OWNER TO vetfamily;
 CREATE INDEX laboratoires_id_index ON laboratoires USING btree (id);
 CREATE INDEX laboratoires_nom_index ON laboratoires USING btree (nom);
 CREATE INDEX laboratoires_obsolete_index ON laboratoires USING btree (obsolete);
+CREATE INDEX laboratoires_created_at_index ON laboratoires USING btree (created_at);
+CREATE INDEX laboratoires_updated_at_index ON laboratoires USING btree (updated_at);
 
 CREATE MATERIALIZED VIEW laboratoires_ref
 AS
-(SELECT id, nom, obsolete FROM ed_laboratoires)
+(SELECT id, nom, obsolete, created_at, updated_at FROM ed_laboratoires)
 WITH DATA;
 ALTER MATERIALIZED VIEW laboratoires_ref OWNER TO vetfamily;
 CREATE INDEX laboratoires_ref_id_index ON laboratoires_ref USING btree (id);
 CREATE INDEX laboratoires_ref_nom_index ON laboratoires_ref USING btree (nom);
 CREATE INDEX laboratoires_ref_obsolete_index ON laboratoires_ref USING btree (obsolete);
+CREATE INDEX laboratoires_ref_created_at_index ON laboratoires USING btree (created_at);
+CREATE INDEX laboratoires_ref_updated_at_index ON laboratoires USING btree (updated_at);
 
 
 
@@ -148,7 +179,7 @@ ALTER FOREIGN TABLE ed_centrales OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW centrales
 AS
-SELECT id, nom, obsolete FROM ed_centrales where id in (1, 2, 3, 7, 11, 13, 15, 16, 17)
+SELECT id, nom, obsolete FROM ed_centrales where id in (1, 2, 3, 7, 11, 13, 15, 16, 17, 18, 19, 20)
 WITH DATA;
 ALTER MATERIALIZED VIEW centrales OWNER TO vetfamily;
 CREATE INDEX centrales_id_index ON centrales USING btree (id);
@@ -161,7 +192,8 @@ CREATE FOREIGN TABLE ed_centrale_laboratoire (
 	id integer not NULL,
 	nom_laboratoire varchar(255),
     laboratoire_id integer,
-    centrale_id integer
+    centrale_id integer,
+    cirrina_pricing_condition_id integer
 )
 SERVER "foreign_elia-digital_server"
 OPTIONS (schema_name 'public', table_name 'centrale_laboratoire');
@@ -169,13 +201,14 @@ ALTER FOREIGN TABLE ed_centrale_laboratoire OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW centrale_laboratoire
 AS
-SELECT id, nom_laboratoire, laboratoire_id, centrale_id FROM ed_centrale_laboratoire
+SELECT id, nom_laboratoire, laboratoire_id, centrale_id, cirrina_pricing_condition_id FROM ed_centrale_laboratoire
 WITH DATA;
 ALTER MATERIALIZED VIEW centrale_laboratoire OWNER TO vetfamily;
 CREATE INDEX centrale_laboratoire_id_index ON centrale_laboratoire USING btree (id);
 CREATE INDEX centrale_laboratoire_nom_laboratoire_index ON centrale_laboratoire USING btree (nom_laboratoire);
 CREATE INDEX centrale_laboratoire_laboratoire_id_index ON centrale_laboratoire USING btree (laboratoire_id);
 CREATE INDEX centrale_laboratoire_centrale_id_index ON centrale_laboratoire USING btree (centrale_id);
+CREATE INDEX centrale_laboratoire_cirrina_pricing_condition_id_index ON centrale_laboratoire USING btree (cirrina_pricing_condition_id);
 
 
 
@@ -188,7 +221,10 @@ CREATE FOREIGN TABLE ed_centrale_produit (
 	obsolete boolean,
 	date_creation date,
 	date_obsolescence date,
-    country_id integer
+    country_id integer,
+    cirrina_pricing_condition_id integer,
+	created_at timestamp,
+	updated_at timestamp
 )
 SERVER "foreign_elia-digital_server"
 OPTIONS (schema_name 'public', table_name 'product_source_vetfamily');
@@ -196,7 +232,7 @@ ALTER FOREIGN TABLE ed_centrale_produit OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW centrale_produit
 AS
-SELECT id, code_produit, centrale_id, produit_id, obsolete, date_creation, date_obsolescence, country_id FROM ed_centrale_produit
+SELECT id, code_produit, centrale_id, produit_id, obsolete, date_creation, date_obsolescence, country_id, cirrina_pricing_condition_id, created_at, updated_at FROM ed_centrale_produit
 WITH DATA;
 ALTER MATERIALIZED VIEW centrale_produit OWNER TO vetfamily;
 CREATE INDEX centrale_produit_id_index ON centrale_produit USING btree (id);
@@ -207,6 +243,9 @@ CREATE INDEX centrale_produit_obsolete_index ON centrale_produit USING btree (ob
 CREATE INDEX centrale_produit_date_creation_index ON centrale_produit USING btree (date_creation);
 CREATE INDEX centrale_produit_date_obsolescence_index ON centrale_produit USING btree (date_obsolescence);
 CREATE INDEX centrale_produit_country_id_index ON centrale_produit USING btree (country_id);
+CREATE INDEX centrale_produit_cirrina_pricing_condition_id_index ON centrale_produit USING btree (cirrina_pricing_condition_id);
+CREATE INDEX centrale_produit_created_at_index ON centrale_produit USING btree (created_at);
+CREATE INDEX centrale_produit_updated_at_index ON centrale_produit USING btree (updated_at);
 
 
 -- Centrale_produit_tarifs
@@ -291,6 +330,56 @@ CREATE INDEX centrale_produit_denominations_nom_index ON centrale_produit_denomi
 CREATE INDEX centrale_produit_denominations_date_creation_index ON centrale_produit_denominations USING btree (date_creation);
 
 
+-- Centrale_produit_references
+CREATE FOREIGN TABLE ed_centrale_produit_references (
+	id integer not NULL,
+	centrale_produit_id integer,
+	code_gtin varchar(60),
+	code_ean varchar(60),
+	code_amm varchar(60),
+	code_cip varchar(60),
+	date_creation date
+)
+SERVER "foreign_elia-digital_server"
+OPTIONS (schema_name 'public', table_name 'centrale_produit_references');
+ALTER FOREIGN TABLE ed_centrale_produit_references OWNER TO vetfamily;
+    
+CREATE MATERIALIZED VIEW centrale_produit_references
+AS
+SELECT id, centrale_produit_id, code_gtin, code_ean, code_amm, code_cip, date_creation FROM ed_centrale_produit_references
+WITH DATA;
+ALTER MATERIALIZED VIEW centrale_produit_references OWNER TO vetfamily;
+CREATE INDEX centrale_produit_references_id_index ON centrale_produit_references USING btree (id);
+CREATE INDEX centrale_produit_references_centrale_produit_id_index ON centrale_produit_references USING btree (centrale_produit_id);
+CREATE INDEX centrale_produit_references_code_gtin_index ON centrale_produit_references USING btree (code_gtin);
+CREATE INDEX centrale_produit_references_code_ean_index ON centrale_produit_references USING btree (code_ean);
+CREATE INDEX centrale_produit_references_code_amm_index ON centrale_produit_references USING btree (code_amm);
+CREATE INDEX centrale_produit_references_code_cip_index ON centrale_produit_references USING btree (code_cip);
+CREATE INDEX centrale_produit_references_date_creation_index ON centrale_produit_references USING btree (date_creation);
+
+
+-- Centrale_produit_laboratoires
+CREATE FOREIGN TABLE ed_centrale_produit_laboratoires (
+	id integer not NULL,
+	centrale_produit_id integer,
+	nom varchar(255),
+	date_creation date
+)
+SERVER "foreign_elia-digital_server"
+OPTIONS (schema_name 'public', table_name 'centrale_produit_laboratoires');
+ALTER FOREIGN TABLE ed_centrale_produit_laboratoires OWNER TO vetfamily;
+    
+CREATE MATERIALIZED VIEW centrale_produit_laboratoires
+AS
+SELECT id, centrale_produit_id, nom, date_creation FROM ed_centrale_produit_laboratoires
+WITH DATA;
+ALTER MATERIALIZED VIEW centrale_produit_laboratoires OWNER TO vetfamily;
+CREATE INDEX centrale_produit_laboratoires_id_index ON centrale_produit_laboratoires USING btree (id);
+CREATE INDEX centrale_produit_laboratoires_centrale_produit_id_index ON centrale_produit_laboratoires USING btree (centrale_produit_id);
+CREATE INDEX centrale_produit_laboratoires_nom_index ON centrale_produit_laboratoires USING btree (nom);
+CREATE INDEX centrale_produit_laboratoires_date_creation_index ON centrale_produit_laboratoires USING btree (date_creation);
+
+
 -- Especes
 CREATE FOREIGN TABLE ed_especes (
 	id integer not NULL,
@@ -344,7 +433,9 @@ CREATE FOREIGN TABLE ed_produits (
     invisible boolean,
     valo_volume numeric,
     unite_valo_volume character varying(100),
-    famille_therapeutique_id int4
+    famille_therapeutique_id int4,
+	created_at timestamp,
+	updated_at timestamp
 )
 SERVER "foreign_elia-digital_server"
 OPTIONS (schema_name 'public', table_name 'product_vetfamily');
@@ -352,7 +443,7 @@ ALTER FOREIGN TABLE ed_produits OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW produits
 AS
-SELECT ed_produits.id, code_gtin, code_gtin_autre, denomination, conditionnement, laboratoire_id, ed_produits.obsolete, invisible, valo_volume, unite_valo_volume, famille_therapeutique_id FROM ed_produits join laboratoires on laboratoires.id = ed_produits.laboratoire_id
+SELECT ed_produits.id, code_gtin, code_gtin_autre, denomination, conditionnement, laboratoire_id, ed_produits.obsolete, invisible, valo_volume, unite_valo_volume, famille_therapeutique_id, ed_produits.created_at, ed_produits.updated_at FROM ed_produits join laboratoires on laboratoires.id = ed_produits.laboratoire_id
 WITH DATA;
 ALTER MATERIALIZED VIEW produits OWNER TO vetfamily;
 CREATE INDEX produits_id_index ON produits USING btree (id);
@@ -366,10 +457,12 @@ CREATE INDEX produits_invisible_index ON produits USING btree (invisible);
 CREATE INDEX produits_valo_volume_index ON produits USING btree (valo_volume);
 CREATE INDEX produits_unite_valo_volume_index ON produits USING btree (unite_valo_volume);
 CREATE INDEX produits_famille_therapeutique_id_index ON produits USING btree (famille_therapeutique_id);
+CREATE INDEX produits_created_at_index ON produits USING btree (created_at);
+CREATE INDEX produits_updated_at_id_index ON produits USING btree (updated_at);
 
 CREATE MATERIALIZED VIEW produits_ref
 AS
-SELECT id, code_gtin, code_gtin_autre, denomination, conditionnement, laboratoire_id, obsolete, invisible, valo_volume, unite_valo_volume, famille_therapeutique_id FROM ed_produits
+SELECT id, code_gtin, code_gtin_autre, denomination, conditionnement, laboratoire_id, obsolete, invisible, valo_volume, unite_valo_volume, famille_therapeutique_id, created_at, updated_at FROM ed_produits
 WITH DATA;
 ALTER MATERIALIZED VIEW produits_ref OWNER TO vetfamily;
 CREATE INDEX produits_ref_id_index ON produits_ref USING btree (id);
@@ -383,6 +476,8 @@ CREATE INDEX produits_ref_invisible_index ON produits_ref USING btree (invisible
 CREATE INDEX produits_ref_valo_volume_index ON produits_ref USING btree (valo_volume);
 CREATE INDEX produits_ref_unite_valo_volume_index ON produits_ref USING btree (unite_valo_volume);
 CREATE INDEX produits_ref_famille_therapeutique_id_index ON produits_ref USING btree (famille_therapeutique_id);
+CREATE INDEX produits_ref_created_at_index ON produits USING btree (created_at);
+CREATE INDEX produits_ref_updated_at_id_index ON produits USING btree (updated_at);
 
 
 -- Types
@@ -431,7 +526,9 @@ CREATE FOREIGN TABLE ed_produit_valorisations (
     produit_id integer,
     valo_euro numeric,
     date_debut date,
-    date_fin date
+    date_fin date,
+	created_at timestamp,
+	updated_at timestamp
 )
 SERVER "foreign_elia-digital_server"
 OPTIONS (schema_name 'public', table_name 'produit_valorisations');
@@ -439,7 +536,7 @@ ALTER FOREIGN TABLE ed_produit_valorisations OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW produit_valorisations
 AS
-SELECT id, produit_id, valo_euro, date_debut, date_fin FROM ed_produit_valorisations
+SELECT id, produit_id, valo_euro, date_debut, date_fin, created_at, updated_at FROM ed_produit_valorisations
 WITH DATA;
 ALTER MATERIALIZED VIEW produit_valorisations OWNER TO vetfamily;
 CREATE INDEX produit_valorisations_id_index ON produit_valorisations USING btree (id);
@@ -447,6 +544,8 @@ CREATE INDEX produit_valorisations_produit_id_index ON produit_valorisations USI
 CREATE INDEX produit_valorisations_valo_euro_index ON produit_valorisations USING btree (valo_euro);
 CREATE INDEX produit_valorisations_date_debut_index ON produit_valorisations USING btree (date_debut);
 CREATE INDEX produit_valorisations_date_fin_index ON produit_valorisations USING btree (date_fin);
+CREATE INDEX produit_valorisations_created_at_index ON produit_valorisations USING btree (created_at);
+CREATE INDEX produit_valorisations_updated_at_index ON produit_valorisations USING btree (updated_at);
 
 
 -- Product-country
