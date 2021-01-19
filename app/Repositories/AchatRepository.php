@@ -40,9 +40,9 @@ class AchatRepository implements AchatRepositoryInterface
 			$params["supplierId"] = $supplierId;
 		}
 
-		$query = "select distinct purr_id, c.id AS clinic_id, c.veterinaires, c.nom AS clinic_name, c.date_entree as entry_date, c.date_left, l.nom AS supplier, p.id AS product_id, CONCAT(p.denomination, ' ', p.conditionnement) AS product_name, p.code_gtin AS product_gtin, liste_types.types, liste_especes.especes as species, ft.classe1_code, ft.classe1_nom, ft.classe2_code, ft.classe2_nom, ft.classe3_code, ft.classe3_nom, purc_date, purc_paid_unit, purc_free_unit, purc_gross, purc_net, ce.nom AS centrale, liste_categories.categories, purc_currency, purc_clinic_rebate_percent, purc_clinic_rebate, purc_clinic_rebate_amadeo, purc_central_rebate_percent, purc_central_rebate, purc_central_rebate_amadeo, purc_double_net, purc_valorization
+		$query = "select distinct purr_id, c.id AS clinic_id, c.veterinaires, c.nom AS clinic_name, c.date_entree as entry_date, c.date_left, l.nom AS supplier, p.id AS product_id, CONCAT(p.denomination, ' ', p.conditionnement) AS product_name, p.code_gtin AS product_gtin, liste_types.types, liste_especes.especes as species, ft.classe1_code, ft.classe1_nom, ft.classe2_code, ft.classe2_nom, ft.classe3_code, ft.classe3_nom, purc_date, purc_paid_unit, purc_free_unit, purc_gross, purc_net, ce.nom AS centrale, liste_categories.categories, purc_currency, purc_clinic_rebate_percent, purc_clinic_rebate, purc_clinic_rebate_amadeo, purc_central_rebate_percent, purc_central_rebate, purc_central_rebate_amadeo, purc_double_net, purc_valorization, prbc_brand_level1, prbc_brand_level2, catt_category1, catt_category2, catt_category3
 				from ed_purchases_ref purr
-				left join ed_purchase purc on purc_purchase_ref_id = purr_id
+				join ed_purchase purc on purc_purchase_ref_id = purr_id
 				join produits p on p.id = purr_product_id
 				left join familles_therapeutiques ft on ft.id = p.famille_therapeutique_id
 				join laboratoires l on l.id = p.laboratoire_id
@@ -68,11 +68,15 @@ class AchatRepository implements AchatRepositoryInterface
 					select distinct cp.produit_id, string_agg(cat.nom, ', ' order by cat.nom) as categories 
 					from categories cat 
 					join categorie_produit cp on cp.categorie_id = cat.id 
+					where cat.annee = :year
+					and cat.country_id = :countryId
 					group by cp.produit_id
 				) liste_categories on liste_categories.produit_id = p.id
+				left join ed_product_vf_brand_category on prbc_product_id = p.id
+				left join ed_vf_category_tree on catt_id = prbc_category_tree_id
 				where " . ($supplierId != 0 ? "l.id = :supplierId " : "l.obsolete is false") . "
 				and purr_obsolete IS FALSE
-				and ((purc_paid_unit != 0) or (purc_paid_unit != 0) or ((purc_gross != 0) or (purc_net != 0)))
+				and ((purc_paid_unit != 0) or (purc_free_unit != 0) or ((purc_gross != 0) or (purc_net != 0)))
 				and p.invisible IS FALSE
 				and c.obsolete IS FALSE
 				and EXTRACT(YEAR from purc_date) = :year
