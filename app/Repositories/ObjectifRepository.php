@@ -224,6 +224,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1) 
 							and cliniques.obsolete IS FALSE
+							and cliniques.premium = objectifs.premium
+							and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 						) achats_periode
 						group by obj_id
 					) calcul_periode on calcul_periode.obj_id = objectifs.id 
@@ -257,6 +259,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
+							and cliniques.premium = objectifs.premium
+							and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 						) achats_periode
 						group by obj_id
 					) calcul_periode_prec on calcul_periode_prec.obj_id = objectifs.id 
@@ -275,6 +279,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
+							and cliniques.premium = objectifs.premium
+							and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 						) achats_periode
 						group by obj_id
 					) calcul_periode_total_prec on calcul_periode_total_prec.obj_id = objectifs.id ";
@@ -314,6 +320,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
+							and cliniques.premium = objectifs.premium
+							and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 						)
 					) produits_periode,
 					(
@@ -368,6 +376,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
+							and cliniques.premium = objectifs.premium
+							and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 						)
 					) produits_periode_prec,
 					objectifs 
@@ -396,6 +406,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
+							and cliniques.premium = objectifs.premium
+							and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 						) achats_periode
 						group by obj_id
 					) calcul_periode on calcul_periode.obj_id = objectifs.id 
@@ -427,6 +439,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
+							and cliniques.premium = objectifs.premium
+							and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 						) achats_periode
 						group by obj_id
 					) calcul_periode_prec on calcul_periode_prec.obj_id = objectifs.id 
@@ -447,6 +461,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
+							and cliniques.premium = objectifs.premium
+							and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 						) achats_periode
 						group by obj_id
 					) calcul_periode_total_prec on calcul_periode_total_prec.obj_id = objectifs.id ";
@@ -503,6 +519,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
+							and cliniques.premium = objectifs.premium
+							and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 						)
 					) produits_periode,
 					(
@@ -558,6 +576,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
+							and cliniques.premium = objectifs.premium
+							and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 						)
 					) produits_periode_prec,
 					objectifs 
@@ -587,6 +607,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
+							and cliniques.premium = objectifs.premium
+							and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 						) achats_periode
 						group by obj_id
 					) calcul_periode on calcul_periode.obj_id = objectifs.id 
@@ -618,6 +640,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
+							and cliniques.premium = objectifs.premium
+							and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 						) achats_periode
 						group by obj_id
 					) calcul_periode_prec on calcul_periode_prec.obj_id = objectifs.id 
@@ -638,6 +662,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and objectifs.id = " . $id . "
 							and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 							and cliniques.obsolete IS FALSE
+							and cliniques.premium = objectifs.premium
+							and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 						) achats_periode
 						group by obj_id
 					) calcul_periode_total_prec on calcul_periode_total_prec.obj_id = objectifs.id ";
@@ -843,6 +869,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									and objectifs.type_valorisation_objectif_id is not null
 									and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 									and cliniques.obsolete IS FALSE
+									and cliniques.premium = objectifs.premium
+									and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 								) achats_periode
 							) achats
 							group by obj_id
@@ -954,6 +982,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									and objectifs.type_valorisation_objectif_id is not null
 									and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 									and cliniques.obsolete IS FALSE
+									and cliniques.premium = objectifs.premium
+									and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 								) achats_periode
 							) achats
 							group by obj_id
@@ -1063,6 +1093,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									and objectifs.id = " . $objectifId . "
 									and EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 									and cliniques.obsolete IS FALSE
+									and cliniques.premium = objectifs.premium
+									and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 								) achats_periode
 							) achats
 							group by obj_id
@@ -1126,6 +1158,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									and objectifs.id = " . $objectifId . "
 									and cliniques.id = " . $cliniqueId . "
 									and cliniques.obsolete IS FALSE
+									and cliniques.premium = objectifs.premium
+									and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 								) achats_periode
 							) achats
 							group by obj_id
@@ -1176,6 +1210,8 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									and objectifs.id = " . $objectifId . "
 									and cliniques.id = " . $cliniqueId . "
 									and cliniques.obsolete IS FALSE
+									and cliniques.premium = objectifs.premium
+									and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 								) achats_periode
 							) achats
 							group by obj_id

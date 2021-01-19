@@ -263,6 +263,8 @@ class CliniqueRepository implements CliniqueRepositoryInterface
 						AND produits.invisible IS FALSE
 						AND achats.date BETWEEN to_date('01/01/" . ($annee-1) . "', 'DD/MM/YYYY') AND last_day(to_date('01/" . ($annee == date('Y') ? date('m') : '12') . "/" . $annee . "', 'DD/MM/YYYY'))
 						AND EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
+						and cliniques.premium = objectifs.premium
+						and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 					) liste_achats ON liste_achats.mois = cliniques_mois.mois::double precision and liste_achats.annee = cliniques_mois.annee::double precision AND liste_achats.clinique_id = cliniques_mois.clinique_id
 					group by cliniques_mois.clinique_id, cliniques_mois.clinique, cliniques_mois.mois, cliniques_mois.annee
 					order by clinique\$\$
