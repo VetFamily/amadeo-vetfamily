@@ -7,7 +7,7 @@ interface AchatRepositoryInterface
 	/**
 	* Recherche la liste de toutes les statistiques.
 	*/
-	public function findAll($year, $countryId, $sourceId, $supplierId);
+	public function findAll($startMonth, $startYear, $endMonth, $endYear, $countryId, $sourceId, $supplierId);
 
     /*
 	* Search purchases based on selected settings, displaying by products.

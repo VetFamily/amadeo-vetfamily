@@ -48,7 +48,7 @@ Route::post('tableaudebord-general', ['middleware' => 'auth', 'uses' => 'Tableau
 Route::get('statistiques', 
 ['as' => 'page.statistiques', 'middleware' => ['auth', 'auth.laboratoire'], 'uses' => 'Commun\HeaderController@showOngletStatistiques']);
 Route::post('getListOfPurchasesByParams', ['middleware' => 'auth', 'uses' => 'Statistiques\StatistiquesController@getListOfPurchasesByParams']);
-Route::get('downloadPurchasesCSV/{year}/{countryId}/{sourceId}/{supplierId}', 
+Route::get('downloadPurchasesCSV/{startMonth}/{startYear}/{endMonth}/{endYear}/{countryId}/{sourceId}/{supplierId}', 
 ['as' => 'page.statistiques-downloadPurchasesCSV', 'middleware' => 'auth', 'uses' => 'Statistiques\StatistiquesController@downloadPurchasesCSV']);
 Route::get('downloadPurchasesByParamsCSV', 
 ['as' => 'page.statistiques-downloadPurchasesByParamsCSV', 'middleware' => 'auth', 'uses' => 'Statistiques\StatistiquesController@downloadPurchasesByParamsCSV']);

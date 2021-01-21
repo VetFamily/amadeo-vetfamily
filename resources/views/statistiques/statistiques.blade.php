@@ -111,7 +111,10 @@
 						    </div>
 						    <div class="modal-body flex-column">
 						    	<div id="divPurchasesYear" class="form-group">
-					                <label class="label_text">@lang('amadeo.year') {{ Form::selectYear('downloadPurchasesYear', date('Y'), 2018, date('Y'), ['id' => 'downloadPurchasesYear']) }}</label>
+									<label class="label_text">@lang('amadeo.year') 
+										<div class="flex-center text-center">
+											{{ Form::selectMonth('downloadPurchases-startMonth', 1, ['id' => 'downloadPurchases-startMonth', 'style' => 'text-transform: capitalize;flex:2;']) }} {{ Form::selectYear('downloadPurchases-startYear', date('Y'), 2018, date('Y'), ['id' => 'downloadPurchases-startYear', 'style' => 'flex:1;']) }} <div style="flex:1;font-size: 10px;color: #000;">@lang('amadeo.purchases.criteria-period-end')</div> {{ Form::selectMonth('downloadPurchases-endMonth', 1, ['id' => 'downloadPurchases-endMonth', 'style' => 'text-transform: capitalize;flex:2;']) }} {{ Form::selectYear('downloadPurchases-endYear', date('Y'), 2018, date('Y'), ['id' => 'downloadPurchases-endYear', 'style' => 'flex:1;']) }}</label>
+										</div>
 					            </div>
 					            <div id="divPurchasesCountry" class="form-group">
 					                <label class="label_text">@lang('amadeo.purchases.country') <select id="downloadPurchasesCountry" autofocus><option value="">Sélectionner...</option></select></label>

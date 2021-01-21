@@ -23,10 +23,13 @@ class AchatRepository implements AchatRepositoryInterface
 	/*
 	* Returns all purchases
 	*/
-	public function findAll($year, $countryId, $sourceId, $supplierId)
+	public function findAll($startMonth, $startYear, $endMonth, $endYear, $countryId, $sourceId, $supplierId)
 	{
 		$params = [
-			"year" => $year,
+			"startYear" => $startYear,
+			"endYear" => $endYear,
+			"startDate" => Carbon::create($startYear, $startMonth, 1, 0, 0, 0),
+			"endDate" => Carbon::create($endYear, $endMonth, 1, 0, 0, 0)->endOfMonth(),
 			"countryId" => $countryId,
 		];
 
@@ -68,7 +71,7 @@ class AchatRepository implements AchatRepositoryInterface
 					select distinct cp.produit_id, string_agg(cat.nom, ', ' order by cat.nom) as categories 
 					from categories cat 
 					join categorie_produit cp on cp.categorie_id = cat.id 
-					where cat.annee = :year
+					where cat.annee in (:startYear, :endYear)
 					and cat.country_id = :countryId
 					group by cp.produit_id
 				) liste_categories on liste_categories.produit_id = p.id
@@ -79,7 +82,7 @@ class AchatRepository implements AchatRepositoryInterface
 				and ((purc_paid_unit != 0) or (purc_free_unit != 0) or ((purc_gross != 0) or (purc_net != 0)))
 				and p.invisible IS FALSE
 				and c.obsolete IS FALSE
-				and EXTRACT(YEAR from purc_date) = :year
+				and purc_date between :startDate and :endDate
 				and c.country_id = :countryId
 				" . ($sourceId != 0 ? "and cc.centrale_id = :sourceId " : "") . "
 				order by purc_date, clinic_name, supplier, product_name, centrale";

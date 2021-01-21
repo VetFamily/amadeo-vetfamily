@@ -1,7 +1,10 @@
 <?php
 	// output headers so that the file is downloaded rather than displayed
 	header('Content-Type: text/csv; charset=utf-8');
-	header('Content-Disposition: attachment; filename="' . date('Ymd') . '_' . \Lang::get('amadeo.purchases.download-purchases.filename') . ' ' . $year . '.csv"'); 
+	$country = $countryId != null ? App\Model\Country::find($countryId)->ctry_name : '';
+	$source = $sourceId != "0" ? App\Model\Centrale::find($sourceId)->nom : '';
+	$supplier = $supplierId != "0" ? App\Model\Laboratoire::find($supplierId)->nom : '';
+	header('Content-Disposition: attachment; filename="' . date('Ymd') . '_' . \Lang::get('amadeo.purchases.download-purchases.filename') . ' ' . $country . ' ' . $source . ' ' . (strlen($supplier) > 10 ? substr_replace($supplier, "...", 10) : $supplier) . ' ' . $startYear . ($startMonth < 10 ? '0' : '') . $startMonth . '-' . $endYear . ($endMonth < 10 ? '0' : '') . $endMonth . '.csv"'); 
 
 	// create a file pointer connected to the output stream
 	$output = fopen('php://output', 'w');

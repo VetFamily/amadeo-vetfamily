@@ -105,11 +105,11 @@ class StatistiquesController extends Controller
 	/*
     * Recherche les statistiques complètes du groupement pour téléchargement d'un CSV.
     */
-	public function downloadPurchasesCSV($year, $countryId, $sourceId, $supplierId, AchatRepository $purchaseRepository)
+	public function downloadPurchasesCSV($startMonth, $startYear, $endMonth, $endYear, $countryId, $sourceId, $supplierId, AchatRepository $purchaseRepository)
 	{
-		$purchases = $purchaseRepository->findAll($year, $countryId, $sourceId, $supplierId);
+		$purchases = $purchaseRepository->findAll($startMonth, $startYear, $endMonth, $endYear, $countryId, $sourceId, $supplierId);
 
-		return view('statistiques/downloadAchatsCSV', compact('purchases', 'year'));
+		return view('statistiques/downloadAchatsCSV', compact('purchases', 'startMonth', 'startYear', 'endMonth', 'endYear', 'countryId', 'sourceId', 'supplierId'));
 	}
 
 	/*

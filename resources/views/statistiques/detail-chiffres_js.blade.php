@@ -2009,12 +2009,15 @@
 
     $("#launchButtonDownloadPurchases").click(function(){
       // Récupération des paramètres du formulaire
-      var year = getSelectValueById("downloadPurchasesYear");
+      var startMonth = getSelectValueById("downloadPurchases-startMonth");
+      var startYear = getSelectValueById("downloadPurchases-startYear");
+      var endMonth = getSelectValueById("downloadPurchases-endMonth");
+      var endYear = getSelectValueById("downloadPurchases-endYear");
       var country = getSelectValueById("downloadPurchasesCountry");
       var source = getSelectValueById("downloadPurchasesSource");
       var supplier = getSelectValueById("downloadPurchasesSupplier");
 
-      document.location.href="downloadPurchasesCSV/" + year + '/' + country + '/' + (source != "" ? source : 0) + '/' + (supplier != "" ? supplier : 0);
+      document.location.href="downloadPurchasesCSV/" + startMonth + '/' + startYear+ '/' + endMonth+ '/' + endYear+ '/' + country + '/' + (source != "" ? source : 0) + '/' + (supplier != "" ? supplier : 0);
 
       bootoast.toast({
         message: "@lang('amadeo.download-progress')",
