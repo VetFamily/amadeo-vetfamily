@@ -247,11 +247,12 @@ class ObjectifAjaxController extends Controller
     return $deleteObjectifs;
   }
   
-  public function updateAll($year)
+  public function updateAll($year, $countryId)
   {
     $objectifs = Objectif::select('objectifs.*')
                             ->join('categories', 'categories.id', '=', 'objectifs.categorie_id')
                             ->where('categories.annee', '=', $year)
+                            ->where('categories.country_id', '=', $countryId)
                             ->where('objectifs.obsolete', 0)
                             ->get();
 
@@ -264,6 +265,7 @@ class ObjectifAjaxController extends Controller
     $objectifsPaliers = Objectif::select('objectifs.*')
                                   ->join('categories', 'categories.id', '=', 'objectifs.categorie_id')
                                   ->where('categories.annee', '=', $year)
+                                  ->where('categories.country_id', '=', $countryId)
                                   ->where('objectifs.type_objectif_id', 2)
                                   ->whereNotNull('objectifs.objectif_precedent_id')
                                   ->where('objectifs.obsolete', 0)

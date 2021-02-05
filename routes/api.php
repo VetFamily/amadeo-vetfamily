@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 Route::group(['middleware' => ['api']], function () {
 
     Route::group(['prefix' => 'objectifs'], function () {
-        Route::get('updateAll/{year}', 'Ajax\ObjectifAjaxController@updateAll');
+        Route::get('updateAll/{year}/{countryId}', 'Ajax\ObjectifAjaxController@updateAll');
     });
 
     Route::group(['prefix' => 'etats-objectif'], function () {

@@ -179,7 +179,7 @@ ALTER FOREIGN TABLE ed_centrales OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW centrales
 AS
-SELECT id, nom, obsolete FROM ed_centrales where id in (1, 2, 3, 7, 11, 13, 15, 16, 17, 18, 19, 20)
+SELECT id, nom, obsolete FROM ed_centrales where id in (1, 2, 3, 7, 11, 13, 15, 16, 17, 18, 19, 20, 21)
 WITH DATA;
 ALTER MATERIALIZED VIEW centrales OWNER TO vetfamily;
 CREATE INDEX centrales_id_index ON centrales USING btree (id);
