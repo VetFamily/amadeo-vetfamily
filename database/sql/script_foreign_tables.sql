@@ -569,6 +569,48 @@ CREATE INDEX prco_country_id_idx ON ed_product_country USING btree (prco_country
 
 
 
+-- Active substance
+CREATE FOREIGN TABLE ft_ed_active_ingredient (
+	id integer not NULL,
+    nom character varying(255),
+    obsolete boolean
+)
+SERVER "foreign_elia-digital_server"
+OPTIONS (schema_name 'public', table_name 'substances_actives');
+ALTER FOREIGN TABLE ft_ed_active_ingredient OWNER TO vetfamily;
+    
+CREATE MATERIALIZED VIEW ed_active_ingredient
+AS
+SELECT id as acin_id, nom as acin_name, obsolete as acin_obsolete FROM ft_ed_active_ingredient
+WITH DATA;
+ALTER MATERIALIZED VIEW ed_active_ingredient OWNER TO vetfamily;
+CREATE INDEX acin_id_index ON ed_active_ingredient USING btree (acin_id);
+CREATE INDEX acin_name_index ON ed_active_ingredient USING btree (acin_name);
+CREATE INDEX acin_obsolete_index ON ed_active_ingredient USING btree (acin_obsolete);
+
+
+
+-- Product-active substance
+CREATE FOREIGN TABLE public.ft_ed_product_active_ingredient (
+	id int4 NOT NULL,
+	produit_id int4 NOT NULL,
+	substance_active_id int4 NOT NULL
+)
+SERVER "foreign_elia-digital_server"
+OPTIONS (schema_name 'public', table_name 'produit_substance_active');
+ALTER FOREIGN TABLE ft_ed_product_active_ingredient OWNER TO vetfamily;
+
+CREATE MATERIALIZED VIEW ed_product_active_ingredient
+AS
+SELECT id as prai_id, produit_id as prai_product_id, substance_active_id as prai_active_ingredient_id FROM ft_ed_product_active_ingredient
+WITH DATA;
+ALTER MATERIALIZED VIEW ed_product_active_ingredient OWNER TO vetfamily;
+CREATE INDEX prai_id_idx ON ed_product_active_ingredient USING btree (prai_id);
+CREATE INDEX prai_product_id_idx ON ed_product_active_ingredient USING btree (prai_product_id);
+CREATE INDEX prai_active_ingredient_id_idx ON ed_product_active_ingredient USING btree (prai_active_ingredient_id);
+
+
+
 -- Achats_autres
 CREATE MATERIALIZED VIEW achats_autres
 TABLESPACE pg_default
