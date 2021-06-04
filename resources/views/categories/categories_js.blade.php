@@ -7,6 +7,53 @@
 		// Calcul du nombre de colonnes
 		var nbCol = "{{sizeof(Session::get('list_of_species'))}}";
 		var idRow = row[7];
+
+		// Filters
+		var html_filters = '<tr><td class="detail-row-title">@lang("amadeo.categories.filters")</td>';
+		html_filters += '<td colspan="2"><div class="checkbox-item-horizontal">' 
+						+ '<div class="checkboxContainer">' 
+							+ '<input id="filters-' + idRow + '-within-agreement"';
+		if (row[11])
+		{
+			html_filters += ' checked="checked"';
+		}
+		html_filters += ' name="filters-' + idRow + '-within-agreement[]" type="checkbox" value="1">' 
+							+ '<label for="filters-' + idRow + '-within-agreement"></label>' 
+						+ '</div>' 
+						+ '<div class="checkboxLabel">' 
+							+ '<label for="filters-' + idRow + '-within-agreement">@lang("amadeo.categories.filters.within-agreement")</label>' 
+						+ '</div>' 
+					+ '</div></td>';
+		html_filters += '<td colspan="2"><div class="checkbox-item-horizontal">' 
+						+ '<div class="checkboxContainer">' 
+							+ '<input id="filters-' + idRow + '-show-in-member-reports"';
+		if (row[12])
+		{
+			html_filters += ' checked="checked"';
+		}
+		html_filters += ' name="filters-' + idRow + '-show-in-member-reports[]" type="checkbox" value="1">' 
+							+ '<label for="filters-' + idRow + '-show-in-member-reports"></label>' 
+						+ '</div>' 
+						+ '<div class="checkboxLabel">' 
+							+ '<label for="filters-' + idRow + '-show-in-member-reports">@lang("amadeo.categories.filters.show-in-member-reports")</label>' 
+						+ '</div>' 
+					+ '</div></td>';
+		html_filters += '<td colspan="2"><div class="checkbox-item-horizontal">' 
+						+ '<div class="checkboxContainer">' 
+							+ '<input id="filters-' + idRow + '-discount-on-invoice"';
+		if (row[13])
+		{
+			html_filters += ' checked="checked"';
+		}
+		html_filters += ' name="filters-' + idRow + '-discount-on-invoice[]" type="checkbox" value="1">' 
+							+ '<label for="filters-' + idRow + '-discount-on-invoice"></label>' 
+						+ '</div>' 
+						+ '<div class="checkboxLabel">' 
+							+ '<label for="filters-' + idRow + '-discount-on-invoice">@lang("amadeo.categories.filters.discount-on-invoice")</label>' 
+						+ '</div>' 
+					+ '</div></td>'
+				+ '</tr>';
+
 		
 		// Affichage des espèces
 		var html_especes = '<tr><td class="detail-row-title">@lang("amadeo.categories.species")</td>';
@@ -64,7 +111,7 @@
 			+ '</div></td></tr>';
 		@endif
 
-		var html = '<table class="detail-row">'+ html_especes + html_produits + html_commentaires + html_buttons + '</table>';
+		var html = '<table class="detail-row">'+ html_filters+ html_especes + html_produits + html_commentaires + html_buttons + '</table>';
 
 		return html;
 	}
@@ -387,7 +434,7 @@
 		    	  	}
 				  @endforeach
 
-				  return [[null, el.country, el.annee, especes, el.laboratoire, el.categorie, el.nb_produits, el.id, el.especes, el.laboratoire_id, el.country_id]];
+				  return [[null, el.country, el.annee, especes, el.laboratoire, el.categorie, el.nb_produits, el.id, el.especes, el.laboratoire_id, el.country_id, el.within_agreement, el.show_in_member_reports, el.discount_on_invoice]];
 				});
 
 			    // DataTable
@@ -683,7 +730,7 @@
 
 						                    // Mise à jour du tableau
 						                    var laboratoire = data.categorie[0]["laboratoire_id"] != null ? data.categorie[0]["laboratoire"] : "@lang('amadeo.categories.seller-multiple')";
-						                    var index = $('#tab-categories').dataTable().fnAddData( [ null, data.categorie[0]["country"], data.categorie[0]["annee"], null, laboratoire, data.categorie[0]["categorie"], data.categorie[0]["nb_produits"], data.categorie[0]["id"], null, data.categorie[0]["laboratoire_id"], data.categorie[0]["country_id"] ] );
+						                    var index = $('#tab-categories').dataTable().fnAddData( [ null, data.categorie[0]["country"], data.categorie[0]["annee"], null, laboratoire, data.categorie[0]["categorie"], data.categorie[0]["nb_produits"], data.categorie[0]["id"], null, data.categorie[0]["laboratoire_id"], data.categorie[0]["country_id"], data.categorie[0]["within_agreement"], data.categorie[0]["show_in_member_reports"], data.categorie[0]["discount_on_invoice"] ] );
 
 						                    if ($( '#selectFilter-1 option[value="' + laboratoire + '"]' ).length == 0)
 						                    {
@@ -783,7 +830,7 @@
 						                    var laboratoire = data.categorie[0]["laboratoire_id"] != null ? data.categorie[0]["laboratoire"] : "@lang('amadeo.categories.seller-multiple')";
 						                    
 											// Mise à jour du tableau
-						                    var index = $('#tab-categories').dataTable().fnAddData( [ null, data.categorie[0]["country"], data.categorie[0]["annee"], data.categorie[0]["especes_noms"], laboratoire, data.categorie[0]["categorie"], data.categorie[0]["nb_produits"], data.categorie[0]["id"], data.categorie[0]["especes"], data.categorie[0]["laboratoire_id"], data.categorie[0]["country_id"] ] );
+						                    var index = $('#tab-categories').dataTable().fnAddData( [ null, data.categorie[0]["country"], data.categorie[0]["annee"], data.categorie[0]["especes_noms"], laboratoire, data.categorie[0]["categorie"], data.categorie[0]["nb_produits"], data.categorie[0]["id"], data.categorie[0]["especes"], data.categorie[0]["laboratoire_id"], data.categorie[0]["country_id"], data.categorie[0]["within_agreement"], data.categorie[0]["show_in_member_reports"], data.categorie[0]["discount_on_invoice"] ] );
 						                    $('#tab-categories tbody > tr.selected').first().removeClass('selected');
 
 						                    $( '.filter-column-5' ).val( data.categorie[0]["categorie"] );
@@ -910,6 +957,9 @@
 			    	var id = rowPrevData[7];
 			    	var nom = trPrev.children().find('input').eq(0).val();
 			    	var especes = getCheckboxRadioValueByName('especes_' + id + '[]');
+					var withinAgreement = getCheckboxRadioValueByName('filters-' + id + '-within-agreement[]');
+					var showInMemberReports = getCheckboxRadioValueByName('filters-' + id + '-show-in-member-reports[]');
+					var discountOnInvoice = getCheckboxRadioValueByName('filters-' + id + '-discount-on-invoice[]');
 			    	var produits = [];
 			    	$( '#tab-categorie-produits-' + id + ' tbody tr' ).each(function() {
                     	if ($('#tab-categorie-produits-' + id).DataTable().row( $(this) ).data())
@@ -949,6 +999,9 @@
 								"_token": document.getElementsByName("_token")[0].value,
 								"nom": nom,
 								"especes": especes,
+								"withinAgreement": (withinAgreement != null && withinAgreement.length > 0) ? 1 : 0,
+								"showInMemberReports": (showInMemberReports != null && showInMemberReports.length > 0) ? 1 : 0,
+								"discountOnInvoice": (discountOnInvoice != null && discountOnInvoice.length > 0) ? 1 : 0,
 								"produits": produits,
 								"commentaires": commentaires
 							};
@@ -988,6 +1041,9 @@
 					                    rowPrevData[3] = especes;
 								    	rowPrevData[6] = produits.length;
 								    	rowPrevData[8] = params["especes"].join("|");
+					                    rowPrevData[11] = params["withinAgreement"];
+					                    rowPrevData[12] = params["showInMemberReports"];
+					                    rowPrevData[13] = params["discountOnInvoice"];
 
 								    	$('#tab-categories').dataTable().fnUpdate(rowPrevData,trPrev,undefined,false);
 

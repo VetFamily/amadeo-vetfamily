@@ -13,7 +13,10 @@ class Categorie extends Model
         'nom', 
         'annee',
         'laboratoire_id',
-        'country_id'
+        'country_id',
+        'within_agreement',
+        'show_in_member_reports',
+        'discount_on_invoice'
     ];
 
     public $timestamps = true;

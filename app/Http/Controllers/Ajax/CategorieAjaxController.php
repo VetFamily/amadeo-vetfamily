@@ -269,7 +269,7 @@ class CategorieAjaxController extends Controller
   public function update(Request $request, $id, ObjectifRepository $objectifRepository)
   {
     // Mise à jour de la catégorie
-    $saveCategorie = Categorie::where('id', $id)->update(['nom' => $request->nom]);
+    $saveCategorie = Categorie::where('id', $id)->update(['nom' => $request->nom, 'within_agreement' => $request->withinAgreement, 'show_in_member_reports' => $request->showInMemberReports, 'discount_on_invoice' => $request->discountOnInvoice]);
 
     // Mise à jour des espèces
     $this->updateEspecesCategorie($id, $request->especes);

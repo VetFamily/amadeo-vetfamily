@@ -20,7 +20,7 @@ class CategorieRepository implements CategorieRepositoryInterface
 	public function findAll($laboratoireId)
 	{
 		$query = $this->categorie
-					->select('categories.nom AS categorie', 'categories.annee AS annee', DB::raw("COALESCE(laboratoires.nom, 'Multi-laboratoires') AS laboratoire"), DB::raw("count(categorie_produit.id) AS nb_produits"), 'categories.id', 'liste_especes.especes', 'liste_especes.especes_noms', 'categories.laboratoire_id', 'categories.country_id', 'ctry_name as country')
+					->select('categories.nom AS categorie', 'categories.annee AS annee', DB::raw("COALESCE(laboratoires.nom, 'Multi-laboratoires') AS laboratoire"), DB::raw("count(categorie_produit.id) AS nb_produits"), 'categories.id', 'liste_especes.especes', 'liste_especes.especes_noms', 'categories.laboratoire_id', 'categories.country_id', 'ctry_name as country', 'categories.within_agreement', 'categories.show_in_member_reports', 'categories.discount_on_invoice')
 					->join('ed_country', 'ctry_id', '=', 'categories.country_id')
         			->leftJoin('laboratoires','laboratoires.id', '=', 'categories.laboratoire_id')
         			->leftJoin('categorie_produit', 'categorie_produit.categorie_id', '=' ,'categories.id')
@@ -51,7 +51,7 @@ class CategorieRepository implements CategorieRepositoryInterface
 	public function findById($id)
 	{
 		$query = $this->categorie
-        			->select('categories.nom AS categorie', 'categories.annee AS annee', DB::raw("COALESCE(laboratoires.nom, 'Multi-laboratoires') AS laboratoire"), DB::raw("count(categorie_produit.id) AS nb_produits"), 'categories.id', 'liste_especes.especes', 'liste_especes.especes_noms', 'categories.laboratoire_id', 'categories.country_id', 'ctry_name as country')
+        			->select('categories.nom AS categorie', 'categories.annee AS annee', DB::raw("COALESCE(laboratoires.nom, 'Multi-laboratoires') AS laboratoire"), DB::raw("count(categorie_produit.id) AS nb_produits"), 'categories.id', 'liste_especes.especes', 'liste_especes.especes_noms', 'categories.laboratoire_id', 'categories.country_id', 'ctry_name as country', 'categories.within_agreement', 'categories.show_in_member_reports', 'categories.discount_on_invoice')
 					->join('ed_country', 'ctry_id', '=', 'categories.country_id')
         			->leftJoin('laboratoires','laboratoires.id', '=', 'categories.laboratoire_id')
         			->leftJoin('categorie_produit', 'categorie_produit.categorie_id', '=' ,'categories.id')
