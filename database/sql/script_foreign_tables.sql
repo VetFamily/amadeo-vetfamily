@@ -179,7 +179,7 @@ ALTER FOREIGN TABLE ed_centrales OWNER TO vetfamily;
     
 CREATE MATERIALIZED VIEW centrales
 AS
-SELECT id, nom, obsolete FROM ed_centrales where id in (1, 2, 3, 7, 11, 13, 15, 16, 17, 18, 19, 20, 21)
+SELECT id, nom, obsolete FROM ed_centrales where id in (1, 2, 3, 7, 11, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)
 WITH DATA;
 ALTER MATERIALIZED VIEW centrales OWNER TO vetfamily;
 CREATE INDEX centrales_id_index ON centrales USING btree (id);
@@ -697,8 +697,353 @@ ALTER VIEW ed_source OWNER TO vetfamily;
 
 
 
+CREATE OR REPLACE VIEW fr_produits
+AS 
+select p.*
+FROM produits p 
+join ed_product_country epc on epc.prco_product_id = p.id 
+where epc.prco_country_id = 1;
+alter view fr_produits owner to vetfamily;
+
+
+CREATE OR REPLACE VIEW fr_types
+AS 
+select t.*
+FROM types t;
+alter view fr_types owner to vetfamily;
+
+CREATE OR REPLACE VIEW fr_especes
+AS 
+select e.*
+FROM especes e;
+alter view fr_especes owner to vetfamily;
+
+
+drop VIEW fr_familles_therapeutiques;
+CREATE OR REPLACE VIEW fr_familles_therapeutiques
+AS 
+select distinct ft.*
+FROM familles_therapeutiques ft
+join fr_produits p on p.famille_therapeutique_id = ft.id;
+alter view fr_familles_therapeutiques owner to vetfamily;
+
+
+
+CREATE OR REPLACE VIEW fr_produit_valorisations
+AS 
+select pv.*
+FROM produit_valorisations pv
+join fr_produits p on p.id = pv.produit_id;
+alter view fr_produit_valorisations owner to vetfamily;
+
+
+CREATE OR REPLACE VIEW fr_produit_type
+AS 
+select pt.*
+FROM produit_type pt
+join fr_produits p on p.id = pt.produit_id;
+alter view fr_produit_type owner to vetfamily;
+
+
+CREATE OR REPLACE VIEW fr_espece_produit
+AS 
+select ep.*
+FROM espece_produit ep
+join fr_produits p on p.id = ep.produit_id;
+alter view fr_espece_produit owner to vetfamily;
+
+
+CREATE OR REPLACE VIEW fr_laboratoires
+AS 
+select distinct l.*
+FROM laboratoires l
+join fr_produits p on p.laboratoire_id = l.id;
+alter view fr_laboratoires owner to vetfamily;
+
+CREATE OR REPLACE VIEW fr_centrales
+AS 
+select ce.*
+FROM centrales ce
+where ce.id in (1,2,3,7,11,18,19);
+alter view fr_centrales owner to vetfamily;
+
+
+CREATE OR REPLACE VIEW fr_centrale_produit
+AS 
+select cp.*
+FROM centrale_produit cp
+join fr_produits p on p.id = cp.produit_id 
+join fr_centrales ce on ce.id = cp.centrale_id 
+where cp.country_id = 1;
+alter view fr_centrale_produit owner to vetfamily;
+
+
+
+
+CREATE OR REPLACE VIEW fr_cliniques
+AS 
+select c.*
+FROM cliniques c
+where c.country_id = 1;
+alter view fr_cliniques owner to vetfamily;
+
+CREATE OR REPLACE VIEW fr_centrale_clinique
+AS 
+select cc.*
+FROM centrale_clinique cc
+join fr_cliniques c on c.id = cc.clinique_id;
+alter view fr_centrale_clinique owner to vetfamily;
+
+CREATE OR REPLACE VIEW fr_clinique_espece
+AS 
+select ce.*
+FROM clinique_espece ce
+join fr_cliniques c on c.id = ce.clinique_id;
+alter view fr_clinique_espece owner to vetfamily;
+
+
+
+
+
+CREATE OR REPLACE VIEW fr_categories
+AS 
+select cat.*
+FROM categories cat
+where cat.country_id = 1;
+alter view fr_categories owner to vetfamily;
+
+CREATE OR REPLACE VIEW fr_categorie_produit
+AS 
+select cpr.*
+FROM categorie_produit cpr
+join fr_categories cat on cat.id = cpr.categorie_id ;
+alter view fr_categorie_produit owner to vetfamily;
+
+CREATE OR REPLACE VIEW fr_categorie_espece
+AS 
+select ce.*
+FROM categorie_espece ce
+join fr_categories cat on cat.id = ce.categorie_id ;
+alter view fr_categorie_espece owner to vetfamily;
+
+
+
+CREATE OR REPLACE VIEW fr_objectifs
+AS 
+select o.*
+FROM objectifs o
+join fr_categories cat on cat.id = o.categorie_id ;
+alter view fr_objectifs owner to vetfamily;
+
+CREATE OR REPLACE VIEW fr_objectif_commentaires
+AS 
+select oc.*
+FROM objectif_commentaires oc
+join objectifs o on o.id = oc.objectif_id ;
+alter view fr_objectif_commentaires owner to vetfamily;
+
+CREATE OR REPLACE VIEW fr_categorie_produit_objectif
+AS 
+select cpo.*
+FROM categorie_produit_objectif cpo
+join objectifs o on o.id = cpo.objectif_id ;
+alter view fr_categorie_produit_objectif owner to vetfamily;
+
+CREATE OR REPLACE VIEW fr_types_objectif
+AS 
+select *
+FROM types_objectif ;
+alter view fr_types_objectif owner to vetfamily;
+
+CREATE OR REPLACE VIEW fr_types_valorisation_objectif
+AS 
+select *
+FROM types_valorisation_objectif;
+alter view fr_types_valorisation_objectif owner to vetfamily;
+
+
+
+
+
+CREATE OR REPLACE VIEW fr_achats
+AS 
+select a.purr_id as id, a.purr_paid_quantity as qte_payante, a.purr_free_quantity as qte_gratuite, a.purr_gross as ca, a.purr_date as "date", a.purr_source_clinic_id as centrale_clinique_id, a.purr_product_id as produit_id, a.purr_central_product_id as centrale_produit_id, a.purr_obsolete as obsolete, 
+	a.purr_product_code as produit_code, a.purr_product_name as produit_denomination, a.purr_product_supplier as produit_laboratoire, a.purr_product_gtin as produit_code_gtin, a.purr_product_vat as produit_tva, a.purr_product_class1 as produit_classe1, 
+	a.purr_product_class2 as produit_classe2, a.purr_product_class3 as produit_classe3, a.purr_product_category1 as produit_categorie1, a.purr_product_category2 as produit_categorie2, a.purr_product_category3 as produit_categorie3, a.purr_product_unit_price as produit_prix_unitaire
+FROM ed_purchases_ref a
+join fr_centrale_clinique cc on a.purr_source_clinic_id = cc.id
+join fr_cliniques c on c.id = cc.clinique_id and c.obsolete is false;
+alter view fr_achats owner to vetfamily;
+
+
+
+
+select table_name from information_schema.views where table_schema = 'public' and table_name like 'fr_%';
+
+
+for tbl in `psql -qAt -c "select table_name from information_schema.views where table_schema = 'public' and table_name like 'fr_%';" "amadeo-vetfamily"` ; do  psql -c "GRANT SELECT ON TABLE \"$tbl\" to bmassart" "amadeo-vetfamily" ; done
+for tbl in `psql -qAt -c "select table_name from information_schema.views where table_schema = 'public' and table_name like 'fr_%';" "amadeo-vetfamily"` ; do  psql -c "GRANT SELECT ON TABLE \"$tbl\" to groubot" "amadeo-vetfamily" ; done
+for tbl in `psql -qAt -c "select table_name from information_schema.views where table_schema = 'public' and table_name like 'fr_%';" "amadeo-vetfamily"` ; do  psql -c "GRANT SELECT ON TABLE \"$tbl\" to ivalette" "amadeo-vetfamily" ; done
+for tbl in `psql -qAt -c "select table_name from information_schema.views where table_schema = 'public' and table_name like 'fr_%';" "amadeo-vetfamily"` ; do  psql -c "GRANT SELECT ON TABLE \"$tbl\" to cirrina" "amadeo-vetfamily" ; done
+
 for tbl in `psql -qAt -c "select tablename from pg_tables where schemaname = 'public';" "amadeo-vetfamily"` ; do  psql -c "GRANT SELECT ON TABLE \"$tbl\" to datawarehouse" "amadeo-vetfamily" ; done
 for tbl in `psql -qAt -c "select sequence_name from information_schema.sequences where sequence_schema = 'public';" "amadeo-vetfamily"` ; do  psql -c "GRANT SELECT ON TABLE \"$tbl\" to datawarehouse " "amadeo-vetfamily" ; done
 for tbl in `psql -qAt -c "select table_name from information_schema.views where table_schema = 'public';" "amadeo-vetfamily"` ; do  psql -c "GRANT SELECT ON TABLE \"$tbl\" to datawarehouse" "amadeo-vetfamily" ; done
 for tbl in `psql -qAt -c "select foreign_table_name from information_schema.foreign_tables where foreign_table_schema = 'public';" "amadeo-vetfamily"` ; do psql -c "GRANT SELECT ON TABLE \"$tbl\" to datawarehouse" "amadeo-vetfamily" ; done
 for tbl in `psql -qAt -c "select matviewname from pg_matviews where schemaname = 'public';" "amadeo-vetfamily"` ; do psql -c "GRANT SELECT ON TABLE \"$tbl\" to datawarehouse" "amadeo-vetfamily" ; done
+
+
+
+
+
+
+
+drop VIEW public.partners_bi;
+CREATE OR REPLACE VIEW public.partners_bi
+AS SELECT p.partner_id ,
+	p.country_id,
+	ed_country.ctry_name AS country_name,
+    p.partner_name,
+    p.distributor_id,
+    p.supplier_id,
+    p.partner_type
+   FROM partners p
+     JOIN ed_country ON ed_country.ctry_id = p.country_id
+  WHERE p.partner_bi IS TRUE
+  ORDER BY p.partner_id;
+
+ drop VIEW public.partners_qr;
+ CREATE OR REPLACE VIEW public.partners_qr
+AS SELECT p.partner_id ,
+	p.country_id,
+	ed_country.ctry_name AS country_name,
+    p.partner_name,
+    p.distributor_id,
+    p.supplier_id,
+    p.partner_type,
+    p.spend_type,
+    p.product_type_id,
+    p.supplier_category_id
+   FROM partners p
+     JOIN ed_country ON ed_country.ctry_id = p.country_id
+  WHERE p.partner_qr IS TRUE
+  ORDER BY p.partner_id;
+ alter table partners_qr owner to vetfamily;
+ 
+ drop VIEW public.partners_lime;
+ CREATE OR REPLACE VIEW public.partners_lime
+AS SELECT p.partner_id ,
+	p.country_id,
+	ed_country.ctry_name AS country_name,
+    p.partner_name,
+    p.distributor_id,
+    p.supplier_id,
+    p.partner_type,
+    p.cirrina_pricing_condition_id,
+    p.supplier_id_lime
+   FROM partners p
+     JOIN ed_country ON ed_country.ctry_id = p.country_id
+  WHERE p.partner_lime IS TRUE
+  ORDER BY p.partner_id;
+ 
+ 
+ 
+ 
+ 
+ SELECT distinct srcf_id, cast(date_trunc('month', purr_date) as date) as purr_date_fom
+FROM ed_purchases_ref
+join centrale_clinique cc on cc.id = purr_source_clinic_id
+join cliniques c on c.id = cc.clinique_id 
+join ed_source_format on (srcf_country_id=c.country_id and srcf_source_id=cc.centrale_id and ((srcf_supplier_id is not null and srcf_supplier_id=cc.supplier_id) or srcf_supplier_id is null))
+order by srcf_id, purr_date_fom
+ 
+ 
+
+
+alter table ed_spend_data_validated_status 
+	add column updated_at timestamp(0) NOT NULL DEFAULT now(),
+	add column created_at timestamp(0) NOT NULL DEFAULT now();
+
+create trigger update_ed_spend_data_validated_status_timestamp before
+update
+    on
+    public.ed_spend_data_validated_status for each row execute function update_modified_column()
+	
+    
+    
+alter table partners add column spend_type varchar(255) null;
+CREATE INDEX partners_spend_type_idx ON public.partners USING btree (spend_type);
+update partners set spend_type = (case when country_id in (1,2,6,7) then 'gross' when country_id in (3,4,5) then 'net' else null end);
+--ALTER TABLE public.partners ALTER COLUMN spend_type SET NOT NULL;
+
+
+
+create table ed_portal_spend_rebates 
+(
+	posr_id serial not null,
+	posr_quarter int4 not null,
+	posr_year int4 not null,
+	posr_clinic_id int4 not null,
+	posr_partner_id int4 not null,
+	posr_spend numeric not null,
+	posr_rebates numeric null,
+	posr_currency varchar(255) not null,
+	CONSTRAINT ed_portal_spend_rebates_pkey PRIMARY KEY (posr_id)
+);
+alter table ed_portal_spend_rebates owner to vetfamily;
+CREATE INDEX posr_quarter_idx ON public.ed_portal_spend_rebates USING btree (posr_quarter);
+CREATE INDEX posr_year_idx ON public.ed_portal_spend_rebates USING btree (posr_year);
+CREATE INDEX posr_clinic_id_idx ON public.ed_portal_spend_rebates USING btree (posr_clinic_id);
+CREATE INDEX posr_partner_id_idx ON public.ed_portal_spend_rebates USING btree (posr_partner_id);
+CREATE INDEX posr_spend_idx ON public.ed_portal_spend_rebates USING btree (posr_spend);
+CREATE INDEX posr_rebates_idx ON public.ed_portal_spend_rebates USING btree (posr_rebates);
+CREATE INDEX posr_currency_idx ON public.ed_portal_spend_rebates USING btree (posr_currency);
+
+alter table ed_portal_spend_rebates 
+	add column updated_at timestamp(0) NOT NULL DEFAULT now(),
+	add column created_at timestamp(0) NOT NULL DEFAULT now();
+
+create trigger update_ed_portal_spend_rebates_timestamp before
+update
+    on
+    public.ed_portal_spend_rebates for each row execute function update_modified_column()
+	
+ 
+
+create table ed_portal_spend_categories 
+(
+	posc_id serial not null,
+	posc_year int4 not null,
+	posc_clinic_id int4 not null,
+	posc_category varchar(255) not null,
+	posc_spend numeric not null,
+	posc_currency varchar(255) not null,
+	CONSTRAINT ed_portal_spend_categories_pkey PRIMARY KEY (posc_id)
+);
+alter table ed_portal_spend_categories owner to vetfamily;
+CREATE INDEX posc_year_idx ON public.ed_portal_spend_categories USING btree (posc_year);
+CREATE INDEX posc_clinic_id_idx ON public.ed_portal_spend_categories USING btree (posc_clinic_id);
+CREATE INDEX posc_category_idx ON public.ed_portal_spend_categories USING btree (posc_category);
+CREATE INDEX posc_spend_idx ON public.ed_portal_spend_categories USING btree (posc_spend);
+CREATE INDEX posc_currency_idx ON public.ed_portal_spend_categories USING btree (posc_currency);
+
+alter table ed_portal_spend_categories 
+	add column updated_at timestamp(0) NOT NULL DEFAULT now(),
+	add column created_at timestamp(0) NOT NULL DEFAULT now();
+
+create trigger ed_portal_spend_categories before
+update
+    on
+    public.ed_portal_spend_categories for each row execute function update_modified_column()
+	
+    
+    
+   UPDATE ed_spend_data_validated_status set sdvs_datateam_validated = false;
+ 
+
+delete FROM public.ed_portal_spend_rebates
+
+
+
+
+

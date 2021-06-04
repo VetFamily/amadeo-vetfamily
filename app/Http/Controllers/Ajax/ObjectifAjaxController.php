@@ -103,7 +103,9 @@ class ObjectifAjaxController extends Controller
           'type_valorisation_objectif_id' => 1, 
           'valorisation_laboratoire' => 'Valorisation en euros', 
           'valorisation_remise' => 'Valorisation en euros', 
-          'suivi' => 1
+          'suivi' => 1,
+          'pourcentage_remise' => 0,
+          'pourcentage_remise_source' => 0
         ];
         $idObjectif = Objectif::create($data)->id;
 
@@ -111,7 +113,7 @@ class ObjectifAjaxController extends Controller
         $insertProduits = [];
         $categorieProduits = Categorie_produit::where('categorie_id', $request->categorie)->get();
         foreach ($categorieProduits as $categorieProduit) {
-          $insertProduits[] = ['objectif_id' => $idObjectif, 'categorie_produit_id' => $categorieProduit->id];
+          $insertProduits[] = ['objectif_id' => $idObjectif, 'categorie_produit_id' => $categorieProduit->id, 'pourcentage_remise' => 0, 'pourcentage_remise_source' => 0];
         }
         Categorie_produit_objectif::insert($insertProduits);
 
