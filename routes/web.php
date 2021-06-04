@@ -33,77 +33,78 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 Route::get('password/change', 'HomeController@showChangePasswordForm')->name('page.password.change');
 Route::post('password/change','HomeController@changePassword')->name('password.change');
 
-/* 
-|	Déclaration des routes pour les vues 
-*/
-// Route principale
-Route::get('/', ['middleware' => 'auth', 'uses' => 'HomeController@index']);
 
-// Tableau de bord
-Route::get('tableaudebord', 
-	['as' => 'page.tableaudebord', 'middleware' => ['auth', 'auth.laboratoire'], 'uses' => 'Commun\HeaderController@showTableauDeBord']);
-Route::post('tableaudebord-general', ['middleware' => 'auth', 'uses' => 'TableauDeBord\TableauDeBordController@getObjectifsGeneral']);
+Route::group(['middleware' => ['auth']], function () {
+		
+	/* 
+	|	Déclaration des routes pour les vues 
+	*/
+	// Route principale
+	Route::get('/', ['uses' => 'HomeController@index']);
 
-// Purchases
-Route::get('statistiques', 
-['as' => 'page.statistiques', 'middleware' => ['auth', 'auth.laboratoire'], 'uses' => 'Commun\HeaderController@showOngletStatistiques']);
-Route::post('getListOfPurchasesByParams', ['middleware' => 'auth', 'uses' => 'Statistiques\StatistiquesController@getListOfPurchasesByParams']);
-Route::get('downloadPurchasesCSV/{startMonth}/{startYear}/{endMonth}/{endYear}/{countryId}/{sourceId}/{supplierId}', 
-['as' => 'page.statistiques-downloadPurchasesCSV', 'middleware' => 'auth', 'uses' => 'Statistiques\StatistiquesController@downloadPurchasesCSV']);
-Route::get('downloadPurchasesByParamsCSV', 
-['as' => 'page.statistiques-downloadPurchasesByParamsCSV', 'middleware' => 'auth', 'uses' => 'Statistiques\StatistiquesController@downloadPurchasesByParamsCSV']);
-Route::post('getListOfClinicsByParams', ['middleware' => 'auth', 'uses' => 'Parametrage\ParametrageController@getListOfClinicsByParams']);
-Route::post('getCountOfClinicsByParams', ['middleware' => 'auth', 'uses' => 'Parametrage\ParametrageController@getCountOfClinicsByParams']);
-Route::post('getListOfTherapeuticClassesByParams', ['middleware' => 'auth', 'uses' => 'Parametrage\ParametrageController@getListOfTherapeuticClassesByParams']);
-Route::post('getListOfProductsByParams', ['middleware' => 'auth', 'uses' => 'Parametrage\ParametrageController@getListOfProductsByParams']);
-Route::post('getCountOfProductsByParams', ['middleware' => 'auth', 'uses' => 'Parametrage\ParametrageController@getCountOfProductsByParams']);
+	// Tableau de bord
+	Route::get('tableaudebord', 
+		['as' => 'page.tableaudebord', 'middleware' => ['auth.laboratoire'], 'uses' => 'Commun\HeaderController@showTableauDeBord']);
+	Route::post('tableaudebord-general', ['uses' => 'TableauDeBord\TableauDeBordController@getObjectifsGeneral']);
 
-// Cliniques
-Route::get('cliniques', 
-	['as' => 'page.cliniques', 'middleware' => ['auth', 'auth.laboratoire'], 'uses' => 'Commun\HeaderController@showCliniques']);
-Route::get('clinic-ajax/downloadClinicsCSV', 'Ajax\CliniqueAjaxController@downloadClinicsCSV');
-Route::resource('clinic-ajax', 'Ajax\CliniqueAjaxController');
+	// Purchases
+	Route::get('statistiques', 
+	['as' => 'page.statistiques', 'middleware' => ['auth.laboratoire'], 'uses' => 'Commun\HeaderController@showOngletStatistiques']);
+	Route::post('getListOfPurchasesByParams', ['uses' => 'Statistiques\StatistiquesController@getListOfPurchasesByParams']);
+	Route::get('downloadPurchasesCSV/{startMonth}/{startYear}/{endMonth}/{endYear}/{countryId}/{sourceId}/{supplierId}', 
+	['as' => 'page.statistiques-downloadPurchasesCSV', 'uses' => 'Statistiques\StatistiquesController@downloadPurchasesCSV']);
+	Route::get('downloadPurchasesByParamsCSV', 
+	['as' => 'page.statistiques-downloadPurchasesByParamsCSV', 'uses' => 'Statistiques\StatistiquesController@downloadPurchasesByParamsCSV']);
+	Route::post('getListOfClinicsByParams', ['uses' => 'Parametrage\ParametrageController@getListOfClinicsByParams']);
+	Route::post('getCountOfClinicsByParams', ['uses' => 'Parametrage\ParametrageController@getCountOfClinicsByParams']);
+	Route::post('getListOfTherapeuticClassesByParams', ['uses' => 'Parametrage\ParametrageController@getListOfTherapeuticClassesByParams']);
+	Route::post('getListOfProductsByParams', ['uses' => 'Parametrage\ParametrageController@getListOfProductsByParams']);
+	Route::post('getCountOfProductsByParams', ['uses' => 'Parametrage\ParametrageController@getCountOfProductsByParams']);
 
-// Produits
-Route::get('produits', 
-	['as' => 'page.produits', 'middleware' => ['auth', 'auth.veterinaire'], 'uses' => 'Commun\HeaderController@showProduits']);
-Route::resource('produit-ajax', 'Ajax\ProduitAjaxController');
+	// Cliniques
+	Route::get('cliniques', 
+		['as' => 'page.cliniques', 'middleware' => ['auth.laboratoire'], 'uses' => 'Commun\HeaderController@showCliniques']);
+	Route::get('clinic-ajax/downloadClinicsCSV', 'Ajax\CliniqueAjaxController@downloadClinicsCSV');
+	Route::resource('clinic-ajax', 'Ajax\CliniqueAjaxController');
 
-// Catégories
-Route::get('categories', 
-	['as' => 'page.categories', 'middleware' => 'auth', 'uses' => 'Commun\HeaderController@showCategories']);
-Route::resource('categorie-ajax', 'Ajax\CategorieAjaxController');
-Route::post('categorie-produit-ajax/showListOfProducts', 'Ajax\CategorieProduitAjaxController@showListOfProducts');
-Route::resource('categorie-produit-ajax', 'Ajax\CategorieProduitAjaxController');
+	// Produits
+	Route::get('produits', 
+		['as' => 'page.produits', 'middleware' => ['auth.veterinaire'], 'uses' => 'Commun\HeaderController@showProduits']);
+	Route::resource('produit-ajax', 'Ajax\ProduitAjaxController');
 
-// Objectifs
-Route::get('objectifs', 
-	['as' => 'page.objectifs', 'middleware' => 'auth', 'uses' => 'Commun\HeaderController@showObjectifs']);
-Route::get('downloadObjectifParCliniquesCSV/{objectifId}/{annee}', 
-	['as' => 'page.objectifs-downloadParCliniquesCSV', 'middleware' => 'auth', 'uses' => 'Statistiques\StatistiquesObjectifsController@downloadObjectifParCliniquesCSV']);
-Route::post('getCategoriesObjectifAjax', ['middleware' => 'auth', 'uses' => 'UtilsController@searchCategorieByCountryAndYearAndSupplier']);
-Route::post('getLaboratoiresObjectifAjax', ['middleware' => 'auth', 'uses' => 'UtilsController@searchSuppliersByCountryAndYear']);
-Route::resource('objectif-ajax', 'Ajax\ObjectifAjaxController');
-Route::resource('objectif-produit-ajax', 'Ajax\ObjectifProduitAjaxController');
+	// Catégories
+	Route::get('categories', 
+		['as' => 'page.categories', 'uses' => 'Commun\HeaderController@showCategories']);
+	Route::resource('categorie-ajax', 'Ajax\CategorieAjaxController');
+	Route::post('categorie-produit-ajax/showListOfProducts', 'Ajax\CategorieProduitAjaxController@showListOfProducts');
+	Route::resource('categorie-produit-ajax', 'Ajax\CategorieProduitAjaxController');
 
-// Engagements
-Route::get('engagements', 
-	['as' => 'page.engagements', 'middleware' => ['auth', 'auth.laboratoire'], 'uses' => 'Commun\HeaderController@showEngagements']);
-Route::resource('engagement-ajax', 'Ajax\EngagementAjaxController');
+	// Objectifs
+	Route::get('objectifs', 
+		['as' => 'page.objectifs', 'uses' => 'Commun\HeaderController@showObjectifs']);
+	Route::get('downloadObjectifParCliniquesCSV/{objectifId}/{annee}', 
+		['as' => 'page.objectifs-downloadParCliniquesCSV', 'uses' => 'Statistiques\StatistiquesObjectifsController@downloadObjectifParCliniquesCSV']);
+	Route::post('getCategoriesObjectifAjax', ['uses' => 'UtilsController@searchCategorieByCountryAndYearAndSupplier']);
+	Route::post('getLaboratoiresObjectifAjax', ['uses' => 'UtilsController@searchSuppliersByCountryAndYear']);
+	Route::resource('objectif-ajax', 'Ajax\ObjectifAjaxController');
+	Route::resource('objectif-produit-ajax', 'Ajax\ObjectifProduitAjaxController');
 
-// Administration
-Route::get('administration', 
-	['as' => 'page.administration', 'middleware' => ['auth', 'auth.laboratoire'], 'uses' => 'Commun\HeaderController@showAdministration']);
-Route::post('getCodesCentralesClinique', ['middleware' => 'auth', 'uses' => 'Administration\AdministrationController@searchCodesCentralesByClinique']);
-Route::get('exportEstimationRFAExcel/{detail}/{mois_debut}/{annee_debut}/{mois_fin}/{annee_fin}/{entrepriseId}/{entrepriseCodesCentrales}/{annee_obj}', 
-	['as' => 'exportEstimationRFAExcel', 'middleware' => 'auth', 'uses' => 'Administration\AdministrationController@exportEstimationRFAExcel']);
-Route::get('exportBilanRFAExcel/{detail}/{annee}', 
-	['as' => 'exportBilanRFAExcel', 'middleware' => ['auth'], 'uses' => 'Administration\AdministrationController@exportBilanRFAExcel']);
-Route::get('exportExtractionPrixNetsExcel/{annee}/{remise}', 
-	['as' => 'exportExtractionPrixNetsExcel', 'middleware' => 'auth', 'uses' => 'Administration\AdministrationController@exportExtractionPrixNetsExcel']);
+	// Engagements
+	Route::get('engagements', 
+		['as' => 'page.engagements', 'middleware' => ['auth.laboratoire'], 'uses' => 'Commun\HeaderController@showEngagements']);
+	Route::resource('engagement-ajax', 'Ajax\EngagementAjaxController');
+
+	// Administration
+	Route::get('administration', 
+		['as' => 'page.administration', 'middleware' => ['auth.laboratoire'], 'uses' => 'Commun\HeaderController@showAdministration']);
+	Route::post('getCodesCentralesClinique', ['uses' => 'Administration\AdministrationController@searchCodesCentralesByClinique']);
+	Route::get('exportEstimationRFAExcel/{detail}/{mois_debut}/{annee_debut}/{mois_fin}/{annee_fin}/{entrepriseId}/{entrepriseCodesCentrales}/{annee_obj}', 
+		['as' => 'exportEstimationRFAExcel', 'uses' => 'Administration\AdministrationController@exportEstimationRFAExcel']);
+	Route::get('exportBilanRFAExcel/{detail}/{annee}', 
+		['as' => 'exportBilanRFAExcel', 'uses' => 'Administration\AdministrationController@exportBilanRFAExcel']);
+	Route::get('exportExtractionPrixNetsExcel/{annee}/{remise}', 
+		['as' => 'exportExtractionPrixNetsExcel', 'uses' => 'Administration\AdministrationController@exportExtractionPrixNetsExcel']);
+
+});
 
 app('debugbar')->disable();
-
-
-
-
