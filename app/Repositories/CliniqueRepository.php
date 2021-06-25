@@ -265,6 +265,8 @@ class CliniqueRepository implements CliniqueRepositoryInterface
 						AND EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 						and cliniques.premium = objectifs.premium
 						and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
+						and ((objectifs.except_opt_out is false) or (objectifs.except_opt_out is true and cliniques.is_opt_out is false))
+						and ((objectifs.except_NO18552 is false) or (objectifs.except_NO18552 is true and cliniques.is_NO18552 is false))
 					) liste_achats ON liste_achats.mois = cliniques_mois.mois::double precision and liste_achats.annee = cliniques_mois.annee::double precision AND liste_achats.clinique_id = cliniques_mois.clinique_id
 					group by cliniques_mois.clinique_id, cliniques_mois.clinique, cliniques_mois.mois, cliniques_mois.annee
 					order by clinique\$\$

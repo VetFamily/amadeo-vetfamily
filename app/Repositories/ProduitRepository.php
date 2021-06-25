@@ -137,6 +137,10 @@ class ProduitRepository implements ProduitRepositoryInterface
 					AND achats.date BETWEEN to_date('01/' || EXTRACT(MONTH from objectifs.date_debut) || '/' || categories.annee, 'DD/MM/YYYY') and last_day(to_date('01/' || EXTRACT(MONTH from objectifs.date_fin) || '/' || categories.annee, 'DD/MM/YYYY'))
 					AND EXTRACT(YEAR from cliniques.date_entree) < (categories.annee + 1)
 					AND cliniques.obsolete is false
+					and cliniques.premium = objectifs.premium
+					and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
+					and ((objectifs.except_opt_out is false) or (objectifs.except_opt_out is true and cliniques.is_opt_out is false))
+					and ((objectifs.except_NO18552 is false) or (objectifs.except_NO18552 is true and cliniques.is_NO18552 is false))
 				) t ON t.prod_id = liste.prod_id
 				GROUP BY denomination, conditionnement, pourcentage_remise, pourcentage_remise_source, cat_prod_obj_id, obsolete";
 
