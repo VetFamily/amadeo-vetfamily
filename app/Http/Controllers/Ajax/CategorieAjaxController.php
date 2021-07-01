@@ -65,7 +65,7 @@ class CategorieAjaxController extends Controller
 
     if ($validator->passes()) {
       // Création de la catégorie
-      $data = ['nom' => $request->nom, 'annee' => $request->annee, 'country_id' => $request->country];
+      $data = ['nom' => $request->nom, 'annee' => $request->annee, 'country_id' => $request->country, 'type' => ($request->type != null ? $request->type : 'invoiced')];
 
       if ($request->laboratoire != 'Multi-laboratoires') {
         $data['laboratoire_id'] = $request->laboratoire;
