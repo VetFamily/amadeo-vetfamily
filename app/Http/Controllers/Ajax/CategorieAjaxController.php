@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Ajax;
 
 use App\Http\Controllers\Controller;
 use App\Model\Categorie;
+use App\Model\Categorie_centrale;
 use App\Model\Categorie_commentaires;
 use App\Model\Categorie_espece;
 use App\Model\Categorie_produit;
@@ -91,6 +92,17 @@ class CategorieAjaxController extends Controller
         }
         if (sizeof($produitsToInsert) > 0) {
           Categorie_produit::insert($produitsToInsert);
+        }
+      }
+
+      // Insertion des sources de la catégorie
+      $sourcesToInsert = [];
+      if ($request->sources != null) {
+        foreach ($request->sources as $source) {
+          $sourcesToInsert[] = ['categorie_id' => $idCategorie, 'centrale_id' => $source];
+        }
+        if (sizeof($sourcesToInsert) > 0) {
+          Categorie_centrale::insert($sourcesToInsert);
         }
       }
 
@@ -259,6 +271,18 @@ class CategorieAjaxController extends Controller
     }
   }
 
+  private function updateSourcesCategorie ($id, $sources)
+  {
+    // Delete all central purchasing of the category
+    Categorie_centrale::where('categorie_id', $id)->delete();
+
+    // Create central purchasing of the category
+    for ($i=0; $i < sizeof($sources); $i++) { 
+      $criteres = ['categorie_id' => $id, 'centrale_id' => $sources[$i]];
+      Categorie_centrale::create($criteres);
+    }
+  }
+
   /**
    * Update the specified resource in storage.
    *
@@ -266,13 +290,16 @@ class CategorieAjaxController extends Controller
    * @param  int  $id
    * @return Response
    */
-  public function update(Request $request, $id, ObjectifRepository $objectifRepository)
+  public function update(Request $request, $id, ObjectifRepository $objectifRepository, CategorieRepository $categorieRepository)
   {
     // Mise à jour de la catégorie
-    $saveCategorie = Categorie::where('id', $id)->update(['nom' => $request->nom, 'within_agreement' => $request->withinAgreement, 'show_in_member_reports' => $request->showInMemberReports, 'discount_on_invoice' => $request->discountOnInvoice]);
+    $saveCategorie = Categorie::where('id', $id)->update(['nom' => $request->nom, 'within_agreement' => $request->withinAgreement, 'show_in_member_reports' => $request->showInMemberReports, 'discount_on_invoice' => $request->discountOnInvoice, 'type' => $request->type]);
 
     // Mise à jour des espèces
     $this->updateEspecesCategorie($id, $request->especes);
+
+    // Mise à jour des sources
+    $this->updateSourcesCategorie($id, $request->sources);
 
     // Mise à jour des produits
     $this->updateProduitsCategorie($id, $saveCategorie["annee"], $request->produits, $objectifRepository);
@@ -282,7 +309,9 @@ class CategorieAjaxController extends Controller
       Categorie_commentaires::insert($request->commentaires);
     }
 
-    return response()->json($saveCategorie);
+    $categorie = $categorieRepository->findById($id);
+
+    return response()->json(['success' => 1, 'categorie' => $categorie]);
   }
 
   /**

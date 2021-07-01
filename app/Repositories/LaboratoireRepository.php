@@ -65,6 +65,7 @@ class LaboratoireRepository implements LaboratoireRepositoryInterface
 								and o.suivi is true
 								and categories.annee = '" . $targetYear . "'
 								and p.invisible is false
+								and cc.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = o.id)
 								" . (($clinic == null) ? "" : ("and c.id = " . $clinic)) . "
 								" . (($clinicCodes == null || in_array('0', $clinicCodes)) ? "" : ("and cc.id in (".implode(",", $clinicCodes).")")) . "
 							) achats_objectifs on achats_objectifs.obj_id = o.id and cpr.produit_id = achats_objectifs.prod_id
@@ -117,6 +118,7 @@ class LaboratoireRepository implements LaboratoireRepositoryInterface
 							and categories.annee = " . $annee . "
 							and achats.date between to_date('01/01/" . $annee . "', 'DD/MM/YYYY') and to_date('31/12/" . $annee . "', 'DD/MM/YYYY')
 							and objectifs.obsolete is false
+							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = objectifs.id)
 						) achats
 						group by lab_id
 					) achats_remise on achats_remise.lab_id = laboratoires.id
@@ -166,6 +168,7 @@ class LaboratoireRepository implements LaboratoireRepositoryInterface
 							and cliniques.id = " . $cliniqueId . "
 							and categories.annee = " . $annee . "
 							and objectifs.obsolete is false
+							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = objectifs.id)
 						) achats
 						group by lab_id
 					) achats_remise on achats_remise.lab_id = laboratoires.id

@@ -113,6 +113,7 @@ class HeaderController extends Controller
         Session::put('laboratoires_liste', $this->laboratoireRepository->findAll());
         Session::put('list_of_species', $this->especeRepository->findAll());
         Session::put('list_of_countries', $this->countryRepository->findAll());
+        Session::put('list_of_central_purchasing', $this->centraleRepository->findAll());
 
     	return view('categories/categories');
     }

@@ -20,7 +20,7 @@ class CategorieRepository implements CategorieRepositoryInterface
 	public function findAll($laboratoireId)
 	{
 		$query = $this->categorie
-					->select('categories.nom AS categorie', 'categories.annee AS annee', DB::raw("COALESCE(laboratoires.nom, 'Multi-laboratoires') AS laboratoire"), DB::raw("count(categorie_produit.id) AS nb_produits"), 'categories.id', 'liste_especes.especes', 'liste_especes.especes_noms', 'categories.laboratoire_id', 'categories.country_id', 'ctry_name as country', 'categories.within_agreement', 'categories.show_in_member_reports', 'categories.discount_on_invoice')
+					->select('categories.nom AS categorie', 'categories.annee AS annee', DB::raw("COALESCE(laboratoires.nom, 'Multi-laboratoires') AS laboratoire"), DB::raw("count(categorie_produit.id) AS nb_produits"), 'categories.id', 'liste_especes.especes', 'liste_especes.especes_noms', 'categories.laboratoire_id', 'categories.country_id', 'ctry_name as country', 'categories.within_agreement', 'categories.show_in_member_reports', 'categories.discount_on_invoice', 'categories.type', 'liste_centrales.centrales', 'liste_centrales.centrales_noms')
 					->join('ed_country', 'ctry_id', '=', 'categories.country_id')
         			->leftJoin('laboratoires','laboratoires.id', '=', 'categories.laboratoire_id')
         			->leftJoin('categorie_produit', 'categorie_produit.categorie_id', '=' ,'categories.id')
@@ -37,8 +37,15 @@ class CategorieRepository implements CategorieRepositoryInterface
 						) liste_especes"),function($join){
 						$join->on("liste_especes.categorie_id","=","categories.id");
 					})
+					->leftJoin(DB::raw("(select cace.categorie_id, string_agg(cace.centrale_id::character varying(10), '|' order by cace.centrale_id) AS centrales, string_agg(ce.nom::character varying(100), ', ' order by ce.nom) AS centrales_noms
+							from categorie_centrale cace
+							join centrales ce on ce.id = cace.centrale_id
+							group by cace.categorie_id
+						) liste_centrales"),function($join){
+						$join->on("liste_centrales.categorie_id","=","categories.id");
+					})
 					->where('categories.obsolete', '=', '0')
-					->groupBy('categorie', 'laboratoire', 'categories.id', 'liste_especes.especes', 'liste_especes.especes_noms', 'country_id', 'country');
+					->groupBy('categorie', 'laboratoire', 'categories.id', 'liste_especes.especes', 'liste_especes.especes_noms', 'country_id', 'country', 'within_agreement', 'show_in_member_reports', 'discount_on_invoice', 'type', 'centrales', 'centrales_noms');
 
 		if ($laboratoireId != null)
 		{
@@ -51,7 +58,7 @@ class CategorieRepository implements CategorieRepositoryInterface
 	public function findById($id)
 	{
 		$query = $this->categorie
-        			->select('categories.nom AS categorie', 'categories.annee AS annee', DB::raw("COALESCE(laboratoires.nom, 'Multi-laboratoires') AS laboratoire"), DB::raw("count(categorie_produit.id) AS nb_produits"), 'categories.id', 'liste_especes.especes', 'liste_especes.especes_noms', 'categories.laboratoire_id', 'categories.country_id', 'ctry_name as country', 'categories.within_agreement', 'categories.show_in_member_reports', 'categories.discount_on_invoice')
+        			->select('categories.nom AS categorie', 'categories.annee AS annee', DB::raw("COALESCE(laboratoires.nom, 'Multi-laboratoires') AS laboratoire"), DB::raw("count(categorie_produit.id) AS nb_produits"), 'categories.id', 'liste_especes.especes', 'liste_especes.especes_noms', 'categories.laboratoire_id', 'categories.country_id', 'ctry_name as country', 'categories.within_agreement', 'categories.show_in_member_reports', 'categories.discount_on_invoice', 'categories.type', 'liste_centrales.centrales', 'liste_centrales.centrales_noms')
 					->join('ed_country', 'ctry_id', '=', 'categories.country_id')
         			->leftJoin('laboratoires','laboratoires.id', '=', 'categories.laboratoire_id')
         			->leftJoin('categorie_produit', 'categorie_produit.categorie_id', '=' ,'categories.id')
@@ -68,9 +75,16 @@ class CategorieRepository implements CategorieRepositoryInterface
 						) liste_especes"),function($join){
 						$join->on("liste_especes.categorie_id","=","categories.id");
 					})
+					->leftJoin(DB::raw("(select cace.categorie_id, string_agg(cace.centrale_id::character varying(10), '|' order by cace.centrale_id) AS centrales, string_agg(ce.nom::character varying(100), ', ' order by ce.nom) AS centrales_noms
+							from categorie_centrale cace
+							join centrales ce on ce.id = cace.centrale_id
+							group by cace.categorie_id
+						) liste_centrales"),function($join){
+						$join->on("liste_centrales.categorie_id","=","categories.id");
+					})
 					->where('categories.obsolete', '=', '0')
 					->where('categories.id', '=', $id)
-					->groupBy('categorie', 'laboratoire', 'categories.id', 'liste_especes.especes', 'liste_especes.especes_noms', 'country_id', 'country');
+					->groupBy('categorie', 'laboratoire', 'categories.id', 'liste_especes.especes', 'liste_especes.especes_noms', 'country_id', 'country', 'within_agreement', 'show_in_member_reports', 'discount_on_invoice', 'type', 'centrales', 'centrales_noms');
 
         return $query->get();
 	}

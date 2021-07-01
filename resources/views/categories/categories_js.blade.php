@@ -8,6 +8,33 @@
 		var nbCol = "{{sizeof(Session::get('list_of_species'))}}";
 		var idRow = row[7];
 
+		// Types
+		var html_types = '<tr><td class="detail-row-title">@lang("amadeo.categories.type")</td>';
+		var type = row[14];
+		@foreach ([strtolower(\Lang::get("amadeo.categories.type.invoiced")), strtolower(\Lang::get("amadeo.categories.type.calculated"))] as $type)
+		var type_checked = false;
+		if (type == '{{ $type }}')
+			type_checked = true;
+		html_types += '<td><div class="radio-item-horizontal">' 
+						+ '<div class="radioContainer">' 
+							+ '<input id="type-' + idRow + '-{{ $type }}"';
+		if (type_checked)
+		{
+			html_types += ' checked="checked"'
+		}
+		@if ((sizeof(Auth::user()->roles) >0) AND ("Vétérinaire" == Auth::user()->roles[0]['nom']))
+		html_types += ' disabled="disabled"'
+		@endif
+		html_types += ' name="type_' + idRow + '[]" type="radio" value="{{ $type }}">' 
+							+ '<label for="type-' + idRow + '-{{ $type }}"></label>' 
+						+ '</div>' 
+						+ '<div class="radioLabel">' 
+							+ '<label for="type-' + idRow + '-{{ $type }}">{{ ucfirst($type) }}</label>' 
+						+ '</div>' 
+					+ '</div></td>';
+		@endforeach
+		html_types += '</tr>';
+
 		// Filters
 		var html_filters = '<tr><td class="detail-row-title">@lang("amadeo.categories.filters")</td>';
 		html_filters += '<td colspan="2"><div class="checkbox-item-horizontal">' 
@@ -86,6 +113,46 @@
 		@endforeach
 		html_especes += '</tr>';
 
+		// Sources
+		var html_sources = '<tr><td class="detail-row-title" style="width: 20%">@lang("amadeo.categories.sources")</td>';
+		var i = 0;
+		var list_of_sources = [];
+		if (row[15] != null)
+		{
+			list_of_sources = row[15].split("|")
+		}
+		@foreach (Session::get('list_of_central_purchasing') as $source)
+			if ((i > 0) && (i % 6 == 0))
+			{
+				html_sources += '</tr><tr><td class="detail-row-title" style="width: 20%"></td>';
+			}
+			var source_checked = false;
+			if (list_of_sources.length > 0 && list_of_sources.includes('{{ $source->id }}'))
+			{	
+				source_checked = true;
+			}
+
+			html_sources += '<td><div class="checkbox-item-horizontal">' 
+							+ '<div class="checkboxContainer">' 
+								+ '<input id="sources-' + idRow + '-{{ $source->id }}"';
+			if (source_checked)
+			{
+				html_sources += ' checked="checked"'
+			}
+			@if ((sizeof(Auth::user()->roles) >0) AND ("Vétérinaire" == Auth::user()->roles[0]['nom']))
+			html_sources += ' disabled="disabled"'
+			@endif
+			html_sources += ' name="sources_' + idRow + '[]" type="checkbox" value="{{ $source->id }}">' 
+								+ '<label for="sources-' + idRow + '-{{ $source->id }}"></label>' 
+							+ '</div>' 
+							+ '<div class="checkboxLabel">' 
+								+ '<label for="sources-' + idRow + '-{{ $source->id }}">{{ $source->nom }}</label>' 
+							+ '</div>' 
+						+ '</div></td>';
+			i++;
+		@endforeach
+		html_sources += '</tr>';
+
 		var html_produits = "<tr>" + "<td class='detail-row-title' style='vertical-align: top;'>@lang('amadeo.categories.products')</td>" + "<td colspan='" + (nbCol-1) + "' class='detail-row-subTable'><table id='tab-categorie-produits-" + idRow + "' class='' cellspacing='0' width='100%'><thead><tr><th>@lang('amadeo.products.source')</th><th>@lang('amadeo.products.name')</th><th>@lang('amadeo.products.packaging')</th><th>@lang('amadeo.products.gtin')</th></tr></thead></table></td><td style='border: 1px solid var(--dark-grey); border-left: none;'>";
 
 		@if ((sizeof(Auth::user()->roles) >0) AND ("Vétérinaire" != Auth::user()->roles[0]['nom']))
@@ -111,7 +178,7 @@
 			+ '</div></td></tr>';
 		@endif
 
-		var html = '<table class="detail-row">'+ html_filters+ html_especes + html_produits + html_commentaires + html_buttons + '</table>';
+		var html = '<table class="detail-row">'+ html_types + html_filters+ html_especes + html_sources + html_produits + html_commentaires + html_buttons + '</table>';
 
 		return html;
 	}
@@ -414,27 +481,7 @@
 		    url: "{{ route('categorie-ajax.index') }}", 
 		    success: function(json) {
 		    	var data = jQuery.map(json, function(el, i) {
-		    	  var especes = "";
-		    	  var isFirst = true;
-		    	  var liste_especes = null;
-		    	  if (el.especes != null)
-		    	  {
-		    	  	liste_especes = el.especes.split("|");
-		    	  }
-				  @foreach (Session::get('list_of_species') as $espece)
-		    	  	if (liste_especes != null && liste_especes.includes('{{ $espece->id }}'))
-		    	  	{
-		    	  		if (isFirst)
-		    	  		{
-		    	  			isFirst = false;
-		    	  		} else {
-		    	  			especes += ", ";
-		    	  		}
-		    	  		especes += '{{ $espece->nom }}';
-		    	  	}
-				  @endforeach
-
-				  return [[null, el.country, el.annee, especes, el.laboratoire, el.categorie, el.nb_produits, el.id, el.especes, el.laboratoire_id, el.country_id, el.within_agreement, el.show_in_member_reports, el.discount_on_invoice]];
+				  return [[null, el.country, el.annee, el.especes_noms, el.laboratoire, el.categorie, el.nb_produits, el.id, el.especes, el.laboratoire_id, el.country_id, el.within_agreement, el.show_in_member_reports, el.discount_on_invoice, el.type, el.centrales]];
 				});
 
 			    // DataTable
@@ -800,7 +847,9 @@
 									"nom": document.getElementById("copyCategorieNom").value,
 									"annee": document.getElementById("copyCategorieAnnee").value,
 									"produits": produits,
-									"especes": select.data()[8] != null ? select.data()[8].split("|") : null
+									"especes": select.data()[8] != null ? select.data()[8].split("|") : null,
+									"type": select.data()[14],
+									"sources": select.data()[15] != null ? select.data()[15].split("|") : null
 								};
 								
 						    	$.ajax({
@@ -830,7 +879,7 @@
 						                    var laboratoire = data.categorie[0]["laboratoire_id"] != null ? data.categorie[0]["laboratoire"] : "@lang('amadeo.categories.seller-multiple')";
 						                    
 											// Mise à jour du tableau
-						                    var index = $('#tab-categories').dataTable().fnAddData( [ null, data.categorie[0]["country"], data.categorie[0]["annee"], data.categorie[0]["especes_noms"], laboratoire, data.categorie[0]["categorie"], data.categorie[0]["nb_produits"], data.categorie[0]["id"], data.categorie[0]["especes"], data.categorie[0]["laboratoire_id"], data.categorie[0]["country_id"], data.categorie[0]["within_agreement"], data.categorie[0]["show_in_member_reports"], data.categorie[0]["discount_on_invoice"] ] );
+						                    var index = $('#tab-categories').dataTable().fnAddData( [ null, data.categorie[0]["country"], data.categorie[0]["annee"], data.categorie[0]["especes_noms"], laboratoire, data.categorie[0]["categorie"], data.categorie[0]["nb_produits"], data.categorie[0]["id"], data.categorie[0]["especes"], data.categorie[0]["laboratoire_id"], data.categorie[0]["country_id"], data.categorie[0]["within_agreement"], data.categorie[0]["show_in_member_reports"], data.categorie[0]["discount_on_invoice"], data.categorie[0]["type"], data.categorie[0]["centrales"] ] );
 						                    $('#tab-categories tbody > tr.selected').first().removeClass('selected');
 
 						                    $( '.filter-column-5' ).val( data.categorie[0]["categorie"] );
@@ -956,7 +1005,9 @@
 			    	// Récupération des informations
 			    	var id = rowPrevData[7];
 			    	var nom = trPrev.children().find('input').eq(0).val();
+			    	var type = getCheckboxRadioValueByName('type_' + id + '[]');
 			    	var especes = getCheckboxRadioValueByName('especes_' + id + '[]');
+			    	var sources = getCheckboxRadioValueByName('sources_' + id + '[]');
 					var withinAgreement = getCheckboxRadioValueByName('filters-' + id + '-within-agreement[]');
 					var showInMemberReports = getCheckboxRadioValueByName('filters-' + id + '-show-in-member-reports[]');
 					var discountOnInvoice = getCheckboxRadioValueByName('filters-' + id + '-discount-on-invoice[]');
@@ -998,7 +1049,9 @@
 					    	var params = {
 								"_token": document.getElementsByName("_token")[0].value,
 								"nom": nom,
+								"type": (type != null && type.length > 0) ? type[0] : null,
 								"especes": especes,
+								"sources": sources,
 								"withinAgreement": (withinAgreement != null && withinAgreement.length > 0) ? 1 : 0,
 								"showInMemberReports": (showInMemberReports != null && showInMemberReports.length > 0) ? 1 : 0,
 								"discountOnInvoice": (discountOnInvoice != null && discountOnInvoice.length > 0) ? 1 : 0,
@@ -1020,30 +1073,16 @@
 											type: 'success'
 										});
 					                    
-								        // Mise à jour du tableau
-								        var especes = "";
-										var isFirst = true;
-										@foreach (Session::get('list_of_species') as $espece)
-											if (params["especes"] != null && params["especes"].includes('{{ $espece->id }}'))
-											{
-												if (isFirst)
-												{
-													isFirst = false;
-												} else {
-													especes += ", ";
-												}
-												especes += '{{ $espece->nom }}';
-											}
-										@endforeach
-
-					                    rowPrevData[5] = params["nom"];
-									    trPrev.children().eq(4).attr('title', params["nom"]);
-					                    rowPrevData[3] = especes;
-								    	rowPrevData[6] = produits.length;
-								    	rowPrevData[8] = params["especes"].join("|");
-					                    rowPrevData[11] = params["withinAgreement"];
-					                    rowPrevData[12] = params["showInMemberReports"];
-					                    rowPrevData[13] = params["discountOnInvoice"];
+					                    rowPrevData[5] = data.categorie[0]["categorie"];
+									    trPrev.children().eq(4).attr('title', data.categorie[0]["categorie"]);
+					                    rowPrevData[3] = data.categorie[0]["especes_noms"];
+								    	rowPrevData[6] = data.categorie[0]["nb_produits"];
+								    	rowPrevData[8] = data.categorie[0]["especes"];
+					                    rowPrevData[11] = data.categorie[0]["withinAgreement"];
+					                    rowPrevData[12] = data.categorie[0]["showInMemberReports"];
+					                    rowPrevData[13] = data.categorie[0]["discountOnInvoice"];
+					                    rowPrevData[14] = data.categorie[0]["type"];
+								    	rowPrevData[15] = data.categorie[0]["centrales"];
 
 								    	$('#tab-categories').dataTable().fnUpdate(rowPrevData,trPrev,undefined,false);
 

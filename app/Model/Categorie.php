@@ -16,7 +16,8 @@ class Categorie extends Model
         'country_id',
         'within_agreement',
         'show_in_member_reports',
-        'discount_on_invoice'
+        'discount_on_invoice',
+        'type'
     ];
 
     public $timestamps = true;

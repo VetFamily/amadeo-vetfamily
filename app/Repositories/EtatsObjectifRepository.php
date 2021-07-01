@@ -149,6 +149,7 @@ class EtatsObjectifRepository implements EtatsObjectifRepositoryInterface
 						{$this->relevant_objectifs_filter}
 						and EXTRACT(YEAR from c.date_entree) < (cat.annee + 1)
 						and c.obsolete is false
+						and cc.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o on o.categorie_id = cace.categorie_id where o.id = :id)
 						and o.id = :id 
 					) as t
 					group by EXTRACT(month from date)
@@ -185,6 +186,7 @@ class EtatsObjectifRepository implements EtatsObjectifRepositoryInterface
 						{$this->relevant_objectifs_filter}
 						and EXTRACT(YEAR from c.date_entree) < (cat.annee + 1)
 						and c.obsolete is false
+						and cc.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o on o.categorie_id = cace.categorie_id where o.id = :id)
 						and o.id = :id
 					) as t
 					group by EXTRACT(month from date)  
@@ -261,6 +263,7 @@ class EtatsObjectifRepository implements EtatsObjectifRepositoryInterface
 									and a.date = cpt.date_creation
 									and cpt.qte_tarif::numeric = 1
 								where o.id = :id
+								and cc.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o on o.categorie_id = cace.categorie_id where o.id = :id)
 							) as t
 							group by prod_id , nom_produit, conditionnement, valeur_ca_obj
 						) as annee
@@ -306,6 +309,7 @@ class EtatsObjectifRepository implements EtatsObjectifRepositoryInterface
 									and a.date = cpt.date_creation
 									and cpt.qte_tarif::numeric = 1
 								where o.id = :id
+								and cc.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o on o.categorie_id = cace.categorie_id where o.id = :id)
 							) as t
 							group by prod_id , nom_produit, conditionnement
 						) as annee_prec on annee_prec.prod_id = annee.prod_id
@@ -381,6 +385,7 @@ class EtatsObjectifRepository implements EtatsObjectifRepositoryInterface
 									and a.date = cpt.date_creation
 									and cpt.qte_tarif::numeric = 1
 								where o.id = :id
+								and cc.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o on o.categorie_id = cace.categorie_id where o.id = :id)
 							) as t
 							group by id_clinique, veterinaires, nom_clinique, valeur_ca_obj
 						) as annee
@@ -426,6 +431,7 @@ class EtatsObjectifRepository implements EtatsObjectifRepositoryInterface
 									and a.date = cpt.date_creation
 									and cpt.qte_tarif::numeric = 1
 								where o.id = :id
+								and cc.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o on o.categorie_id = cace.categorie_id where o.id = :id)
 							) as t
 							group by id_clinique, veterinaires, nom_clinique
 						) as annee_prec on annee_prec.id_clinique = annee.id_clinique

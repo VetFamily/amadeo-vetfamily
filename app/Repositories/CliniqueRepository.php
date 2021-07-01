@@ -267,6 +267,7 @@ class CliniqueRepository implements CliniqueRepositoryInterface
 						and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 						and ((objectifs.except_opt_out is false) or (objectifs.except_opt_out is true and cliniques.is_opt_out is false))
 						and ((objectifs.except_NO18552 is false) or (objectifs.except_NO18552 is true and cliniques.is_NO18552 is false))
+						and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $objectifId . ")
 					) liste_achats ON liste_achats.mois = cliniques_mois.mois::double precision and liste_achats.annee = cliniques_mois.annee::double precision AND liste_achats.clinique_id = cliniques_mois.clinique_id
 					group by cliniques_mois.clinique_id, cliniques_mois.clinique, cliniques_mois.mois, cliniques_mois.annee
 					order by clinique\$\$
@@ -410,6 +411,7 @@ class CliniqueRepository implements CliniqueRepositoryInterface
 							and c.id = " . $clinicId . "
 							" . (($clinicCodes == null || in_array('0', $clinicCodes)) ? "" : ("and cc.id in (".implode(",", $clinicCodes).")")) . "
 							AND p.invisible IS FALSE
+							and cc.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $targetId . ")
 						) achats_periode
 					) t";
 	
