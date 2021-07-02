@@ -144,7 +144,9 @@ return [
     'purchases.currency' => 'Currency',
     'sellers.search-empty' => 'No matching results found',
 
-    'clinics.id' => 'Clinic ID',
+    'clinics.id' => 'Amadeo clinic ID',
+    'clinics.lime-id' => 'Lime ID',
+    'clinics.old-member-id' => 'Old member ID',
     'clinics.title' => 'Clinics management',
     'clinics.search-empty' => 'No matching results found',
     'clinics.download-clinics.filename' => 'VetFamily_Clinics download',

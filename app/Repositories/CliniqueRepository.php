@@ -154,15 +154,15 @@ class CliniqueRepository implements CliniqueRepositoryInterface
 	public function findAllForExportCSV($clinicIds)
 	{
 		$query = "
-		select clinique_id, veterinaires, clinique, adresse, code_postal, ville, date_entree, date_left, country, commentaire, 
+		select clinique_id, lime_id, old_member_id, veterinaires, clinique, adresse, code_postal, ville, date_entree, date_left, country, commentaire, 
 		json_agg(json_build_object('centrale_nom', centrale_nom, 'centrale_id', centrale_id, 'identifiant', coalesce(identifiant_hors_web, ''))) as infos_hors_web, 
 		json_agg(json_build_object('centrale_nom', centrale_nom, 'centrale_id', centrale_id, 'identifiant', coalesce(identifiant_web, ''))) as infos_web
 		from
 		(
-			select c.clinique_id, c.veterinaires, c.clinique, c.adresse, c.code_postal, c.ville, c.date_entree, c.date_left, c.country, c.commentaire, c.centrale_id, c.centrale_nom, liste_centrales_hors_web.identifiant_hors_web, liste_centrales_web.identifiant_web
+			select c.clinique_id, c.lime_id, c.old_member_id, c.veterinaires, c.clinique, c.adresse, c.code_postal, c.ville, c.date_entree, c.date_left, c.country, c.commentaire, c.centrale_id, c.centrale_nom, liste_centrales_hors_web.identifiant_hors_web, liste_centrales_web.identifiant_web
 			from
 			(
-				select c.id as clinique_id, c.veterinaires, c.nom as clinique, c.adresse, c.code_postal, c.ville, c.date_entree, c.date_left, co.ctry_name as country, c.commentaire, ce.id AS centrale_id, ce.nom AS centrale_nom
+				select c.id as clinique_id, c.lime_id, c.old_member_id, c.veterinaires, c.nom as clinique, c.adresse, c.code_postal, c.ville, c.date_entree, c.date_left, co.ctry_name as country, c.commentaire, ce.id AS centrale_id, ce.nom AS centrale_nom
 				from centrales ce,
 				cliniques c
 				join ed_country co on co.ctry_id = c.country_id
@@ -198,7 +198,7 @@ class CliniqueRepository implements CliniqueRepositoryInterface
 				group by clinique_id, centrale_id
 			) liste_centrales_web ON liste_centrales_web.clinique_id = c.clinique_id AND liste_centrales_web.centrale_id = c.centrale_id
 		) t
-		group by clinique_id, veterinaires, clinique, adresse, code_postal, ville, date_entree, date_left, country, commentaire";
+		group by clinique_id, lime_id, old_member_id, veterinaires, clinique, adresse, code_postal, ville, date_entree, date_left, country, commentaire";
 
 		$result = DB::select(DB::raw($query));
 

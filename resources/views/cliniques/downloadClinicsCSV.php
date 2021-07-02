@@ -8,7 +8,7 @@
 	fprintf($output, "\xEF\xBB\xBF");
 
     // output the column headings
-    $headings = [ \Lang::get("amadeo.clinics.id"), \Lang::get('amadeo.clinics.country'), \Lang::get('amadeo.clinics.veterinaries'), \Lang::get('amadeo.clinics.name'), \Lang::get('amadeo.clinics.address'), \Lang::get('amadeo.clinics.zip-code'), \Lang::get('amadeo.clinics.city'), \Lang::get('amadeo.clinics.entry-year'), \Lang::get('amadeo.clinics.date-left') ];
+    $headings = [ \Lang::get("amadeo.clinics.id"), \Lang::get('amadeo.clinics.country'), \Lang::get("amadeo.clinics.lime-id"), \Lang::get("amadeo.clinics.old-member-id"), \Lang::get('amadeo.clinics.veterinaries'), \Lang::get('amadeo.clinics.name'), \Lang::get('amadeo.clinics.address'), \Lang::get('amadeo.clinics.zip-code'), \Lang::get('amadeo.clinics.city'), \Lang::get('amadeo.clinics.entry-year'), \Lang::get('amadeo.clinics.date-left') ];
     foreach ($centralPurchasing as $cp) {
         array_push($headings, ucwords(strtolower($cp->nom)));
         array_push($headings, ucwords(strtolower($cp->nom) . ' (Web)'));
@@ -18,7 +18,7 @@
 
 	// Parcours des données
 	foreach ($clinics as $clinic) {
-        $line = [ $clinic->clinique_id, $clinic->country, $clinic->veterinaires, $clinic->clinique, $clinic->adresse, '="' . $clinic->code_postal . '"', $clinic->ville, $clinic->date_entree, $clinic->date_left ];
+        $line = [ $clinic->clinique_id, $clinic->country, $clinic->lime_id, $clinic->old_member_id, $clinic->veterinaires, $clinic->clinique, $clinic->adresse, '="' . $clinic->code_postal . '"', $clinic->ville, $clinic->date_entree, $clinic->date_left ];
         $listOfCentralPurchasingOffWeb = json_decode($clinic->infos_hors_web);
         $listOfCentralPurchasingWeb = json_decode($clinic->infos_web);
         for ($i=0; $i < sizeof($listOfCentralPurchasingOffWeb); $i++) { 

@@ -142,7 +142,9 @@ return [
     'purchases.currency' => 'Devise',
     'sellers.search-empty' => 'Aucun laboratoire correspondant',
 
-    'clinics.id' => 'ID clinique',
+    'clinics.id' => 'ID clinique Amadeo',
+    'clinics.lime-id' => 'ID Lime',
+    'clinics.old-member-id' => 'Ancien member ID',
     'clinics.title' => 'Gestion des cliniques',
     'clinics.search-empty' => 'Aucune clinique correspondante',
     'clinics.download-clinics.filename' => 'Elia-digital_Extraction cliniques',
