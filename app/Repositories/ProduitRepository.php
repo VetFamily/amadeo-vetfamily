@@ -141,6 +141,9 @@ class ProduitRepository implements ProduitRepositoryInterface
 					and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 					and ((objectifs.except_opt_out is false) or (objectifs.except_opt_out is true and cliniques.is_opt_out is false))
 					and ((objectifs.except_NO18552 is false) or (objectifs.except_NO18552 is true and cliniques.is_NO18552 is false))
+					and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
+					and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
+					and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
 					and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $objectifId . ")
 				) t ON t.prod_id = liste.prod_id
 				GROUP BY denomination, conditionnement, pourcentage_remise, pourcentage_remise_source, cat_prod_obj_id, obsolete";
@@ -225,6 +228,9 @@ class ProduitRepository implements ProduitRepositoryInterface
 									and ((o.except_SE1107 is false) or (o.except_SE1107 is true and c.is_SE1107 is false))
 									and ((o.except_opt_out is false) or (o.except_opt_out is true and c.is_opt_out is false))
 									and ((o.except_NO18552 is false) or (o.except_NO18552 is true and c.is_NO18552 is false))
+									and ((o.except_es_vf2_centauro is false) or (o.except_es_vf2_centauro is true and c.is_es_vf2_centauro is false))
+									and ((o.except_es_vf2_nuzoa is false) or (o.except_es_vf2_nuzoa is true and c.is_es_vf2_nuzoa is false))
+									and ((o.except_es_vf2_distrivet is false) or (o.except_es_vf2_distrivet is true and c.is_es_vf2_distrivet is false))
 									and cc.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = o.id)
 									" . (($clinic == null) ? "" : ("and c.id = " . $clinic)) . "
 									" . (($clinicCodes == null || in_array('0', $clinicCodes)) ? "" : ("and cc.id in (".implode(",", $clinicCodes).")")) . "
@@ -288,6 +294,9 @@ class ProduitRepository implements ProduitRepositoryInterface
 									and ((objectifs.except_SE1107 is false) or (objectifs.except_SE1107 is true and cliniques.is_SE1107 is false))
 									and ((objectifs.except_opt_out is false) or (objectifs.except_opt_out is true and cliniques.is_opt_out is false))
 									and ((objectifs.except_NO18552 is false) or (objectifs.except_NO18552 is true and cliniques.is_NO18552 is false))
+									and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
+									and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
+									and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
 									and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = objectifs.id)
 								) achats_periode
 							) achats
