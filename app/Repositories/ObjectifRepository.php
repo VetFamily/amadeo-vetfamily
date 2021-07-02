@@ -231,7 +231,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 							and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 							and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = " . $id . ")
+							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $id . ")
 						) achats_periode
 						group by obj_id
 					) calcul_periode on calcul_periode.obj_id = objectifs.id 
@@ -272,7 +272,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 							and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 							and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = " . $id . ")
+							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $id . ")
 						) achats_periode
 						group by obj_id
 					) calcul_periode_prec on calcul_periode_prec.obj_id = objectifs.id 
@@ -298,7 +298,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 							and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 							and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = " . $id . ")
+							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $id . ")
 						) achats_periode
 						group by obj_id
 					) calcul_periode_total_prec on calcul_periode_total_prec.obj_id = objectifs.id ";
@@ -345,7 +345,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 							and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 							and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = " . $id . ")
+							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $id . ")
 						)
 					) produits_periode,
 					(
@@ -373,7 +373,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 				$query .= "					 
 							and objectifs.id = " . $id . "
 							and produits.obsolete is false and produits.invisible is false
-							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = " . $id . ")
+							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $id . ")
 						) t
 						where t.produit_id not in (
 							select distinct achats.produit_id
@@ -408,7 +408,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 							and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 							and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = " . $id . ")
+							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $id . ")
 						)
 					) produits_periode_prec,
 					objectifs 
@@ -444,7 +444,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 							and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 							and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = " . $id . ")
+							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $id . ")
 						) achats_periode
 						group by obj_id
 					) calcul_periode on calcul_periode.obj_id = objectifs.id 
@@ -483,7 +483,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 							and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 							and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = " . $id . ")
+							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $id . ")
 						) achats_periode
 						group by obj_id
 					) calcul_periode_prec on calcul_periode_prec.obj_id = objectifs.id 
@@ -511,7 +511,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 							and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 							and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = " . $id . ")
+							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $id . ")
 						) achats_periode
 						group by obj_id
 					) calcul_periode_total_prec on calcul_periode_total_prec.obj_id = objectifs.id ";
@@ -575,7 +575,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 							and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 							and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = " . $id . ")
+							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $id . ")
 						)
 					) produits_periode,
 					(
@@ -638,7 +638,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 							and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 							and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = " . $id . ")
+							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $id . ")
 						)
 					) produits_periode_prec,
 					objectifs 
@@ -675,7 +675,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 							and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 							and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = " . $id . ")
+							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $id . ")
 						) achats_periode
 						group by obj_id
 					) calcul_periode on calcul_periode.obj_id = objectifs.id 
@@ -714,7 +714,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 							and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 							and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = " . $id . ")
+							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $id . ")
 						) achats_periode
 						group by obj_id
 					) calcul_periode_prec on calcul_periode_prec.obj_id = objectifs.id 
@@ -742,7 +742,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 							and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 							and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 							and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = " . $id . ")
+							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $id . ")
 						) achats_periode
 						group by obj_id
 					) calcul_periode_total_prec on calcul_periode_total_prec.obj_id = objectifs.id ";
@@ -834,7 +834,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 								where p.invisible is false
 								and o.obsolete is false
 								and o.suivi is true
-								and cc.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = o.id)
+								and cc.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = o.id)
 								and cat.annee = '" . $targetYear . "'
 								and cat.laboratoire_id = '" . $lab . "'
 								" . (($clinic == null) ? "" : ("and c.id = " . $clinic)) . "
@@ -956,7 +956,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 									and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 									and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-									and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = objectifs.id)
+									and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = objectifs.id)
 								) achats_periode
 							) achats
 							group by obj_id
@@ -1075,7 +1075,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 									and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 									and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-									and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = objectifs.id)
+									and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = objectifs.id)
 								) achats_periode
 							) achats
 							group by obj_id
@@ -1192,7 +1192,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 									and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 									and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-									and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = objectifs.id)
+									and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = objectifs.id)
 								) achats_periode
 							) achats
 							group by obj_id
@@ -1263,7 +1263,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 									and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 									and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-									and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = " . $objectifId . ")
+									and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $objectifId . ")
 								) achats_periode
 							) achats
 							group by obj_id
@@ -1321,7 +1321,7 @@ class ObjectifRepository implements ObjectifRepositoryInterface
 									and ((objectifs.except_es_vf2_centauro is false) or (objectifs.except_es_vf2_centauro is true and cliniques.is_es_vf2_centauro is false))
 									and ((objectifs.except_es_vf2_nuzoa is false) or (objectifs.except_es_vf2_nuzoa is true and cliniques.is_es_vf2_nuzoa is false))
 									and ((objectifs.except_es_vf2_distrivet is false) or (objectifs.except_es_vf2_distrivet is true and cliniques.is_es_vf2_distrivet is false))
-									and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.catgorie_id = cace.categorie_id where o2.id = " . $objectifId . "
+									and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = " . $objectifId . "
 								) achats_periode
 							) achats
 							group by obj_id
