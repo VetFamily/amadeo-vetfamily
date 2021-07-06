@@ -777,7 +777,7 @@
 
 						                    // Mise à jour du tableau
 						                    var laboratoire = data.categorie[0]["laboratoire_id"] != null ? data.categorie[0]["laboratoire"] : "@lang('amadeo.categories.seller-multiple')";
-						                    var index = $('#tab-categories').dataTable().fnAddData( [ null, data.categorie[0]["country"], data.categorie[0]["annee"], null, laboratoire, data.categorie[0]["categorie"], data.categorie[0]["nb_produits"], data.categorie[0]["id"], null, data.categorie[0]["laboratoire_id"], data.categorie[0]["country_id"], data.categorie[0]["within_agreement"], data.categorie[0]["show_in_member_reports"], data.categorie[0]["discount_on_invoice"] ] );
+						                    var index = $('#tab-categories').dataTable().fnAddData( [ null, data.categorie[0]["country"], data.categorie[0]["annee"], null, laboratoire, data.categorie[0]["categorie"], data.categorie[0]["nb_produits"], data.categorie[0]["id"], null, data.categorie[0]["laboratoire_id"], data.categorie[0]["country_id"], data.categorie[0]["within_agreement"], data.categorie[0]["show_in_member_reports"], data.categorie[0]["discount_on_invoice"], data.categorie[0]["type"], data.categorie[0]["centrales"] ] );
 
 						                    if ($( '#selectFilter-1 option[value="' + laboratoire + '"]' ).length == 0)
 						                    {
