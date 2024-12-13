@@ -65,6 +65,7 @@ class LaboratoireRepository implements LaboratoireRepositoryInterface
 								and o.suivi is true
 								and categories.annee = '" . $targetYear . "'
 								and p.invisible is false
+								and cc.centrale_id != 11
 								and cc.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = o.id)
 								" . (($clinic == null) ? "" : ("and c.id = " . $clinic)) . "
 								" . (($clinicCodes == null || in_array('0', $clinicCodes)) ? "" : ("and cc.id in (".implode(",", $clinicCodes).")")) . "
@@ -95,6 +96,7 @@ class LaboratoireRepository implements LaboratoireRepositoryInterface
 							and produits.invisible is false
 							and EXTRACT(YEAR from cliniques.date_entree) < " . ($annee+1) . "
 							and achats.date between to_date('01/01/" . $annee . "', 'DD/MM/YYYY') and to_date('31/12/" . $annee . "', 'DD/MM/YYYY')
+							and centrale_clinique.centrale_id != 11
 						) achats
 						group by lab_id
 					) achats on achats.lab_id = laboratoires.id
@@ -119,6 +121,7 @@ class LaboratoireRepository implements LaboratoireRepositoryInterface
 							and achats.date between to_date('01/01/" . $annee . "', 'DD/MM/YYYY') and to_date('31/12/" . $annee . "', 'DD/MM/YYYY')
 							and objectifs.obsolete is false
 							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = objectifs.id)
+							and centrale_clinique.centrale_id != 11
 						) achats
 						group by lab_id
 					) achats_remise on achats_remise.lab_id = laboratoires.id
@@ -147,6 +150,7 @@ class LaboratoireRepository implements LaboratoireRepositoryInterface
 							where laboratoires.id = " . $laboratoireId . "
 							and produits.invisible is false
 							and cliniques.id = " . $cliniqueId . "
+							and centrale_clinique.centrale_id != 11
 						) achats
 						group by lab_id
 					) achats on achats.lab_id = laboratoires.id
@@ -169,6 +173,7 @@ class LaboratoireRepository implements LaboratoireRepositoryInterface
 							and categories.annee = " . $annee . "
 							and objectifs.obsolete is false
 							and centrale_clinique.centrale_id in (select cace.centrale_id from categorie_centrale cace join objectifs o2 on o2.categorie_id = cace.categorie_id where o2.id = objectifs.id)
+							and centrale_clinique.centrale_id != 11
 						) achats
 						group by lab_id
 					) achats_remise on achats_remise.lab_id = laboratoires.id
