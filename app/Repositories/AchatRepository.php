@@ -252,7 +252,7 @@ class AchatRepository implements AchatRepositoryInterface
 						FROM
 						(
 							select" . ($groupByValoProduit != "" ? "" : " distinct") . " p.id AS prod_id, a.id, 
-							(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then a.date else (a.date + interval '1 year') end) as mois, 
+							(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then date_trunc('month', a.date) else (date_trunc('month', a.date) + interval '1 year') end) as mois, 
 							(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then " . $selectValoQuery . " else 0 end) as manque,
 							(case when (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "') then " . $selectValoQuery . " else 0 end) as manque_prec,
 							(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then " . $selectQuery . " else 0 end) as ca_periode, 
@@ -430,7 +430,7 @@ class AchatRepository implements AchatRepositoryInterface
 							from
 							(
 								select" . ($groupByValoLabo != "" ? "" : " distinct") . " p.laboratoire_id as lab_id, a.produit_id, a.id, 
-								(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then a.date else (a.date + interval '1 year') end) as mois, 
+								(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then date_trunc('month', a.date) else (date_trunc('month', a.date) + interval '1 year') end) as mois, 
 								(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then 1 else 0 end) as nb_produits,
 								(case when (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "') then 1 else 0 end) as nb_produits_prec,
 								(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then " . $selectValoQuery . " else 0 end) as nb_valos,
@@ -471,7 +471,7 @@ class AchatRepository implements AchatRepositoryInterface
 							from
 							(
 								select a.produit_id, 
-								(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then a.date else (a.date + interval '1 year') end) as mois,
+								(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then date_trunc('month', a.date) else (date_trunc('month', a.date) + interval '1 year') end) as mois,
 								(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then a.ca_complet else 0 end) as ca_periode, 
 								(case when (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "') then a.ca_complet else 0 end) as ca_periode_prec
 								from achats_autres a
@@ -620,7 +620,7 @@ class AchatRepository implements AchatRepositoryInterface
 							from
 							(
 								select" . ($groupByValo != "" ? "" : " distinct") . " cc.clinique_id, a.produit_id, a.id, 
-								(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then a.date else (a.date + interval '1 year') end) as mois, 
+								(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then date_trunc('month', a.date) else (date_trunc('month', a.date) + interval '1 year') end) as mois, 
 								(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then 1 else 0 end) as nb_produits,
 								(case when (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "') then 1 else 0 end) as nb_produits_prec,
 								(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then " . $selectValoQuery . " else 0 end) as nb_valos,
@@ -805,7 +805,7 @@ class AchatRepository implements AchatRepositoryInterface
 							from
 							(
 								select" . ($groupByValo != "" ? "" : " distinct") . " cap.categorie_id, a.produit_id, a.id, 
-								(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then a.date else (a.date + interval '1 year') end) as mois, 
+								(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then date_trunc('month', a.date) else (date_trunc('month', a.date) + interval '1 year') end) as mois, 
 								(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then 1 else 0 end) as nb_produits,
 								(case when (a.date between '" . $startDatePrec . "' and '" . $endDatePrec . "') then 1 else 0 end) as nb_produits_prec,
 								(case when (a.date between '" . $startDate . "' and '" . $endDate . "') then " . $selectValoQuery . " else 0 end) as nb_valos,
